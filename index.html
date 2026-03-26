@@ -181,7 +181,7 @@
   </div>
 </div>
 
-<div id="googleStatus" class="google-status" style="display:none">
+<div id="googleStatus" class="google-status">
   <div class="dot"></div>
   <span id="googleStatusText">Not connected to Google</span>
   <div style="margin-left:auto;display:flex;gap:6px;align-items:center;">
@@ -193,11 +193,11 @@
 <!-- PENDING SECTION -->
 <div id="pendingSection">
   <div class="collapsible-header" onclick="toggleSection('pending')">
-    <div style="display:flex;align-items:center;gap:6px;">
+    <div style="display:flex;align-items:center;gap:8px;">
       <span style="font-size:13px;font-weight:800;color:var(--text);">Ready to Export</span>
-      <span style="font-size:13px;font-weight:800;color:var(--muted2);" id="pendingCount">(0)</span>
+      <span style="font-size:13px;font-weight:700;color:var(--muted2);" id="pendingCount">(0)</span>
     </div>
-    <span id="pendingChevron" style="color:var(--muted);font-size:14px;transition:transform 0.2s;">▼</span>
+    <span id="pendingChevron" style="font-size:11px;color:var(--muted);font-weight:700;letter-spacing:0.5px;">HIDE</span>
   </div>
   <div id="pendingList" class="ledger">
     <div class="empty-state" id="emptyState" style="padding:16px 20px;font-size:12px;"><span class="empty-icon" style="font-size:28px;margin-bottom:8px;">🧾</span>No receipts yet.<br>Snap your first one above and Skrunchi it!</div>
@@ -207,11 +207,11 @@
 <!-- EXPORTED SECTION -->
 <div id="exportedSection" style="display:none">
   <div class="collapsible-header" onclick="toggleSection('exported')">
-    <div style="display:flex;align-items:center;gap:6px;">
+    <div style="display:flex;align-items:center;gap:8px;">
       <span style="font-size:13px;font-weight:800;color:var(--text);">Exported</span>
-      <span style="font-size:13px;font-weight:800;color:var(--muted2);" id="exportedCount">(0)</span>
+      <span style="font-size:13px;font-weight:700;color:var(--muted2);" id="exportedCount">(0)</span>
     </div>
-    <span id="exportedChevron" style="color:var(--muted);font-size:14px;transition:transform 0.2s;">▶</span>
+    <span id="exportedChevron" style="font-size:11px;color:var(--muted);font-weight:700;letter-spacing:0.5px;">SHOW</span>
   </div>
   <div id="exportedList" class="ledger" style="display:none"></div>
 </div>
@@ -517,7 +517,6 @@
     };
     receipts.push(entry);
     saveToStorage();
-    document.getElementById('googleStatus').style.display='flex';
     refreshLedger();
     updateTotal(); updateCounts();
     document.getElementById('resultCard').classList.remove('visible');
@@ -537,11 +536,11 @@
     if (section === 'pending') {
       pendingOpen = !pendingOpen;
       document.getElementById('pendingList').style.display = pendingOpen ? '' : 'none';
-      document.getElementById('pendingChevron').textContent = pendingOpen ? '▼' : '▶';
+      document.getElementById('pendingChevron').textContent = pendingOpen ? 'HIDE' : 'SHOW';
     } else {
       exportedOpen = !exportedOpen;
       document.getElementById('exportedList').style.display = exportedOpen ? '' : 'none';
-      document.getElementById('exportedChevron').textContent = exportedOpen ? '▼' : '▶';
+      document.getElementById('exportedChevron').textContent = exportedOpen ? 'HIDE' : 'SHOW';
     }
   }
 
@@ -641,7 +640,7 @@
 
       // Open exported section so user can see them
       exportedOpen = true;
-      document.getElementById('exportedChevron').textContent = '▼';
+      document.getElementById('exportedChevron').textContent = 'HIDE';
       refreshLedger(); updateTotal(); updateCounts();
       showToast(`Exported to Google Sheets ✓`);
 
