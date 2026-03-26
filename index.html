@@ -184,34 +184,37 @@
 <div id="googleStatus" class="google-status" style="display:none">
   <div class="dot"></div>
   <span id="googleStatusText">Not connected to Google</span>
-  <button onclick="connectGoogle()" id="googleConnectBtn" style="margin-left:auto;background:var(--blue);color:#fff;border:none;border-radius:8px;padding:6px 12px;font-family:'Nunito',sans-serif;font-size:12px;font-weight:800;cursor:pointer;">Connect</button>
+  <div style="margin-left:auto;display:flex;gap:6px;align-items:center;">
+    <button onclick="resetSheet()" id="resetSheetBtn" style="display:none;background:transparent;color:var(--muted);border:1px solid var(--border);border-radius:8px;padding:6px 10px;font-family:'Nunito',sans-serif;font-size:11px;font-weight:800;cursor:pointer;">Reset Sheet</button>
+    <button onclick="connectGoogle()" id="googleConnectBtn" style="background:var(--blue);color:#fff;border:none;border-radius:8px;padding:6px 12px;font-family:'Nunito',sans-serif;font-size:12px;font-weight:800;cursor:pointer;">Connect</button>
+  </div>
 </div>
 
 <!-- PENDING SECTION -->
-<div id="pendingSection" style="display:none">
+<div id="pendingSection">
   <div class="collapsible-header" onclick="toggleSection('pending')">
-    <div style="display:flex;align-items:center;gap:8px;">
+    <div style="display:flex;align-items:center;gap:6px;">
       <span style="font-size:13px;font-weight:800;color:var(--text);">Ready to Export</span>
-      <span class="count" id="pendingCount" style="background:var(--accent);">0</span>
+      <span style="font-size:13px;font-weight:800;color:var(--muted2);" id="pendingCount">(0)</span>
     </div>
     <span id="pendingChevron" style="color:var(--muted);font-size:14px;transition:transform 0.2s;">▼</span>
   </div>
-  <div id="pendingList" class="ledger"></div>
+  <div id="pendingList" class="ledger">
+    <div class="empty-state" id="emptyState" style="padding:16px 20px;font-size:12px;"><span class="empty-icon" style="font-size:28px;margin-bottom:8px;">🧾</span>No receipts yet.<br>Snap your first one above and Skrunchi it!</div>
+  </div>
 </div>
 
 <!-- EXPORTED SECTION -->
 <div id="exportedSection" style="display:none">
   <div class="collapsible-header" onclick="toggleSection('exported')">
-    <div style="display:flex;align-items:center;gap:8px;">
+    <div style="display:flex;align-items:center;gap:6px;">
       <span style="font-size:13px;font-weight:800;color:var(--text);">Exported</span>
-      <span class="count" id="exportedCount" style="background:var(--muted);">0</span>
+      <span style="font-size:13px;font-weight:800;color:var(--muted2);" id="exportedCount">(0)</span>
     </div>
     <span id="exportedChevron" style="color:var(--muted);font-size:14px;transition:transform 0.2s;">▶</span>
   </div>
   <div id="exportedList" class="ledger" style="display:none"></div>
 </div>
-
-<div class="empty-state" id="emptyState"><span class="empty-icon">🧾</span>No receipts yet.<br>Snap your first one above<br>and Skrunchi it!</div>
 <div class="export-bar">
   <button class="btn-export" id="exportBtn" disabled onclick="startExport()">📊 Export to Google Sheets</button>
 </div>
@@ -342,17 +345,28 @@
     const status = document.getElementById('googleStatus');
     const statusText = document.getElementById('googleStatusText');
     const connectBtn = document.getElementById('googleConnectBtn');
+    const resetBtn = document.getElementById('resetSheetBtn');
     if (googleAccessToken) {
       status.classList.add('connected');
       statusText.textContent = 'Connected to Google Sheets';
       connectBtn.textContent = 'Disconnect';
       connectBtn.onclick = disconnectGoogle;
+      resetBtn.style.display = spreadsheetId ? 'block' : 'none';
     } else {
       status.classList.remove('connected');
       statusText.textContent = 'Not connected to Google';
       connectBtn.textContent = 'Connect';
       connectBtn.onclick = connectGoogle;
+      resetBtn.style.display = 'none';
     }
+  }
+
+  function resetSheet() {
+    if (!confirm('This will create a new Google Sheet next time you export. Your receipts in the app stay safe. Continue?')) return;
+    spreadsheetId = null;
+    localStorage.removeItem('skrunchi_sheet_id');
+    showToast('Sheet reset — next export creates a fresh sheet');
+    updateGoogleStatus();
   }
 
   function connectGoogle() { window.location.href = '/api/auth'; }
@@ -421,8 +435,8 @@
   function updateCounts() {
     const pending = receipts.filter(r => !r.exported).length;
     const exported = receipts.filter(r => r.exported).length;
-    document.getElementById('pendingCount').textContent = pending;
-    document.getElementById('exportedCount').textContent = exported;
+    document.getElementById('pendingCount').textContent = `(${pending})`;
+    document.getElementById('exportedCount').textContent = `(${exported})`;
     document.getElementById('exportBtn').disabled = pending === 0 || !googleAccessToken;
   }
 
@@ -547,21 +561,22 @@
     const exported = receipts.filter(r => r.exported);
 
     const emptyState = document.getElementById('emptyState');
-    const pendingSection = document.getElementById('pendingSection');
     const exportedSection = document.getElementById('exportedSection');
     const pendingList = document.getElementById('pendingList');
     const exportedList = document.getElementById('exportedList');
 
-    // Show/hide empty state
-    emptyState.style.display = receipts.length === 0 ? '' : 'none';
-
-    // Pending section
-    pendingSection.style.display = pending.length > 0 ? '' : 'none';
+    // Pending section always visible
     pendingList.innerHTML = '';
-    pending.forEach(entry => pendingList.appendChild(makeItem(entry)));
+    if (pending.length === 0) {
+      pendingList.appendChild(emptyState);
+      emptyState.style.display = '';
+    } else {
+      emptyState.style.display = 'none';
+      pending.forEach(entry => pendingList.appendChild(makeItem(entry)));
+    }
     pendingList.style.display = pendingOpen ? '' : 'none';
 
-    // Exported section
+    // Exported section only shows when there are exported receipts
     exportedSection.style.display = exported.length > 0 ? '' : 'none';
     exportedList.innerHTML = '';
     exported.forEach(entry => exportedList.appendChild(makeItem(entry)));
