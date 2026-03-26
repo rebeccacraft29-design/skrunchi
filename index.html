@@ -73,6 +73,7 @@
   .ledger-item { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 13px 15px; display: flex; align-items: center; gap: 12px; animation: slideUp 0.25s ease; cursor: pointer; transition: border-color 0.15s; }
   .ledger-item:hover { border-color: var(--accent); }
   .ledger-item:active { transform: scale(0.99); }
+  .ledger-thumb { width: 44px; height: 44px; border-radius: 10px; object-fit: cover; border: 1px solid var(--border); flex-shrink: 0; background: var(--surface2); }
   .ledger-icon { width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; background: var(--surface2); border: 1px solid var(--border); }
   .ledger-info { flex: 1; min-width: 0; }
   .ledger-vendor { font-size: 15px; font-weight: 800; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -181,6 +182,9 @@
       <h3>Edit Receipt</h3>
       <div class="modal-close" onclick="closeEdit()">✕</div>
     </div>
+    <div id="editImageWrap" style="padding:14px 18px 0;display:none;">
+      <img id="editImage" src="" alt="Receipt" style="width:100%;max-height:220px;object-fit:contain;border-radius:12px;border:1px solid var(--border);background:var(--surface2);">
+    </div>
     <div class="modal-category">
       <div class="modal-category-title">Category</div>
       <div class="cat-chip" onclick="selectCat(this,'Meals & Entertainment')">🍽️ Meals</div>
@@ -225,13 +229,19 @@
   document.getElementById('fileInputCamera').addEventListener('change', e => { if(e.target.files[0]) handleFile(e.target.files[0]); });
   document.getElementById('fileInputGallery').addEventListener('change', e => { if(e.target.files[0]) handleFile(e.target.files[0]); });
   async function handleFile(file) {
-    document.getElementById('receiptPreview').src = URL.createObjectURL(file);
+    const url = URL.createObjectURL(file);
+    document.getElementById('receiptPreview').src = url;
     document.getElementById('uploadZone').style.display = 'none';
     document.getElementById('resultCard').classList.remove('visible');
     document.getElementById('errorMsg').classList.remove('visible');
     document.getElementById('processingCard').classList.add('visible');
     animateProgress();
-    try { showResult(await analyzeReceipt(await fileToBase64(file), file.type||'image/jpeg')); }
+    try { 
+      const b64 = await fileToBase64(file);
+      const result = await analyzeReceipt(b64, file.type||'image/jpeg');
+      result._imageUrl = url;
+      showResult(result); 
+    }
     catch(err) { showError(err.message||'Could not read receipt. Please try again.'); }
   }
   function fileToBase64(file) { return new Promise((res,rej)=>{ const r=new FileReader(); r.onload=()=>res(r.result.split(',')[1]); r.onerror=rej; r.readAsDataURL(file); }); }
@@ -267,7 +277,7 @@
   }
   function showError(msg) { clearInterval(prog); document.getElementById('processingCard').classList.remove('visible'); document.getElementById('uploadZone').style.display=''; const e=document.getElementById('errorMsg'); e.textContent='⚠️ '+msg; e.classList.add('visible'); document.getElementById('fileInputCamera').value=''; document.getElementById('fileInputGallery').value=''; }
   function saveReceipt() {
-    const entry={id:Date.now(),vendor:document.getElementById('resultVendor').textContent,category:document.getElementById('resultCategory').textContent,date:document.getElementById('fieldDate').value,payment:document.getElementById('fieldPayment').value,notes:document.getElementById('fieldNotes').value,subtotal:document.getElementById('amtSubtotal').value,gst_hst:document.getElementById('amtGST').value,pst:document.getElementById('amtPST').value,tip:document.getElementById('amtTip').value,total:document.getElementById('amtTotal').value,icon:ICONS[document.getElementById('resultCategory').textContent]||'📄'};
+    const entry={id:Date.now(),vendor:document.getElementById('resultVendor').textContent,category:document.getElementById('resultCategory').textContent,date:document.getElementById('fieldDate').value,payment:document.getElementById('fieldPayment').value,notes:document.getElementById('fieldNotes').value,subtotal:document.getElementById('amtSubtotal').value,gst_hst:document.getElementById('amtGST').value,pst:document.getElementById('amtPST').value,tip:document.getElementById('amtTip').value,total:document.getElementById('amtTotal').value,icon:ICONS[document.getElementById('resultCategory').textContent]||'📄',imageUrl:currentData?currentData._imageUrl:null};
     receipts.push(entry); addToLedger(entry); updateTotal();
     document.getElementById('resultCard').classList.remove('visible'); document.getElementById('uploadZone').style.display=''; document.getElementById('fileInputCamera').value=''; document.getElementById('fileInputGallery').value=''; currentData=null; document.getElementById('exportBtn').disabled=false; showToast("Skrunchi'd! ✓");
   }
@@ -276,7 +286,10 @@
     document.getElementById('emptyState').style.display='none'; document.getElementById('ledgerLabel').style.display='block';
     const item=document.createElement('div'); item.className='ledger-item';
     item.onclick = () => openEdit(entry.id);
-    item.innerHTML=`<div class="ledger-icon">${entry.icon}</div><div class="ledger-info"><div class="ledger-vendor">${entry.vendor}</div><div class="ledger-meta">${entry.date} &nbsp;·&nbsp; ${entry.category}</div></div><div class="ledger-right"><div class="ledger-total">${entry.total||'—'}</div><div class="ledger-tax">${entry.gst_hst?'GST/HST '+entry.gst_hst:''}${entry.pst&&entry.pst!=='$0.00'?' · PST '+entry.pst:''}${entry.tip&&entry.tip!=='$0.00'?' · Tip '+entry.tip:''}</div></div>`;
+    const iconHtml = entry.imageUrl 
+      ? `<img class="ledger-thumb" src="${entry.imageUrl}" alt="Receipt">` 
+      : `<div class="ledger-icon">${entry.icon}</div>`;
+    item.innerHTML=`${iconHtml}<div class="ledger-info"><div class="ledger-vendor">${entry.vendor}</div><div class="ledger-meta">${entry.date} &nbsp;·&nbsp; ${entry.category}</div></div><div class="ledger-right"><div class="ledger-total">${entry.total||'—'}</div><div class="ledger-tax">${entry.gst_hst?'GST/HST '+entry.gst_hst:''}${entry.pst&&entry.pst!=='$0.00'?' · PST '+entry.pst:''}${entry.tip&&entry.tip!=='$0.00'?' · Tip '+entry.tip:''}</div></div>`;
     document.getElementById('ledger').appendChild(item);
   }
   function updateTotal() { let t=0; receipts.forEach(r=>{ const v=parseFloat((r.total||'0').replace(/[^0-9.]/g,'')); if(!isNaN(v))t+=v; }); document.getElementById('totalPill').textContent='$'+t.toFixed(2)+' logged'; }
@@ -303,7 +316,11 @@
     document.getElementById('editPST').value = entry.pst || '';
     document.getElementById('editTip').value = entry.tip || '';
     document.getElementById('editTotal').value = entry.total || '';
-    // Set active category chip
+    // Show receipt image if available
+    const imgWrap = document.getElementById('editImageWrap');
+    const img = document.getElementById('editImage');
+    if (entry.imageUrl) { img.src = entry.imageUrl; imgWrap.style.display = 'block'; }
+    else { imgWrap.style.display = 'none'; }
     document.querySelectorAll('.cat-chip').forEach(c => {
       c.classList.toggle('active', c.getAttribute('onclick').includes(entry.category));
     });
