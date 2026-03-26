@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Skrunchi — Snap it. Skrunchi it. Done.</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap');
+  :root {
+    --bg: #111318; --surface: #1a1d24; --surface2: #22262f; --border: #2e3340;
+    --accent: #ff7b35; --accent-soft: rgba(255,123,53,0.12);
+    --blue: #4d9fff; --blue-soft: rgba(77,159,255,0.12);
+    --text: #eef0f6; --muted: #6b7280; --muted2: #9aa3b0; --radius: 18px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Nunito', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; max-width: 480px; margin: 0 auto; padding-bottom: 90px; }
+  header { padding: 18px 20px 14px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border); position: sticky; top: 0; background: var(--bg); z-index: 10; }
+  .logo-wrap { display: flex; align-items: center; gap: 10px; }
+  .logo-icon { width: 36px; height: 36px; background: var(--accent); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+  .logo-text { font-size: 22px; font-weight: 900; color: var(--text); letter-spacing: -0.5px; }
+  .logo-text span { color: var(--accent); }
+  .tagline { font-size: 9px; color: var(--muted); letter-spacing: 0.8px; margin-top: 1px; font-weight: 600; }
+  .total-pill { background: var(--surface2); border: 1px solid var(--border); border-radius: 100px; padding: 7px 14px; font-size: 12px; color: var(--blue); font-weight: 700; }
+  .upload-zone { margin: 20px 16px; border: 2px dashed var(--border); border-radius: var(--radius); padding: 36px 20px; text-align: center; cursor: pointer; transition: all 0.2s; position: relative; background: var(--surface); }
+  .upload-zone:hover { border-color: var(--accent); background: #1e1a16; }
+  .upload-zone input { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
+  .upload-icon { width: 68px; height: 68px; background: var(--accent-soft); border: 2px solid rgba(255,123,53,0.25); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; font-size: 28px; }
+  .upload-zone h3 { font-size: 20px; font-weight: 800; margin-bottom: 8px; }
+  .upload-zone p { font-size: 13px; color: var(--muted2); line-height: 1.6; font-weight: 500; }
+  .upload-hint { display: inline-flex; align-items: center; gap: 6px; margin-top: 16px; font-size: 12px; color: var(--accent); font-weight: 700; background: var(--accent-soft); padding: 6px 16px; border-radius: 100px; border: 1px solid rgba(255,123,53,0.2); }
+  .processing-card { margin: 0 16px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; display: none; }
+  .processing-card.visible { display: block; }
+  .receipt-preview { width: 100%; max-height: 180px; object-fit: cover; border-radius: 12px; margin-bottom: 16px; }
+  .analyzing-bar { background: var(--surface2); border-radius: 100px; height: 6px; overflow: hidden; margin-bottom: 8px; }
+  .analyzing-fill { height: 100%; background: linear-gradient(90deg, var(--accent), var(--blue)); border-radius: 100px; width: 0%; transition: width 0.4s ease; }
+  .analyzing-label { font-size: 12px; color: var(--muted2); display: flex; justify-content: space-between; font-weight: 600; }
+  .result-card { margin: 0 16px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; display: none; animation: slideUp 0.3s ease; }
+  .result-card.visible { display: block; }
+  @keyframes slideUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+  .result-header { background: var(--surface2); padding: 14px 18px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border); }
+  .result-header h4 { font-size: 17px; font-weight: 800; }
+  .category-tag { font-size: 11px; padding: 4px 12px; border-radius: 100px; background: var(--blue-soft); color: var(--blue); border: 1px solid rgba(77,159,255,0.25); font-weight: 700; }
+  .fields { padding: 14px 18px; display: grid; gap: 10px; }
+  .field-row { display: flex; align-items: center; gap: 10px; }
+  .field-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.6px; min-width: 80px; font-weight: 700; }
+  .field-value { font-size: 13px; color: var(--text); flex: 1; background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; padding: 8px 12px; font-family: 'Nunito', sans-serif; font-weight: 600; width: 100%; transition: border-color 0.15s; }
+  .field-value:focus { outline: none; border-color: var(--blue); }
+  .amounts-section { padding: 0 18px 16px; }
+  .amounts-title { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 10px; font-weight: 700; }
+  .amounts-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 7px; margin-bottom: 7px; }
+  .amounts-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; }
+  .amount-box { background: var(--surface2); border: 1px solid var(--border); border-radius: 12px; padding: 11px 8px; text-align: center; }
+  .amount-box.total { border-color: rgba(255,123,53,0.35); background: var(--accent-soft); }
+  .amount-box label { display: block; font-size: 9px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 5px; font-weight: 700; }
+  .amount-box input { width: 100%; background: transparent; border: none; font-family: 'Nunito', sans-serif; font-size: 15px; font-weight: 800; color: var(--text); text-align: center; padding: 0; }
+  .amount-box input:focus { outline: none; }
+  .amount-box.total input { color: var(--accent); }
+  .action-row { padding: 14px 18px; display: flex; gap: 8px; border-top: 1px solid var(--border); }
+  .btn { flex: 1; padding: 13px; border-radius: 12px; border: none; font-family: 'Nunito', sans-serif; font-size: 15px; font-weight: 800; cursor: pointer; transition: all 0.15s; }
+  .btn-primary { background: var(--accent); color: #fff; }
+  .btn-primary:hover { background: #ff8f50; transform: translateY(-1px); }
+  .btn-ghost { background: transparent; color: var(--muted2); border: 1px solid var(--border); }
+  .btn-ghost:hover { border-color: var(--muted); color: var(--text); }
+  .section-label { padding: 16px 20px 10px; font-size: 12px; font-weight: 800; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; }
+  .ledger { margin: 0 16px; display: flex; flex-direction: column; gap: 8px; }
+  .ledger-item { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 13px 15px; display: flex; align-items: center; gap: 12px; animation: slideUp 0.25s ease; }
+  .ledger-icon { width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; background: var(--surface2); border: 1px solid var(--border); }
+  .ledger-info { flex: 1; min-width: 0; }
+  .ledger-vendor { font-size: 15px; font-weight: 800; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .ledger-meta { font-size: 11px; color: var(--muted2); margin-top: 3px; font-weight: 600; }
+  .ledger-right { text-align: right; flex-shrink: 0; }
+  .ledger-total { font-size: 16px; font-weight: 900; color: var(--accent); }
+  .ledger-tax { font-size: 10px; color: var(--muted); margin-top: 2px; font-weight: 600; }
+  .empty-state { text-align: center; padding: 36px 20px; color: var(--muted2); font-size: 13px; line-height: 2; font-weight: 600; }
+  .empty-icon { font-size: 40px; margin-bottom: 12px; display: block; opacity: 0.5; }
+  .export-bar { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 480px; padding: 12px 16px; background: var(--bg); border-top: 1px solid var(--border); }
+  .btn-export { width: 100%; padding: 15px; border-radius: 14px; border: none; background: var(--blue); color: #fff; font-family: 'Nunito', sans-serif; font-size: 16px; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.15s; }
+  .btn-export:hover { background: #6aadff; }
+  .btn-export:disabled { background: var(--surface2); color: var(--muted); cursor: not-allowed; }
+  .toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-80px); background: var(--accent); color: #fff; font-family: 'Nunito', sans-serif; font-weight: 800; font-size: 14px; padding: 12px 24px; border-radius: 100px; z-index: 100; transition: transform 0.3s ease; white-space: nowrap; }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+  .error-msg { margin: 0 16px 16px; background: #1a0e0e; border: 1px solid #3a2020; border-radius: 12px; padding: 12px 16px; font-size: 12px; color: #ff9090; display: none; font-weight: 600; }
+  .error-msg.visible { display: block; }
+</style>
+</head>
+<body>
+<header>
+  <div class="logo-wrap">
+    <div class="logo-icon">🧾</div>
+    <div>
+      <div class="logo-text">Skr<span>u</span>nchi</div>
+      <div class="tagline">Snap it. Skrunchi it. Done.</div>
+    </div>
+  </div>
+  <div class="total-pill" id="totalPill">$0.00 logged</div>
+</header>
+<div class="upload-zone" id="uploadZone">
+  <input type="file" accept="image/*" capture="environment" id="fileInput">
+  <div class="upload-icon">📷</div>
+  <h3>Snap a Receipt</h3>
+  <p>Photo or upload from your camera roll.<br>Skrunchi reads vendor, taxes, tip — everything.</p>
+  <span class="upload-hint">📸 Tap to snap or upload</span>
+</div>
+<div class="processing-card" id="processingCard">
+  <img id="receiptPreview" class="receipt-preview" src="" alt="Receipt">
+  <div class="analyzing-bar"><div class="analyzing-fill" id="analyzingFill"></div></div>
+  <div class="analyzing-label"><span id="analyzingLabel">Reading receipt...</span><span id="analyzingPct">0%</span></div>
+</div>
+<div class="error-msg" id="errorMsg"></div>
+<div class="result-card" id="resultCard">
+  <div class="result-header">
+    <h4 id="resultVendor">—</h4>
+    <div class="category-tag" id="resultCategory">—</div>
+  </div>
+  <div class="fields">
+    <div class="field-row"><span class="field-label">Date</span><input class="field-value" id="fieldDate" type="text" placeholder="e.g. 2024-03-15"></div>
+    <div class="field-row"><span class="field-label">Payment</span><input class="field-value" id="fieldPayment" type="text" placeholder="e.g. Visa, Cash"></div>
+    <div class="field-row"><span class="field-label">Notes</span><input class="field-value" id="fieldNotes" type="text" placeholder="Optional description"></div>
+  </div>
+  <div class="amounts-section">
+    <div class="amounts-title">Amounts</div>
+    <div class="amounts-grid">
+      <div class="amount-box"><label>Subtotal</label><input id="amtSubtotal" type="text" placeholder="$0.00"></div>
+      <div class="amount-box"><label>GST / HST</label><input id="amtGST" type="text" placeholder="$0.00"></div>
+      <div class="amount-box"><label>PST</label><input id="amtPST" type="text" placeholder="$0.00"></div>
+    </div>
+    <div class="amounts-grid-2">
+      <div class="amount-box"><label>Tip</label><input id="amtTip" type="text" placeholder="$0.00"></div>
+      <div class="amount-box total"><label>Total</label><input id="amtTotal" type="text" placeholder="$0.00"></div>
+    </div>
+  </div>
+  <div class="action-row">
+    <button class="btn btn-ghost" onclick="discardReceipt()">Discard</button>
+    <button class="btn btn-primary" onclick="saveReceipt()">Save to Ledger</button>
+  </div>
+</div>
+<div class="section-label" id="ledgerLabel" style="display:none">This Session</div>
+<div class="ledger" id="ledger">
+  <div class="empty-state" id="emptyState"><span class="empty-icon">🧾</span>No receipts yet.<br>Snap your first one above<br>and Skrunchi it!</div>
+</div>
+<div class="export-bar">
+  <button class="btn-export" id="exportBtn" disabled onclick="exportCSV()">📊 Export to Google Sheets CSV</button>
+</div>
+<div class="toast" id="toast"></div>
+<script>
+  const ICONS = {'Meals & Entertainment':'🍽️','Travel':'✈️','Office Supplies':'📎','Software & Subscriptions':'💻','Fuel & Transportation':'⛽','Accommodation':'🏨','Marketing & Advertising':'📣','Professional Services':'💼','Equipment':'🔧','Utilities':'💡','Other':'📄'};
+  let receipts = [], currentData = null;
+  document.getElementById('fileInput').addEventListener('change', e => { if(e.target.files[0]) handleFile(e.target.files[0]); });
+  async function handleFile(file) {
+    document.getElementById('receiptPreview').src = URL.createObjectURL(file);
+    document.getElementById('uploadZone').style.display = 'none';
+    document.getElementById('resultCard').classList.remove('visible');
+    document.getElementById('errorMsg').classList.remove('visible');
+    document.getElementById('processingCard').classList.add('visible');
+    animateProgress();
+    try { showResult(await analyzeReceipt(await fileToBase64(file), file.type||'image/jpeg')); }
+    catch(err) { showError(err.message||'Could not read receipt. Please try again.'); }
+  }
+  function fileToBase64(file) { return new Promise((res,rej)=>{ const r=new FileReader(); r.onload=()=>res(r.result.split(',')[1]); r.onerror=rej; r.readAsDataURL(file); }); }
+  let prog;
+  function animateProgress() {
+    let pct=0; const fill=document.getElementById('analyzingFill'),label=document.getElementById('analyzingLabel'),pctEl=document.getElementById('analyzingPct');
+    const steps=[[20,'Reading receipt...'],[45,'Finding amounts...'],[65,'Detecting taxes & tip...'],[85,'Categorizing...'],[93,'Almost done...']]; let idx=0;
+    prog=setInterval(()=>{ if(idx<steps.length&&pct>=steps[idx][0]-1){label.textContent=steps[idx][1];idx++;} if(pct<93)pct++; fill.style.width=pct+'%'; pctEl.textContent=pct+'%'; },80);
+  }
+  function finishProgress() { clearInterval(prog); document.getElementById('analyzingLabel').textContent='Done!'; document.getElementById('analyzingFill').style.width='100%'; document.getElementById('analyzingPct').textContent='100%'; }
+  async function analyzeReceipt(b64, mime) {
+    const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,messages:[{role:'user',content:[{type:'image',source:{type:'base64',media_type:mime,data:b64}},{type:'text',text:'Parse this receipt for a Canadian small business expense app. Return ONLY valid JSON (no markdown): {"vendor":"name","date":"YYYY-MM-DD","category":"one of: Meals & Entertainment, Travel, Office Supplies, Software & Subscriptions, Fuel & Transportation, Accommodation, Marketing & Advertising, Professional Services, Equipment, Utilities, Other","payment_method":"if visible","subtotal":"numeric","gst_hst":"numeric or 0.00","pst":"numeric or 0.00","tip":"numeric or 0.00","total":"numeric","notes":"5 words max"}'}]}]})});
+    if(!r.ok) throw new Error('Connection error. Please try again.');
+    const d=await r.json(); return JSON.parse(d.content.map(b=>b.text||'').join('').replace(/```json|```/g,'').trim());
+  }
+  function showResult(data) {
+    finishProgress(); currentData=data;
+    setTimeout(()=>{
+      document.getElementById('processingCard').classList.remove('visible');
+      document.getElementById('resultCard').classList.add('visible');
+      document.getElementById('resultVendor').textContent=data.vendor||'Unknown Vendor';
+      document.getElementById('resultCategory').textContent=data.category||'Other';
+      document.getElementById('fieldDate').value=data.date||'';
+      document.getElementById('fieldPayment').value=data.payment_method||'';
+      document.getElementById('fieldNotes').value=data.notes||'';
+      document.getElementById('amtSubtotal').value=data.subtotal?'$'+data.subtotal:'';
+      document.getElementById('amtGST').value=data.gst_hst?'$'+data.gst_hst:'';
+      document.getElementById('amtPST').value=data.pst&&data.pst!=='0.00'?'$'+data.pst:'';
+      document.getElementById('amtTip').value=data.tip&&data.tip!=='0.00'?'$'+data.tip:'';
+      document.getElementById('amtTotal').value=data.total?'$'+data.total:'';
+    },400);
+  }
+  function showError(msg) { clearInterval(prog); document.getElementById('processingCard').classList.remove('visible'); document.getElementById('uploadZone').style.display=''; const e=document.getElementById('errorMsg'); e.textContent='⚠️ '+msg; e.classList.add('visible'); document.getElementById('fileInput').value=''; }
+  function saveReceipt() {
+    const entry={id:Date.now(),vendor:document.getElementById('resultVendor').textContent,category:document.getElementById('resultCategory').textContent,date:document.getElementById('fieldDate').value,payment:document.getElementById('fieldPayment').value,notes:document.getElementById('fieldNotes').value,subtotal:document.getElementById('amtSubtotal').value,gst_hst:document.getElementById('amtGST').value,pst:document.getElementById('amtPST').value,tip:document.getElementById('amtTip').value,total:document.getElementById('amtTotal').value,icon:ICONS[document.getElementById('resultCategory').textContent]||'📄'};
+    receipts.push(entry); addToLedger(entry); updateTotal();
+    document.getElementById('resultCard').classList.remove('visible'); document.getElementById('uploadZone').style.display=''; document.getElementById('fileInput').value=''; currentData=null; document.getElementById('exportBtn').disabled=false; showToast("Skrunchi'd! ✓");
+  }
+  function discardReceipt() { document.getElementById('resultCard').classList.remove('visible'); document.getElementById('uploadZone').style.display=''; document.getElementById('fileInput').value=''; currentData=null; }
+  function addToLedger(entry) {
+    document.getElementById('emptyState').style.display='none'; document.getElementById('ledgerLabel').style.display='block';
+    const item=document.createElement('div'); item.className='ledger-item';
+    item.innerHTML=`<div class="ledger-icon">${entry.icon}</div><div class="ledger-info"><div class="ledger-vendor">${entry.vendor}</div><div class="ledger-meta">${entry.date} &nbsp;·&nbsp; ${entry.category}</div></div><div class="ledger-right"><div class="ledger-total">${entry.total||'—'}</div><div class="ledger-tax">${entry.gst_hst?'GST/HST '+entry.gst_hst:''}${entry.pst&&entry.pst!=='$0.00'?' · PST '+entry.pst:''}${entry.tip&&entry.tip!=='$0.00'?' · Tip '+entry.tip:''}</div></div>`;
+    document.getElementById('ledger').appendChild(item);
+  }
+  function updateTotal() { let t=0; receipts.forEach(r=>{ const v=parseFloat((r.total||'0').replace(/[^0-9.]/g,'')); if(!isNaN(v))t+=v; }); document.getElementById('totalPill').textContent='$'+t.toFixed(2)+' logged'; }
+  function exportCSV() {
+    if(!receipts.length) return;
+    const h=['Date','Vendor','Category','Subtotal','GST/HST','PST','Tip','Total','Payment Method','Notes'];
+    const rows=receipts.map(r=>[r.date,r.vendor,r.category,r.subtotal.replace('$',''),r.gst_hst.replace('$',''),r.pst?r.pst.replace('$',''):'0.00',r.tip?r.tip.replace('$',''):'0.00',r.total.replace('$',''),r.payment,r.notes].map(v=>`"${(v||'').replace(/"/g,'""')}"`).join(','));
+    const csv=[h.join(','),...rows].join('\n'); const blob=new Blob([csv],{type:'text/csv'}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download='skrunchi_'+new Date().toISOString().slice(0,10)+'.csv'; a.click(); URL.revokeObjectURL(url); showToast('CSV Downloaded ✓');
+  }
+  function showToast(msg) { const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2500); }
+</script>
+</body>
+</html>
