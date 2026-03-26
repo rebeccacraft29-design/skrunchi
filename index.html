@@ -548,42 +548,56 @@
     const iconHtml = entry.imageUrl
       ? `<img class="ledger-thumb" src="${entry.imageUrl}" alt="Receipt">`
       : `<div class="ledger-icon">${entry.icon}</div>`;
-    const exportedBadge = entry.exported ? `<div class="exported-badge">✓ Exported ${entry.exportedDate||''}</div>` : '';
-    const item=document.createElement('div'); item.className='ledger-item';
+    const exportedBadge = entry.exported
+      ? `<div class="exported-badge">✓ Exported ${entry.exportedDate||''}</div>`
+      : '';
+    const reExportBtn = entry.exported
+      ? `<button onclick="event.stopPropagation();reExport(${entry.id})" style="margin-top:6px;background:transparent;border:1px solid var(--border);border-radius:6px;padding:3px 8px;font-family:'Nunito',sans-serif;font-size:10px;font-weight:700;color:var(--muted2);cursor:pointer;">Re-export</button>`
+      : '';
+    const item = document.createElement('div');
+    item.className = 'ledger-item';
     item.onclick = () => openEdit(entry.id);
-    item.innerHTML=`${iconHtml}<div class="ledger-info"><div class="ledger-vendor">${entry.vendor}</div><div class="ledger-meta">${entry.date} &nbsp;·&nbsp; ${entry.category}</div>${exportedBadge}</div><div class="ledger-right"><div class="ledger-total">${entry.total||'—'}</div><div class="ledger-tax">${entry.gst_hst?'GST/HST '+entry.gst_hst:''}${entry.pst&&entry.pst!=='$0.00'?' · PST '+entry.pst:''}${entry.tip&&entry.tip!=='$0.00'?' · Tip '+entry.tip:''}</div></div>`;
+    item.innerHTML = `${iconHtml}<div class="ledger-info"><div class="ledger-vendor">${entry.vendor}</div><div class="ledger-meta">${entry.date} &nbsp;·&nbsp; ${entry.category}</div>${exportedBadge}${reExportBtn}</div><div class="ledger-right"><div class="ledger-total">${entry.total||'—'}</div><div class="ledger-tax">${entry.gst_hst?'GST/HST '+entry.gst_hst:''}${entry.pst&&entry.pst!=='$0.00'?' · PST '+entry.pst:''}${entry.tip&&entry.tip!=='$0.00'?' · Tip '+entry.tip:''}</div></div>`;
     return item;
+  }
+
+  function reExport(id) {
+    const entry = receipts.find(r => r.id === id);
+    if (!entry) return;
+    entry.exported = false;
+    entry.exportedDate = null;
+    saveToStorage();
+    refreshLedger(); updateTotal(); updateCounts();
+    showToast('Moved back to Ready to Export');
   }
 
   function refreshLedger() {
     const pending = receipts.filter(r => !r.exported);
     const exported = receipts.filter(r => r.exported);
 
-    const emptyState = document.getElementById('emptyState');
     const exportedSection = document.getElementById('exportedSection');
     const pendingList = document.getElementById('pendingList');
     const exportedList = document.getElementById('exportedList');
+    const emptyState = document.getElementById('emptyState');
 
-    // Pending section always visible
+    // Rebuild pending list
     pendingList.innerHTML = '';
     if (pending.length === 0) {
-      pendingList.appendChild(emptyState);
       emptyState.style.display = '';
+      pendingList.appendChild(emptyState);
     } else {
       emptyState.style.display = 'none';
+      if (!pendingList.contains(emptyState)) pendingList.appendChild(emptyState);
       pending.forEach(entry => pendingList.appendChild(makeItem(entry)));
     }
     pendingList.style.display = pendingOpen ? '' : 'none';
 
-    // Exported section only shows when there are exported receipts
+    // Rebuild exported list
     exportedSection.style.display = exported.length > 0 ? '' : 'none';
     exportedList.innerHTML = '';
     exported.forEach(entry => exportedList.appendChild(makeItem(entry)));
     exportedList.style.display = exportedOpen ? '' : 'none';
   }
-
-  // Keep addToLedger as alias for compatibility
-  function addToLedger(entry) { refreshLedger(); }
 
   function updateTotal() {
     let t=0;
