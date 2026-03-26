@@ -20,7 +20,34 @@
   .logo-text { font-size: 22px; font-weight: 900; color: var(--text); letter-spacing: -0.5px; }
   .logo-text span { color: var(--accent); }
   .tagline { font-size: 9px; color: var(--muted); letter-spacing: 0.8px; margin-top: 1px; font-weight: 600; }
-  .total-pill { background: var(--surface2); border: 1px solid var(--border); border-radius: 100px; padding: 7px 14px; font-size: 12px; color: var(--blue); font-weight: 700; }
+  .total-pill { background: var(--surface2); border: 1px solid var(--border); border-radius: 100px; padding: 7px 14px; font-size: 12px; color: var(--blue); font-weight: 700; cursor: pointer; transition: all 0.15s; }
+  .total-pill:hover { border-color: var(--blue); background: var(--blue-soft); }
+
+  /* HISTORY PAGE */
+  .history-page { position: fixed; inset: 0; background: var(--bg); z-index: 40; max-width: 480px; margin: 0 auto; overflow-y: auto; transform: translateX(100%); transition: transform 0.3s ease; padding-bottom: 40px; }
+  .history-page.visible { transform: translateX(0); }
+  .history-header { padding: 18px 20px 14px; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid var(--border); position: sticky; top: 0; background: var(--bg); z-index: 1; }
+  .history-back { width: 36px; height: 36px; border-radius: 10px; background: var(--surface2); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 16px; }
+  .history-back:hover { border-color: var(--accent); }
+  .history-title { font-size: 18px; font-weight: 900; }
+  .history-summary { margin: 16px 16px 0; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .summary-box { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 14px 16px; }
+  .summary-box.pending-box { border-color: rgba(255,123,53,0.3); background: var(--accent-soft); }
+  .summary-box.paid-box { border-color: rgba(74,222,128,0.3); background: rgba(74,222,128,0.08); }
+  .summary-label { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.6px; font-weight: 700; margin-bottom: 6px; }
+  .summary-amount { font-size: 22px; font-weight: 900; }
+  .summary-box.pending-box .summary-amount { color: var(--accent); }
+  .summary-box.paid-box .summary-amount { color: #4ade80; }
+  .summary-count { font-size: 11px; color: var(--muted2); font-weight: 600; margin-top: 2px; }
+  .period-group { margin: 16px 16px 0; }
+  .period-header { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; cursor: pointer; margin-bottom: 6px; }
+  .period-header h4 { font-size: 14px; font-weight: 800; }
+  .period-meta { font-size: 11px; color: var(--muted2); font-weight: 600; margin-top: 2px; }
+  .period-total { font-size: 15px; font-weight: 900; color: var(--accent); }
+  .period-items { display: flex; flex-direction: column; gap: 6px; margin-bottom: 8px; }
+  .mark-paid-btn { background: rgba(74,222,128,0.15); color: #4ade80; border: 1px solid rgba(74,222,128,0.3); border-radius: 8px; padding: 5px 10px; font-family: 'Nunito', sans-serif; font-size: 11px; font-weight: 800; cursor: pointer; white-space: nowrap; transition: all 0.15s; }
+  .mark-paid-btn:hover { background: rgba(74,222,128,0.25); }
+  .paid-badge { font-size: 10px; color: #4ade80; font-weight: 700; }
   .upload-zone { margin: 20px 16px; border: 2px dashed var(--border); border-radius: var(--radius); padding: 36px 20px; text-align: center; cursor: pointer; transition: all 0.2s; position: relative; background: var(--surface); }
   .upload-zone:hover { border-color: var(--accent); background: #1e1a16; }
   .upload-zone input { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
@@ -130,8 +157,29 @@
       <div class="tagline">Snap it. Skrunchi it. Done.</div>
     </div>
   </div>
-  <div class="total-pill" id="totalPill">$0.00 logged</div>
+  <div class="total-pill" id="totalPill" onclick="openHistory()">$0.00 pending</div>
 </header>
+
+<!-- HISTORY PAGE -->
+<div class="history-page" id="historyPage">
+  <div class="history-header">
+    <div class="history-back" onclick="closeHistory()">←</div>
+    <div class="history-title">Expense History</div>
+  </div>
+  <div class="history-summary">
+    <div class="summary-box pending-box">
+      <div class="summary-label">Pending Reimbursement</div>
+      <div class="summary-amount" id="histPendingAmt">$0.00</div>
+      <div class="summary-count" id="histPendingCount">0 receipts</div>
+    </div>
+    <div class="summary-box paid-box">
+      <div class="summary-label">Total Paid Back</div>
+      <div class="summary-amount" id="histPaidAmt">$0.00</div>
+      <div class="summary-count" id="histPaidCount">0 receipts</div>
+    </div>
+  </div>
+  <div id="historyContent" style="margin-top:8px;"></div>
+</div>
 <div class="upload-zone" id="uploadZone">
   <div class="upload-icon">📷</div>
   <h3>Snap a Receipt</h3>
@@ -548,17 +596,33 @@
     const iconHtml = entry.imageUrl
       ? `<img class="ledger-thumb" src="${entry.imageUrl}" alt="Receipt">`
       : `<div class="ledger-icon">${entry.icon}</div>`;
-    const exportedBadge = entry.exported
+    const exportedBadge = entry.exported && !entry.paid
       ? `<div class="exported-badge">✓ Exported ${entry.exportedDate||''}</div>`
       : '';
-    const reExportBtn = entry.exported
-      ? `<button onclick="event.stopPropagation();reExport(${entry.id})" style="margin-top:6px;background:transparent;border:1px solid var(--border);border-radius:6px;padding:3px 8px;font-family:'Nunito',sans-serif;font-size:10px;font-weight:700;color:var(--muted2);cursor:pointer;">Re-export</button>`
+    const paidBadge = entry.paid
+      ? `<div class="paid-badge">💚 Paid ${entry.paidDate||''}</div>`
+      : '';
+    const reExportBtn = entry.exported && !entry.paid
+      ? `<button onclick="event.stopPropagation();reExport(${entry.id})" style="margin-top:4px;background:transparent;border:1px solid var(--border);border-radius:6px;padding:3px 8px;font-family:'Nunito',sans-serif;font-size:10px;font-weight:700;color:var(--muted2);cursor:pointer;">Re-export</button>`
+      : '';
+    const markPaidBtn = entry.exported && !entry.paid
+      ? `<button onclick="event.stopPropagation();markPaid(${entry.id})" class="mark-paid-btn" style="margin-top:4px;margin-left:4px;">Mark as Paid</button>`
       : '';
     const item = document.createElement('div');
     item.className = 'ledger-item';
     item.onclick = () => openEdit(entry.id);
-    item.innerHTML = `${iconHtml}<div class="ledger-info"><div class="ledger-vendor">${entry.vendor}</div><div class="ledger-meta">${entry.date} &nbsp;·&nbsp; ${entry.category}</div>${exportedBadge}${reExportBtn}</div><div class="ledger-right"><div class="ledger-total">${entry.total||'—'}</div><div class="ledger-tax">${entry.gst_hst?'GST/HST '+entry.gst_hst:''}${entry.pst&&entry.pst!=='$0.00'?' · PST '+entry.pst:''}${entry.tip&&entry.tip!=='$0.00'?' · Tip '+entry.tip:''}</div></div>`;
+    item.innerHTML = `${iconHtml}<div class="ledger-info"><div class="ledger-vendor">${entry.vendor}</div><div class="ledger-meta">${entry.date} &nbsp;·&nbsp; ${entry.category}</div>${exportedBadge}${paidBadge}<div style="display:flex;gap:4px;flex-wrap:wrap;">${reExportBtn}${markPaidBtn}</div></div><div class="ledger-right"><div class="ledger-total">${entry.total||'—'}</div><div class="ledger-tax">${entry.gst_hst?'GST/HST '+entry.gst_hst:''}${entry.pst&&entry.pst!=='$0.00'?' · PST '+entry.pst:''}${entry.tip&&entry.tip!=='$0.00'?' · Tip '+entry.tip:''}</div></div>`;
     return item;
+  }
+
+  function markPaid(id) {
+    const entry = receipts.find(r => r.id === id);
+    if (!entry) return;
+    entry.paid = true;
+    entry.paidDate = new Date().toLocaleDateString('en-CA');
+    saveToStorage();
+    refreshLedger(); updateTotal(); updateCounts();
+    showToast('Marked as paid 💚');
   }
 
   function reExport(id) {
@@ -595,13 +659,79 @@
     // Rebuild exported list
     exportedSection.style.display = exported.length > 0 ? '' : 'none';
     exportedList.innerHTML = '';
-    exported.forEach(entry => exportedList.appendChild(makeItem(entry)));
+    exported.filter(r => !r.paid).forEach(entry => exportedList.appendChild(makeItem(entry)));
     exportedList.style.display = exportedOpen ? '' : 'none';
+  }
+
+  // Keep addToLedger alias
+  function addToLedger(entry) { refreshLedger(); }
+
+  // HISTORY PAGE
+  function openHistory() {
+    renderHistory();
+    document.getElementById('historyPage').classList.add('visible');
+  }
+
+  function closeHistory() {
+    document.getElementById('historyPage').classList.remove('visible');
+  }
+
+  function renderHistory() {
+    const exported = receipts.filter(r => r.exported && !r.paid);
+    const paid = receipts.filter(r => r.paid);
+    const pendingTotal = exported.reduce((sum,r)=>sum+parseFloat((r.total||'0').replace(/[^0-9.]/g,'')),0);
+    const paidTotal = paid.reduce((sum,r)=>sum+parseFloat((r.total||'0').replace(/[^0-9.]/g,'')),0);
+    document.getElementById('histPendingAmt').textContent = '$'+pendingTotal.toFixed(2);
+    document.getElementById('histPendingCount').textContent = exported.length+' receipt'+(exported.length!==1?'s':'');
+    document.getElementById('histPaidAmt').textContent = '$'+paidTotal.toFixed(2);
+    document.getElementById('histPaidCount').textContent = paid.length+' receipt'+(paid.length!==1?'s':'');
+    const content = document.getElementById('historyContent');
+    content.innerHTML = '';
+    const groupBy = items => {
+      const g={};
+      items.forEach(r=>{ const p=getTabName(r.date); if(!g[p])g[p]=[]; g[p].push(r); });
+      return g;
+    };
+    if (exported.length > 0) {
+      const t=document.createElement('div');
+      t.style.cssText='padding:16px 20px 8px;font-size:11px;font-weight:800;color:var(--accent);text-transform:uppercase;letter-spacing:1px;';
+      t.textContent='Pending Reimbursement';
+      content.appendChild(t);
+      Object.entries(groupBy(exported)).forEach(([period,items])=>renderPeriodGroup(content,period,items,false));
+    }
+    if (paid.length > 0) {
+      const t=document.createElement('div');
+      t.style.cssText='padding:16px 20px 8px;font-size:11px;font-weight:800;color:#4ade80;text-transform:uppercase;letter-spacing:1px;';
+      t.textContent='Paid';
+      content.appendChild(t);
+      Object.entries(groupBy(paid)).forEach(([period,items])=>renderPeriodGroup(content,period,items,true));
+    }
+    if (!exported.length && !paid.length) {
+      content.innerHTML='<div style="text-align:center;padding:40px 20px;color:var(--muted2);font-size:13px;font-weight:600;">No history yet.<br>Export receipts to start tracking reimbursements.</div>';
+    }
+  }
+
+  function renderPeriodGroup(container, period, items, isPaid) {
+    const total = items.reduce((sum,r)=>sum+parseFloat((r.total||'0').replace(/[^0-9.]/g,'')),0);
+    const groupEl = document.createElement('div'); groupEl.className='period-group';
+    const isOpen={open:true};
+    const itemsEl = document.createElement('div'); itemsEl.className='period-items';
+    const header = document.createElement('div'); header.className='period-header';
+    header.innerHTML=`<div><h4>${period}</h4><div class="period-meta">${items.length} receipt${items.length!==1?'s':''}</div></div><div style="text-align:right;"><div class="period-total" style="color:${isPaid?'#4ade80':'var(--accent)'}">$${total.toFixed(2)}</div><div style="font-size:10px;color:var(--muted);font-weight:700;margin-top:2px;" class="toggle-label">HIDE</div></div>`;
+    header.onclick=()=>{ isOpen.open=!isOpen.open; itemsEl.style.display=isOpen.open?'':'none'; header.querySelector('.toggle-label').textContent=isOpen.open?'HIDE':'SHOW'; };
+    items.forEach(entry=>{
+      const iconHtml=entry.imageUrl?`<img class="ledger-thumb" src="${entry.imageUrl}" alt="Receipt">`:`<div class="ledger-icon">${entry.icon}</div>`;
+      const btn=!isPaid?`<button onclick="event.stopPropagation();markPaid(${entry.id});renderHistory();" class="mark-paid-btn">Mark as Paid</button>`:`<div class="paid-badge">💚 Paid ${entry.paidDate||''}</div>`;
+      const item=document.createElement('div'); item.className='ledger-item';
+      item.innerHTML=`${iconHtml}<div class="ledger-info"><div class="ledger-vendor">${entry.vendor}</div><div class="ledger-meta">${entry.date} &nbsp;·&nbsp; ${entry.category}</div><div style="margin-top:4px;">${btn}</div></div><div class="ledger-right"><div class="ledger-total" style="color:${isPaid?'#4ade80':'var(--accent)'};">${entry.total||'—'}</div></div>`;
+      itemsEl.appendChild(item);
+    });
+    groupEl.appendChild(header); groupEl.appendChild(itemsEl); container.appendChild(groupEl);
   }
 
   function updateTotal() {
     let t=0;
-    receipts.filter(r=>!r.exported).forEach(r=>{ const v=parseFloat((r.total||'0').replace(/[^0-9.]/g,'')); if(!isNaN(v))t+=v; });
+    receipts.filter(r=>!r.exported && !r.paid).forEach(r=>{ const v=parseFloat((r.total||'0').replace(/[^0-9.]/g,'')); if(!isNaN(v))t+=v; });
     document.getElementById('totalPill').textContent='$'+t.toFixed(2)+' pending';
   }
 
