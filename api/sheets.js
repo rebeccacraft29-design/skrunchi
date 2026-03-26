@@ -61,7 +61,7 @@ module.exports = async function handler(req, res) {
     await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${encodeURIComponent(tabName)}!A1:K1?valueInputOption=RAW`, {
       method: 'PUT',
       headers,
-      body: JSON.stringify({ values: [['Receipt', 'Date', 'Vendor', 'Category', 'Subtotal', 'GST/HST', 'PST', 'Tip', 'Total', 'Payment Method', 'Notes']] })
+      body: JSON.stringify({ values: [['Photo', 'Date', 'Vendor', 'Category', 'Subtotal', 'GST/HST', 'PST', 'Tip', 'Total', 'Payment Method', 'Notes']] })
     });
 
     // Get current row count to know where to start appending
