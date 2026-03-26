@@ -218,6 +218,23 @@
       <h4>📅 Mid-Month to Mid-Month</h4>
       <p>May 15 – June 14, June 15 – July 14...</p>
     </div>
+    <div class="cycle-option" id="cycleCustom" onclick="selectCycle('custom')">
+      <h4>📅 Custom Date Range</h4>
+      <p>Set your own start and end day of the month</p>
+    </div>
+    <div id="customDayFields" style="display:none;padding:0 18px;gap:10px;display:none;flex-direction:column;">
+      <div style="display:flex;gap:10px;align-items:center;margin-top:8px;">
+        <div style="flex:1;">
+          <label style="font-size:11px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:0.6px;display:block;margin-bottom:6px;">Start Day</label>
+          <input id="customStartDay" type="number" min="1" max="28" placeholder="e.g. 20" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:10px 12px;font-family:'Nunito',sans-serif;font-size:15px;font-weight:700;color:var(--text);outline:none;">
+        </div>
+        <div style="flex:1;">
+          <label style="font-size:11px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:0.6px;display:block;margin-bottom:6px;">End Day</label>
+          <input id="customEndDay" type="number" min="1" max="28" placeholder="e.g. 19" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:10px 12px;font-family:'Nunito',sans-serif;font-size:15px;font-weight:700;color:var(--text);outline:none;">
+        </div>
+      </div>
+      <p style="font-size:11px;color:var(--muted2);font-weight:600;">e.g. Start: 20, End: 19 → May 20 – June 19</p>
+    </div>
     <div style="padding:16px 18px 0;display:flex;gap:8px;">
       <button class="btn btn-primary" onclick="saveCycle()" style="flex:1;">Save & Continue</button>
     </div>
@@ -341,8 +358,20 @@
     selectedCycle = type;
     document.getElementById('cycleMonthly').classList.toggle('selected', type === 'monthly');
     document.getElementById('cycleMidMonth').classList.toggle('selected', type === 'midmonth');
+    document.getElementById('cycleCustom').classList.toggle('selected', type === 'custom');
+    document.getElementById('customDayFields').style.display = type === 'custom' ? 'flex' : 'none';
   }
   function saveCycle() {
+    if (selectedCycle === 'custom') {
+      const start = parseInt(document.getElementById('customStartDay').value);
+      const end = parseInt(document.getElementById('customEndDay').value);
+      if (!start || !end || start < 1 || start > 28 || end < 1 || end > 28) {
+        showToast('Please enter valid start and end days (1-28)');
+        return;
+      }
+      localStorage.setItem('custom_start_day', start);
+      localStorage.setItem('custom_end_day', end);
+    }
     accountingCycle = selectedCycle;
     localStorage.setItem('accounting_cycle', accountingCycle);
     document.getElementById('cycleModal').classList.remove('visible');
@@ -359,6 +388,17 @@
       } else {
         const prev = new Date(d.getFullYear(), d.getMonth() - 1, 1);
         return `${months[prev.getMonth()]} 15 – ${months[d.getMonth()]} 14 ${d.getFullYear()}`;
+      }
+    }
+    if (accountingCycle === 'custom') {
+      const startDay = parseInt(localStorage.getItem('custom_start_day') || '1');
+      const endDay = parseInt(localStorage.getItem('custom_end_day') || '31');
+      if (d.getDate() >= startDay) {
+        const endMonth = new Date(d.getFullYear(), d.getMonth() + 1, 1);
+        return `${months[d.getMonth()]} ${startDay} – ${months[endMonth.getMonth()]} ${endDay} ${endMonth.getFullYear()}`;
+      } else {
+        const startMonth = new Date(d.getFullYear(), d.getMonth() - 1, 1);
+        return `${months[startMonth.getMonth()]} ${startDay} – ${months[d.getMonth()]} ${endDay} ${d.getFullYear()}`;
       }
     }
     return `${months[d.getMonth()]} ${d.getFullYear()}`;
@@ -547,6 +587,11 @@
       const today = new Date().toLocaleDateString('en-CA');
       receipts.forEach(r => { if (!r.exported) { r.exported = true; r.exportedDate = today; } });
       saveToStorage();
+
+      // Switch to exported tab so user can see them
+      currentTab = 'exported';
+      document.getElementById('tabPending').classList.remove('active');
+      document.getElementById('tabExported').classList.add('active');
       refreshLedger(); updateTotal(); updateCounts();
       showToast(`Exported to Google Sheets ✓`);
 
