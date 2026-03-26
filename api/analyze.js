@@ -1,4 +1,8 @@
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  if (req.method === 'OPTIONS') return res.status(200).end();
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
@@ -29,7 +33,7 @@ export default async function handler(req, res) {
             },
             {
               type: 'text',
-              text: 'Parse this receipt for a Canadian small business expense app. Return ONLY valid JSON (no markdown): {"vendor":"name","date":"YYYY-MM-DD","category":"one of: Meals & Entertainment, Travel, Office Supplies, Software & Subscriptions, Fuel & Transportation, Accommodation, Marketing & Advertising, Professional Services, Equipment, Utilities, Other","payment_method":"if visible","subtotal":"numeric","gst_hst":"numeric or 0.00","pst":"numeric or 0.00","tip":"numeric or 0.00","total":"numeric","notes":"5 words max"}'
+              text: 'Parse this receipt for a Canadian small business expense app. Some receipts show two totals — one before tip and one after. If you see this, use the PRE-TIP total as the subtotal base, extract taxes from that section, extract the tip amount separately, and use the FINAL total (after tip) as the total field. Return ONLY valid JSON (no markdown): {"vendor":"name","date":"YYYY-MM-DD","category":"one of: Meals & Entertainment, Travel, Office Supplies, Software & Subscriptions, Fuel & Transportation, Accommodation, Marketing & Advertising, Professional Services, Equipment, Utilities, Other","payment_method":"if visible else empty string","subtotal":"pre-tax amount numeric","gst_hst":"GST or HST numeric or 0.00","pst":"PST numeric or 0.00","tip":"tip amount numeric or 0.00","total":"final total after tip and taxes numeric","notes":"5 words max what was purchased"}'
             }
           ]
         }]
