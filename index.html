@@ -376,7 +376,7 @@
       if (googleAccessToken) {
         localStorage.setItem('google_access_token', googleAccessToken);
         if (refreshToken) localStorage.setItem('google_refresh_token', refreshToken);
-        showToast('Connected to Google ✓');
+        showToast('Connected to Google! Sheets ready.');
       }
       window.history.replaceState({}, '', '/');
     }
@@ -410,10 +410,10 @@
   }
 
   function resetSheet() {
-    if (!confirm('This will create a new Google Sheet next time you export. Your receipts in the app stay safe. Continue?')) return;
+    if (!confirm('This will create a new Google Sheet next time you export. Your receipts stay safe. Continue?')) return;
     spreadsheetId = null;
     localStorage.removeItem('skrunchi_sheet_id');
-    showToast('Sheet reset — next export creates a fresh sheet');
+    showToast('Sheet reset');
     updateGoogleStatus();
   }
 
@@ -481,10 +481,11 @@
   // TABS - removed, replaced with collapsible sections
 
   function updateCounts() {
-    const pending = receipts.filter(r => !r.exported).length;
-    const exported = receipts.filter(r => r.exported).length;
+    const pending = receipts.filter(r => !r.exported && !r.paid).length;
+    const exported = receipts.filter(r => r.exported && !r.paid).length;
     document.getElementById('pendingCount').textContent = `(${pending})`;
     document.getElementById('exportedCount').textContent = `(${exported})`;
+    document.getElementById('exportedSection').style.display = exported > 0 ? '' : 'none';
     document.getElementById('exportBtn').disabled = pending === 0 || !googleAccessToken;
   }
 
@@ -634,15 +635,17 @@
     refreshLedger(); updateTotal(); updateCounts();
     showToast('Moved back to Ready to Export');
   }
-
   function refreshLedger() {
-    const pending = receipts.filter(r => !r.exported);
-    const exported = receipts.filter(r => r.exported);
+    const pending = receipts.filter(r => !r.exported && !r.paid);
+    const exported = receipts.filter(r => r.exported && !r.paid);
 
     const exportedSection = document.getElementById('exportedSection');
     const pendingList = document.getElementById('pendingList');
     const exportedList = document.getElementById('exportedList');
     const emptyState = document.getElementById('emptyState');
+
+    // Always detach emptyState before clearing to prevent it being destroyed
+    if (pendingList.contains(emptyState)) pendingList.removeChild(emptyState);
 
     // Rebuild pending list
     pendingList.innerHTML = '';
@@ -651,16 +654,15 @@
       pendingList.appendChild(emptyState);
     } else {
       emptyState.style.display = 'none';
-      if (!pendingList.contains(emptyState)) pendingList.appendChild(emptyState);
       pending.forEach(entry => pendingList.appendChild(makeItem(entry)));
     }
     pendingList.style.display = pendingOpen ? '' : 'none';
 
-    // Rebuild exported list
-    exportedSection.style.display = exported.length > 0 ? '' : 'none';
+    // Rebuild exported list — only unpaid
     exportedList.innerHTML = '';
-    exported.filter(r => !r.paid).forEach(entry => exportedList.appendChild(makeItem(entry)));
+    exported.forEach(entry => exportedList.appendChild(makeItem(entry)));
     exportedList.style.display = exportedOpen ? '' : 'none';
+    exportedSection.style.display = exported.length > 0 ? '' : 'none';
   }
 
   // Keep addToLedger alias
