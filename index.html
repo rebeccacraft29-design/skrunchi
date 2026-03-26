@@ -70,7 +70,9 @@
   .btn-ghost:hover { border-color: var(--muted); color: var(--text); }
   .section-label { padding: 16px 20px 10px; font-size: 12px; font-weight: 800; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; }
   .ledger { margin: 0 16px; display: flex; flex-direction: column; gap: 8px; }
-  .ledger-item { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 13px 15px; display: flex; align-items: center; gap: 12px; animation: slideUp 0.25s ease; }
+  .ledger-item { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 13px 15px; display: flex; align-items: center; gap: 12px; animation: slideUp 0.25s ease; cursor: pointer; transition: border-color 0.15s; }
+  .ledger-item:hover { border-color: var(--accent); }
+  .ledger-item:active { transform: scale(0.99); }
   .ledger-icon { width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; background: var(--surface2); border: 1px solid var(--border); }
   .ledger-info { flex: 1; min-width: 0; }
   .ledger-vendor { font-size: 15px; font-weight: 800; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -88,6 +90,20 @@
   .toast.show { transform: translateX(-50%) translateY(0); }
   .error-msg { margin: 0 16px 16px; background: #1a0e0e; border: 1px solid #3a2020; border-radius: 12px; padding: 12px 16px; font-size: 12px; color: #ff9090; display: none; font-weight: 600; }
   .error-msg.visible { display: block; }
+  /* EDIT MODAL */
+  .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 50; display: none; align-items: flex-end; justify-content: center; backdrop-filter: blur(4px); }
+  .modal-overlay.visible { display: flex; }
+  .modal { background: var(--surface); border: 1px solid var(--border); border-radius: 24px 24px 0 0; width: 100%; max-width: 480px; max-height: 90vh; overflow-y: auto; animation: slideUp 0.3s ease; padding-bottom: 32px; }
+  .modal-header { padding: 20px 18px 14px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border); position: sticky; top: 0; background: var(--surface); z-index: 1; }
+  .modal-header h3 { font-size: 18px; font-weight: 900; }
+  .modal-close { width: 32px; height: 32px; border-radius: 50%; background: var(--surface2); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 16px; color: var(--muted2); transition: all 0.15s; }
+  .modal-close:hover { border-color: var(--danger); color: var(--danger); }
+  .modal-category { display: flex; flex-wrap: wrap; gap: 6px; padding: 14px 18px; border-bottom: 1px solid var(--border); }
+  .modal-category-title { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.6px; font-weight: 700; width: 100%; margin-bottom: 2px; }
+  .cat-chip { font-size: 11px; padding: 5px 12px; border-radius: 100px; background: var(--surface2); color: var(--muted2); border: 1px solid var(--border); font-weight: 700; cursor: pointer; transition: all 0.15s; }
+  .cat-chip.active { background: var(--blue-soft); color: var(--blue); border-color: rgba(77,159,255,0.35); }
+  .modal-actions { padding: 16px 18px 0; display: flex; gap: 8px; }
+  :root { --danger: #ff5c5c; }
 </style>
 </head>
 <body>
@@ -157,6 +173,52 @@
   <button class="btn-export" id="exportBtn" disabled onclick="exportCSV()">📊 Export to Google Sheets CSV</button>
 </div>
 <div class="toast" id="toast"></div>
+
+<!-- EDIT MODAL -->
+<div class="modal-overlay" id="editModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>Edit Receipt</h3>
+      <div class="modal-close" onclick="closeEdit()">✕</div>
+    </div>
+    <div class="modal-category">
+      <div class="modal-category-title">Category</div>
+      <div class="cat-chip" onclick="selectCat(this,'Meals & Entertainment')">🍽️ Meals</div>
+      <div class="cat-chip" onclick="selectCat(this,'Travel')">✈️ Travel</div>
+      <div class="cat-chip" onclick="selectCat(this,'Office Supplies')">📎 Office</div>
+      <div class="cat-chip" onclick="selectCat(this,'Software & Subscriptions')">💻 Software</div>
+      <div class="cat-chip" onclick="selectCat(this,'Fuel & Transportation')">⛽ Fuel</div>
+      <div class="cat-chip" onclick="selectCat(this,'Accommodation')">🏨 Hotel</div>
+      <div class="cat-chip" onclick="selectCat(this,'Marketing & Advertising')">📣 Marketing</div>
+      <div class="cat-chip" onclick="selectCat(this,'Professional Services')">💼 Professional</div>
+      <div class="cat-chip" onclick="selectCat(this,'Equipment')">🔧 Equipment</div>
+      <div class="cat-chip" onclick="selectCat(this,'Utilities')">💡 Utilities</div>
+      <div class="cat-chip" onclick="selectCat(this,'Other')">📄 Other</div>
+    </div>
+    <div class="fields">
+      <div class="field-row"><span class="field-label">Vendor</span><input class="field-value" id="editVendor" type="text"></div>
+      <div class="field-row"><span class="field-label">Date</span><input class="field-value" id="editDate" type="text" placeholder="YYYY-MM-DD"></div>
+      <div class="field-row"><span class="field-label">Payment</span><input class="field-value" id="editPayment" type="text"></div>
+      <div class="field-row"><span class="field-label">Notes</span><input class="field-value" id="editNotes" type="text"></div>
+    </div>
+    <div class="amounts-section">
+      <div class="amounts-title">Amounts</div>
+      <div class="amounts-grid">
+        <div class="amount-box"><label>Subtotal</label><input id="editSubtotal" type="text" placeholder="$0.00"></div>
+        <div class="amount-box"><label>GST / HST</label><input id="editGST" type="text" placeholder="$0.00"></div>
+        <div class="amount-box"><label>PST</label><input id="editPST" type="text" placeholder="$0.00"></div>
+      </div>
+      <div class="amounts-grid-2">
+        <div class="amount-box"><label>Tip</label><input id="editTip" type="text" placeholder="$0.00"></div>
+        <div class="amount-box total"><label>Total</label><input id="editTotal" type="text" placeholder="$0.00"></div>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeEdit()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveEdit()">Save Changes</button>
+    </div>
+  </div>
+</div>
 <script>
   const ICONS = {'Meals & Entertainment':'🍽️','Travel':'✈️','Office Supplies':'📎','Software & Subscriptions':'💻','Fuel & Transportation':'⛽','Accommodation':'🏨','Marketing & Advertising':'📣','Professional Services':'💼','Equipment':'🔧','Utilities':'💡','Other':'📄'};
   let receipts = [], currentData = null;
@@ -213,6 +275,7 @@
   function addToLedger(entry) {
     document.getElementById('emptyState').style.display='none'; document.getElementById('ledgerLabel').style.display='block';
     const item=document.createElement('div'); item.className='ledger-item';
+    item.onclick = () => openEdit(entry.id);
     item.innerHTML=`<div class="ledger-icon">${entry.icon}</div><div class="ledger-info"><div class="ledger-vendor">${entry.vendor}</div><div class="ledger-meta">${entry.date} &nbsp;·&nbsp; ${entry.category}</div></div><div class="ledger-right"><div class="ledger-total">${entry.total||'—'}</div><div class="ledger-tax">${entry.gst_hst?'GST/HST '+entry.gst_hst:''}${entry.pst&&entry.pst!=='$0.00'?' · PST '+entry.pst:''}${entry.tip&&entry.tip!=='$0.00'?' · Tip '+entry.tip:''}</div></div>`;
     document.getElementById('ledger').appendChild(item);
   }
@@ -224,6 +287,60 @@
     const csv=[h.join(','),...rows].join('\n'); const blob=new Blob([csv],{type:'text/csv'}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download='skrunchi_'+new Date().toISOString().slice(0,10)+'.csv'; a.click(); URL.revokeObjectURL(url); showToast('CSV Downloaded ✓');
   }
   function showToast(msg) { const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2500); }
+
+  // EDIT MODAL
+  let editingId = null;
+  function openEdit(id) {
+    const entry = receipts.find(r => r.id === id);
+    if (!entry) return;
+    editingId = id;
+    document.getElementById('editVendor').value = entry.vendor || '';
+    document.getElementById('editDate').value = entry.date || '';
+    document.getElementById('editPayment').value = entry.payment || '';
+    document.getElementById('editNotes').value = entry.notes || '';
+    document.getElementById('editSubtotal').value = entry.subtotal || '';
+    document.getElementById('editGST').value = entry.gst_hst || '';
+    document.getElementById('editPST').value = entry.pst || '';
+    document.getElementById('editTip').value = entry.tip || '';
+    document.getElementById('editTotal').value = entry.total || '';
+    // Set active category chip
+    document.querySelectorAll('.cat-chip').forEach(c => {
+      c.classList.toggle('active', c.getAttribute('onclick').includes(entry.category));
+    });
+    document.getElementById('editModal').classList.add('visible');
+  }
+  function closeEdit() { document.getElementById('editModal').classList.remove('visible'); editingId = null; }
+  function selectCat(el, cat) { document.querySelectorAll('.cat-chip').forEach(c => c.classList.remove('active')); el.classList.add('active'); }
+  function saveEdit() {
+    const entry = receipts.find(r => r.id === editingId);
+    if (!entry) return;
+    const activeCat = document.querySelector('.cat-chip.active');
+    entry.vendor = document.getElementById('editVendor').value;
+    entry.category = activeCat ? activeCat.getAttribute('onclick').match(/'([^']+)'/)[1] : entry.category;
+    entry.date = document.getElementById('editDate').value;
+    entry.payment = document.getElementById('editPayment').value;
+    entry.notes = document.getElementById('editNotes').value;
+    entry.subtotal = document.getElementById('editSubtotal').value;
+    entry.gst_hst = document.getElementById('editGST').value;
+    entry.pst = document.getElementById('editPST').value;
+    entry.tip = document.getElementById('editTip').value;
+    entry.total = document.getElementById('editTotal').value;
+    entry.icon = ICONS[entry.category] || '📄';
+    // Refresh ledger display
+    refreshLedger();
+    updateTotal();
+    closeEdit();
+    showToast('Receipt updated ✓');
+  }
+  function refreshLedger() {
+    const ledger = document.getElementById('ledger');
+    const empty = document.getElementById('emptyState');
+    ledger.innerHTML = '';
+    ledger.appendChild(empty);
+    if (receipts.length === 0) { empty.style.display = ''; return; }
+    empty.style.display = 'none';
+    receipts.forEach(entry => addToLedger(entry));
+  }
 </script>
 </body>
 </html>
