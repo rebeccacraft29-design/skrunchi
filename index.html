@@ -28,6 +28,13 @@
   .upload-zone h3 { font-size: 20px; font-weight: 800; margin-bottom: 8px; }
   .upload-zone p { font-size: 13px; color: var(--muted2); line-height: 1.6; font-weight: 500; }
   .upload-hint { display: inline-flex; align-items: center; gap: 6px; margin-top: 16px; font-size: 12px; color: var(--accent); font-weight: 700; background: var(--accent-soft); padding: 6px 16px; border-radius: 100px; border: 1px solid rgba(255,123,53,0.2); }
+  .upload-buttons { display: flex; gap: 10px; margin-top: 18px; justify-content: center; }
+  .upload-btn { flex: 1; max-width: 155px; padding: 12px 14px; border-radius: 12px; border: none; font-family: 'Nunito', sans-serif; font-size: 13px; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; transition: all 0.15s; position: relative; overflow: hidden; }
+  .upload-btn input { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; font-size: 0; }
+  .upload-btn.camera { background: var(--accent); color: #fff; }
+  .upload-btn.camera:hover { background: #ff8f50; transform: translateY(-1px); }
+  .upload-btn.gallery { background: var(--surface2); color: var(--text); border: 1px solid var(--border); }
+  .upload-btn.gallery:hover { border-color: var(--blue); color: var(--blue); }
   .processing-card { margin: 0 16px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; display: none; }
   .processing-card.visible { display: block; }
   .receipt-preview { width: 100%; max-height: 180px; object-fit: cover; border-radius: 12px; margin-bottom: 16px; }
@@ -95,11 +102,19 @@
   <div class="total-pill" id="totalPill">$0.00 logged</div>
 </header>
 <div class="upload-zone" id="uploadZone">
-  <input type="file" accept="image/*" capture="environment" id="fileInput">
   <div class="upload-icon">📷</div>
   <h3>Snap a Receipt</h3>
-  <p>Photo or upload from your camera roll.<br>Skrunchi reads vendor, taxes, tip — everything.</p>
-  <span class="upload-hint">📸 Tap to snap or upload</span>
+  <p>Skrunchi reads vendor, taxes, tip — everything.</p>
+  <div class="upload-buttons">
+    <label class="upload-btn camera">
+      📷 Take Photo
+      <input type="file" accept="image/*" capture="environment" id="fileInputCamera">
+    </label>
+    <label class="upload-btn gallery">
+      🖼️ Choose Photo
+      <input type="file" accept="image/*" id="fileInputGallery">
+    </label>
+  </div>
 </div>
 <div class="processing-card" id="processingCard">
   <img id="receiptPreview" class="receipt-preview" src="" alt="Receipt">
@@ -145,7 +160,8 @@
 <script>
   const ICONS = {'Meals & Entertainment':'🍽️','Travel':'✈️','Office Supplies':'📎','Software & Subscriptions':'💻','Fuel & Transportation':'⛽','Accommodation':'🏨','Marketing & Advertising':'📣','Professional Services':'💼','Equipment':'🔧','Utilities':'💡','Other':'📄'};
   let receipts = [], currentData = null;
-  document.getElementById('fileInput').addEventListener('change', e => { if(e.target.files[0]) handleFile(e.target.files[0]); });
+  document.getElementById('fileInputCamera').addEventListener('change', e => { if(e.target.files[0]) handleFile(e.target.files[0]); });
+  document.getElementById('fileInputGallery').addEventListener('change', e => { if(e.target.files[0]) handleFile(e.target.files[0]); });
   async function handleFile(file) {
     document.getElementById('receiptPreview').src = URL.createObjectURL(file);
     document.getElementById('uploadZone').style.display = 'none';
