@@ -181,9 +181,10 @@
   }
   function finishProgress() { clearInterval(prog); document.getElementById('analyzingLabel').textContent='Done!'; document.getElementById('analyzingFill').style.width='100%'; document.getElementById('analyzingPct').textContent='100%'; }
   async function analyzeReceipt(b64, mime) {
-    const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,messages:[{role:'user',content:[{type:'image',source:{type:'base64',media_type:mime,data:b64}},{type:'text',text:'Parse this receipt for a Canadian small business expense app. Return ONLY valid JSON (no markdown): {"vendor":"name","date":"YYYY-MM-DD","category":"one of: Meals & Entertainment, Travel, Office Supplies, Software & Subscriptions, Fuel & Transportation, Accommodation, Marketing & Advertising, Professional Services, Equipment, Utilities, Other","payment_method":"if visible","subtotal":"numeric","gst_hst":"numeric or 0.00","pst":"numeric or 0.00","tip":"numeric or 0.00","total":"numeric","notes":"5 words max"}'}]}]})});
-    if(!r.ok) throw new Error('Connection error. Please try again.');
-    const d=await r.json(); return JSON.parse(d.content.map(b=>b.text||'').join('').replace(/```json|```/g,'').trim());
+    const r=await fetch('/api/analyze',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({image:b64,mediaType:mime})});
+    const data=await r.json();
+    if(!r.ok || data.error) throw new Error(data.error||'Could not read receipt. Please try again.');
+    return data;
   }
   function showResult(data) {
     finishProgress(); currentData=data;
@@ -202,13 +203,13 @@
       document.getElementById('amtTotal').value=data.total?'$'+data.total:'';
     },400);
   }
-  function showError(msg) { clearInterval(prog); document.getElementById('processingCard').classList.remove('visible'); document.getElementById('uploadZone').style.display=''; const e=document.getElementById('errorMsg'); e.textContent='⚠️ '+msg; e.classList.add('visible'); document.getElementById('fileInput').value=''; }
+  function showError(msg) { clearInterval(prog); document.getElementById('processingCard').classList.remove('visible'); document.getElementById('uploadZone').style.display=''; const e=document.getElementById('errorMsg'); e.textContent='⚠️ '+msg; e.classList.add('visible'); document.getElementById('fileInputCamera').value=''; document.getElementById('fileInputGallery').value=''; }
   function saveReceipt() {
     const entry={id:Date.now(),vendor:document.getElementById('resultVendor').textContent,category:document.getElementById('resultCategory').textContent,date:document.getElementById('fieldDate').value,payment:document.getElementById('fieldPayment').value,notes:document.getElementById('fieldNotes').value,subtotal:document.getElementById('amtSubtotal').value,gst_hst:document.getElementById('amtGST').value,pst:document.getElementById('amtPST').value,tip:document.getElementById('amtTip').value,total:document.getElementById('amtTotal').value,icon:ICONS[document.getElementById('resultCategory').textContent]||'📄'};
     receipts.push(entry); addToLedger(entry); updateTotal();
-    document.getElementById('resultCard').classList.remove('visible'); document.getElementById('uploadZone').style.display=''; document.getElementById('fileInput').value=''; currentData=null; document.getElementById('exportBtn').disabled=false; showToast("Skrunchi'd! ✓");
+    document.getElementById('resultCard').classList.remove('visible'); document.getElementById('uploadZone').style.display=''; document.getElementById('fileInputCamera').value=''; document.getElementById('fileInputGallery').value=''; currentData=null; document.getElementById('exportBtn').disabled=false; showToast("Skrunchi'd! ✓");
   }
-  function discardReceipt() { document.getElementById('resultCard').classList.remove('visible'); document.getElementById('uploadZone').style.display=''; document.getElementById('fileInput').value=''; currentData=null; }
+  function discardReceipt() { document.getElementById('resultCard').classList.remove('visible'); document.getElementById('uploadZone').style.display=''; document.getElementById('fileInputCamera').value=''; document.getElementById('fileInputGallery').value=''; currentData=null; }
   function addToLedger(entry) {
     document.getElementById('emptyState').style.display='none'; document.getElementById('ledgerLabel').style.display='block';
     const item=document.createElement('div'); item.className='ledger-item';
