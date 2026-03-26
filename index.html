@@ -104,6 +104,22 @@
   .cat-chip { font-size: 11px; padding: 5px 12px; border-radius: 100px; background: var(--surface2); color: var(--muted2); border: 1px solid var(--border); font-weight: 700; cursor: pointer; transition: all 0.15s; }
   .cat-chip.active { background: var(--blue-soft); color: var(--blue); border-color: rgba(77,159,255,0.35); }
   .modal-actions { padding: 16px 18px 0; display: flex; gap: 8px; }
+  /* CYCLE SETUP & GOOGLE SHEETS */
+  .cycle-modal { background: var(--surface); border: 1px solid var(--border); border-radius: 24px 24px 0 0; width: 100%; max-width: 480px; animation: slideUp 0.3s ease; padding-bottom: 32px; }
+  .cycle-option { margin: 0 18px 10px; padding: 16px; border-radius: 14px; border: 2px solid var(--border); cursor: pointer; transition: all 0.15s; }
+  .cycle-option:hover { border-color: var(--blue); }
+  .cycle-option.selected { border-color: var(--blue); background: var(--blue-soft); }
+  .cycle-option h4 { font-size: 15px; font-weight: 800; margin-bottom: 4px; }
+  .cycle-option p { font-size: 12px; color: var(--muted2); font-weight: 600; }
+  .google-status { margin: 0 16px 12px; padding: 12px 16px; border-radius: 12px; background: var(--surface); border: 1px solid var(--border); display: flex; align-items: center; gap: 10px; font-size: 13px; font-weight: 700; }
+  .google-status .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--muted); flex-shrink: 0; }
+  .google-status.connected .dot { background: #4ade80; }
+  .google-status.connected { border-color: rgba(74,222,128,0.3); }
+  .ledger-tabs { display: flex; margin: 16px 16px 0; gap: 6px; }
+  .ledger-tab { flex: 1; padding: 9px; border-radius: 10px; border: 1px solid var(--border); background: var(--surface); font-size: 12px; font-weight: 800; cursor: pointer; text-align: center; color: var(--muted2); transition: all 0.15s; }
+  .ledger-tab.active { background: var(--surface2); color: var(--text); border-color: var(--border); }
+  .ledger-tab .count { display: inline-block; margin-left: 5px; background: var(--accent); color: #fff; border-radius: 100px; font-size: 10px; padding: 1px 6px; }
+  .exported-badge { font-size: 9px; color: #4ade80; font-weight: 700; letter-spacing: 0.5px; margin-top: 2px; }
   :root { --danger: #ff5c5c; }
 </style>
 </head>
@@ -166,12 +182,46 @@
     <button class="btn btn-primary" onclick="saveReceipt()">Save to Ledger</button>
   </div>
 </div>
-<div class="section-label" id="ledgerLabel" style="display:none">This Session</div>
+<div class="section-label" id="ledgerLabel" style="display:none">Receipts</div>
+<div class="ledger-tabs" id="ledgerTabs" style="display:none">
+  <div class="ledger-tab active" id="tabPending" onclick="switchTab('pending')">
+    Ready to Export <span class="count" id="pendingCount">0</span>
+  </div>
+  <div class="ledger-tab" id="tabExported" onclick="switchTab('exported')">
+    Exported <span class="count" id="exportedCount" style="background:var(--muted)">0</span>
+  </div>
+</div>
+<div id="googleStatus" class="google-status" style="display:none">
+  <div class="dot"></div>
+  <span id="googleStatusText">Not connected to Google</span>
+  <button onclick="connectGoogle()" id="googleConnectBtn" style="margin-left:auto;background:var(--blue);color:#fff;border:none;border-radius:8px;padding:6px 12px;font-family:'Nunito',sans-serif;font-size:12px;font-weight:800;cursor:pointer;">Connect</button>
+</div>
 <div class="ledger" id="ledger">
   <div class="empty-state" id="emptyState"><span class="empty-icon">🧾</span>No receipts yet.<br>Snap your first one above<br>and Skrunchi it!</div>
 </div>
 <div class="export-bar">
-  <button class="btn-export" id="exportBtn" disabled onclick="exportCSV()">📊 Export to Google Sheets CSV</button>
+  <button class="btn-export" id="exportBtn" disabled onclick="startExport()">📊 Export to Google Sheets</button>
+</div>
+
+<!-- CYCLE SETUP MODAL -->
+<div class="modal-overlay" id="cycleModal">
+  <div class="cycle-modal">
+    <div class="modal-header">
+      <h3>Set Up Your Accounting Cycle</h3>
+    </div>
+    <p style="padding:14px 18px 10px;font-size:13px;color:var(--muted2);font-weight:600;">Choose how your accounting periods are structured. This only needs to be set once.</p>
+    <div class="cycle-option selected" id="cycleMonthly" onclick="selectCycle('monthly')">
+      <h4>📅 Calendar Month</h4>
+      <p>May 1 – May 31, June 1 – June 30...</p>
+    </div>
+    <div class="cycle-option" id="cycleMidMonth" onclick="selectCycle('midmonth')">
+      <h4>📅 Mid-Month to Mid-Month</h4>
+      <p>May 15 – June 14, June 15 – July 14...</p>
+    </div>
+    <div style="padding:16px 18px 0;display:flex;gap:8px;">
+      <button class="btn btn-primary" onclick="saveCycle()" style="flex:1;">Save & Continue</button>
+    </div>
+  </div>
 </div>
 <div class="toast" id="toast"></div>
 
@@ -225,9 +275,340 @@
 </div>
 <script>
   const ICONS = {'Meals & Entertainment':'🍽️','Travel':'✈️','Office Supplies':'📎','Software & Subscriptions':'💻','Fuel & Transportation':'⛽','Accommodation':'🏨','Marketing & Advertising':'📣','Professional Services':'💼','Equipment':'🔧','Utilities':'💡','Other':'📄'};
-  let receipts = [], currentData = null;
+  
+  let receipts = [];
+  let currentData = null;
+  let currentTab = 'pending';
+  let googleAccessToken = localStorage.getItem('google_access_token') || null;
+  let spreadsheetId = localStorage.getItem('skrunchi_sheet_id') || null;
+  let accountingCycle = localStorage.getItem('accounting_cycle') || null;
+
+  // On load
+  window.addEventListener('load', () => {
+    // Check for Google auth callback
+    const params = new URLSearchParams(window.location.search);
+    const googleAuth = params.get('google_auth');
+    const error = params.get('error');
+    if (googleAuth) {
+      const authParams = new URLSearchParams(decodeURIComponent(googleAuth));
+      googleAccessToken = authParams.get('access_token');
+      const refreshToken = authParams.get('refresh_token');
+      if (googleAccessToken) {
+        localStorage.setItem('google_access_token', googleAccessToken);
+        if (refreshToken) localStorage.setItem('google_refresh_token', refreshToken);
+        showToast('Connected to Google ✓');
+      }
+      window.history.replaceState({}, '', '/');
+    }
+    if (error) { showToast('Google connection failed'); window.history.replaceState({}, '', '/'); }
+    updateGoogleStatus();
+    // Load saved receipts
+    const saved = localStorage.getItem('skrunchi_receipts');
+    if (saved) { receipts = JSON.parse(saved); refreshLedger(); updateTotal(); updateCounts(); }
+  });
+
+  function saveToStorage() { localStorage.setItem('skrunchi_receipts', JSON.stringify(receipts)); }
+
+  function updateGoogleStatus() {
+    const status = document.getElementById('googleStatus');
+    const statusText = document.getElementById('googleStatusText');
+    const connectBtn = document.getElementById('googleConnectBtn');
+    if (googleAccessToken) {
+      status.classList.add('connected');
+      statusText.textContent = 'Connected to Google Sheets';
+      connectBtn.textContent = 'Disconnect';
+      connectBtn.onclick = disconnectGoogle;
+    } else {
+      status.classList.remove('connected');
+      statusText.textContent = 'Not connected to Google';
+      connectBtn.textContent = 'Connect';
+      connectBtn.onclick = connectGoogle;
+    }
+  }
+
+  function connectGoogle() { window.location.href = '/api/auth'; }
+  function disconnectGoogle() {
+    googleAccessToken = null;
+    localStorage.removeItem('google_access_token');
+    localStorage.removeItem('google_refresh_token');
+    updateGoogleStatus();
+    showToast('Disconnected from Google');
+  }
+
+  // ACCOUNTING CYCLE
+  let selectedCycle = 'monthly';
+  function selectCycle(type) {
+    selectedCycle = type;
+    document.getElementById('cycleMonthly').classList.toggle('selected', type === 'monthly');
+    document.getElementById('cycleMidMonth').classList.toggle('selected', type === 'midmonth');
+  }
+  function saveCycle() {
+    accountingCycle = selectedCycle;
+    localStorage.setItem('accounting_cycle', accountingCycle);
+    document.getElementById('cycleModal').classList.remove('visible');
+    doExport();
+  }
+
+  function getTabName(date) {
+    const d = date ? new Date(date) : new Date();
+    const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    if (accountingCycle === 'midmonth') {
+      if (d.getDate() >= 15) {
+        const next = new Date(d.getFullYear(), d.getMonth() + 1, 1);
+        return `${months[d.getMonth()]} 15 – ${months[next.getMonth()]} 14 ${next.getFullYear()}`;
+      } else {
+        const prev = new Date(d.getFullYear(), d.getMonth() - 1, 1);
+        return `${months[prev.getMonth()]} 15 – ${months[d.getMonth()]} 14 ${d.getFullYear()}`;
+      }
+    }
+    return `${months[d.getMonth()]} ${d.getFullYear()}`;
+  }
+
+  // TABS
+  function switchTab(tab) {
+    currentTab = tab;
+    document.getElementById('tabPending').classList.toggle('active', tab === 'pending');
+    document.getElementById('tabExported').classList.toggle('active', tab === 'exported');
+    refreshLedger();
+    const pendingCount = receipts.filter(r => !r.exported).length;
+    document.getElementById('exportBtn').disabled = tab !== 'pending' || pendingCount === 0 || !googleAccessToken;
+  }
+
+  function updateCounts() {
+    const pending = receipts.filter(r => !r.exported).length;
+    const exported = receipts.filter(r => r.exported).length;
+    document.getElementById('pendingCount').textContent = pending;
+    document.getElementById('exportedCount').textContent = exported;
+    document.getElementById('exportBtn').disabled = pending === 0 || !googleAccessToken || currentTab !== 'pending';
+  }
+
+  // FILE HANDLING
   document.getElementById('fileInputCamera').addEventListener('change', e => { if(e.target.files[0]) handleFile(e.target.files[0]); });
   document.getElementById('fileInputGallery').addEventListener('change', e => { if(e.target.files[0]) handleFile(e.target.files[0]); });
+
+  async function handleFile(file) {
+    const url = URL.createObjectURL(file);
+    document.getElementById('receiptPreview').src = url;
+    document.getElementById('uploadZone').style.display = 'none';
+    document.getElementById('resultCard').classList.remove('visible');
+    document.getElementById('errorMsg').classList.remove('visible');
+    document.getElementById('processingCard').classList.add('visible');
+    animateProgress();
+    try {
+      const b64 = await fileToBase64(file);
+      const result = await analyzeReceipt(b64, file.type||'image/jpeg');
+      result._imageUrl = url;
+      showResult(result);
+    } catch(err) { showError(err.message||'Could not read receipt. Please try again.'); }
+  }
+
+  function fileToBase64(file) { return new Promise((res,rej)=>{ const r=new FileReader(); r.onload=()=>res(r.result.split(',')[1]); r.onerror=rej; r.readAsDataURL(file); }); }
+
+  let prog;
+  function animateProgress() {
+    let pct=0; const fill=document.getElementById('analyzingFill'),label=document.getElementById('analyzingLabel'),pctEl=document.getElementById('analyzingPct');
+    const steps=[[20,'Reading receipt...'],[45,'Finding amounts...'],[65,'Detecting taxes & tip...'],[85,'Categorizing...'],[93,'Almost done...']]; let idx=0;
+    prog=setInterval(()=>{ if(idx<steps.length&&pct>=steps[idx][0]-1){label.textContent=steps[idx][1];idx++;} if(pct<93)pct++; fill.style.width=pct+'%'; pctEl.textContent=pct+'%'; },80);
+  }
+
+  function finishProgress() { clearInterval(prog); document.getElementById('analyzingLabel').textContent='Done!'; document.getElementById('analyzingFill').style.width='100%'; document.getElementById('analyzingPct').textContent='100%'; }
+
+  async function analyzeReceipt(b64, mime) {
+    const r=await fetch('/api/analyze',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({image:b64,mediaType:mime})});
+    const data=await r.json();
+    if(!r.ok || data.error) throw new Error(data.error||'Could not read receipt. Please try again.');
+    return data;
+  }
+
+  function showResult(data) {
+    finishProgress(); currentData=data;
+    setTimeout(()=>{
+      document.getElementById('processingCard').classList.remove('visible');
+      document.getElementById('resultCard').classList.add('visible');
+      document.getElementById('resultVendor').textContent=data.vendor||'Unknown Vendor';
+      document.getElementById('resultCategory').textContent=data.category||'Other';
+      document.getElementById('fieldDate').value=data.date||'';
+      document.getElementById('fieldPayment').value=data.payment_method||'';
+      document.getElementById('fieldNotes').value=data.notes||'';
+      document.getElementById('amtSubtotal').value=data.subtotal?'$'+data.subtotal:'';
+      document.getElementById('amtGST').value=data.gst_hst?'$'+data.gst_hst:'';
+      document.getElementById('amtPST').value=data.pst&&data.pst!=='0.00'?'$'+data.pst:'';
+      document.getElementById('amtTip').value=data.tip&&data.tip!=='0.00'?'$'+data.tip:'';
+      document.getElementById('amtTotal').value=data.total?'$'+data.total:'';
+    },400);
+  }
+
+  function showError(msg) { clearInterval(prog); document.getElementById('processingCard').classList.remove('visible'); document.getElementById('uploadZone').style.display=''; const e=document.getElementById('errorMsg'); e.textContent='⚠️ '+msg; e.classList.add('visible'); document.getElementById('fileInputCamera').value=''; document.getElementById('fileInputGallery').value=''; }
+
+  function saveReceipt() {
+    const entry={
+      id:Date.now(),
+      vendor:document.getElementById('resultVendor').textContent,
+      category:document.getElementById('resultCategory').textContent,
+      date:document.getElementById('fieldDate').value,
+      payment:document.getElementById('fieldPayment').value,
+      notes:document.getElementById('fieldNotes').value,
+      subtotal:document.getElementById('amtSubtotal').value,
+      gst_hst:document.getElementById('amtGST').value,
+      pst:document.getElementById('amtPST').value,
+      tip:document.getElementById('amtTip').value,
+      total:document.getElementById('amtTotal').value,
+      icon:ICONS[document.getElementById('resultCategory').textContent]||'📄',
+      imageUrl:currentData?currentData._imageUrl:null,
+      exported:false
+    };
+    receipts.push(entry);
+    saveToStorage();
+    document.getElementById('ledgerLabel').style.display='block';
+    document.getElementById('ledgerTabs').style.display='flex';
+    document.getElementById('googleStatus').style.display='flex';
+    if (currentTab === 'pending') addToLedger(entry);
+    updateTotal(); updateCounts();
+    document.getElementById('resultCard').classList.remove('visible');
+    document.getElementById('uploadZone').style.display='';
+    document.getElementById('fileInputCamera').value='';
+    document.getElementById('fileInputGallery').value='';
+    currentData=null;
+    showToast("Skrunchi'd! ✓");
+  }
+
+  function discardReceipt() { document.getElementById('resultCard').classList.remove('visible'); document.getElementById('uploadZone').style.display=''; document.getElementById('fileInputCamera').value=''; document.getElementById('fileInputGallery').value=''; currentData=null; }
+
+  function addToLedger(entry) {
+    const iconHtml = entry.imageUrl
+      ? `<img class="ledger-thumb" src="${entry.imageUrl}" alt="Receipt">`
+      : `<div class="ledger-icon">${entry.icon}</div>`;
+    const exportedBadge = entry.exported ? `<div class="exported-badge">✓ Exported ${entry.exportedDate||''}</div>` : '';
+    const item=document.createElement('div'); item.className='ledger-item';
+    item.onclick = () => openEdit(entry.id);
+    item.innerHTML=`${iconHtml}<div class="ledger-info"><div class="ledger-vendor">${entry.vendor}</div><div class="ledger-meta">${entry.date} &nbsp;·&nbsp; ${entry.category}</div>${exportedBadge}</div><div class="ledger-right"><div class="ledger-total">${entry.total||'—'}</div><div class="ledger-tax">${entry.gst_hst?'GST/HST '+entry.gst_hst:''}${entry.pst&&entry.pst!=='$0.00'?' · PST '+entry.pst:''}${entry.tip&&entry.tip!=='$0.00'?' · Tip '+entry.tip:''}</div></div>`;
+    document.getElementById('ledger').appendChild(item);
+  }
+
+  function refreshLedger() {
+    const ledger=document.getElementById('ledger');
+    const empty=document.getElementById('emptyState');
+    ledger.innerHTML=''; ledger.appendChild(empty);
+    const filtered = receipts.filter(r => currentTab === 'pending' ? !r.exported : r.exported);
+    if (filtered.length === 0) { empty.style.display=''; return; }
+    empty.style.display='none';
+    filtered.forEach(entry => addToLedger(entry));
+  }
+
+  function updateTotal() {
+    let t=0;
+    receipts.filter(r=>!r.exported).forEach(r=>{ const v=parseFloat((r.total||'0').replace(/[^0-9.]/g,'')); if(!isNaN(v))t+=v; });
+    document.getElementById('totalPill').textContent='$'+t.toFixed(2)+' pending';
+  }
+
+  // EXPORT TO GOOGLE SHEETS
+  function startExport() {
+    if (!googleAccessToken) { connectGoogle(); return; }
+    if (!accountingCycle) {
+      document.getElementById('cycleModal').classList.add('visible');
+      return;
+    }
+    doExport();
+  }
+
+  async function doExport() {
+    const pending = receipts.filter(r => !r.exported);
+    if (!pending.length) { showToast('Nothing to export'); return; }
+
+    document.getElementById('exportBtn').textContent = '⏳ Exporting...';
+    document.getElementById('exportBtn').disabled = true;
+
+    // Group by tab name
+    const groups = {};
+    pending.forEach(r => {
+      const tab = getTabName(r.date);
+      if (!groups[tab]) groups[tab] = [];
+      groups[tab].push(r);
+    });
+
+    try {
+      let currentSheetId = spreadsheetId;
+      for (const [tabName, tabReceipts] of Object.entries(groups)) {
+        const res = await fetch('/api/sheets', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ accessToken: googleAccessToken, receipts: tabReceipts, tabName, spreadsheetId: currentSheetId })
+        });
+        const data = await res.json();
+        if (data.error) throw new Error(data.error);
+        currentSheetId = data.spreadsheetId;
+      }
+
+      // Save sheet ID for next time
+      spreadsheetId = currentSheetId;
+      localStorage.setItem('skrunchi_sheet_id', spreadsheetId);
+
+      // Mark all as exported
+      const today = new Date().toLocaleDateString('en-CA');
+      receipts.forEach(r => { if (!r.exported) { r.exported = true; r.exportedDate = today; } });
+      saveToStorage();
+      refreshLedger(); updateTotal(); updateCounts();
+      showToast(`Exported to Google Sheets ✓`);
+
+    } catch(err) {
+      showToast('Export failed: ' + err.message);
+    }
+
+    document.getElementById('exportBtn').textContent = '📊 Export to Google Sheets';
+    updateCounts();
+  }
+
+  function showToast(msg) { const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),3000); }
+
+  // EDIT MODAL
+  let editingId = null;
+  function openEdit(id) {
+    const entry = receipts.find(r => r.id === id);
+    if (!entry) return;
+    editingId = id;
+    document.getElementById('editVendor').value = entry.vendor || '';
+    document.getElementById('editDate').value = entry.date || '';
+    document.getElementById('editPayment').value = entry.payment || '';
+    document.getElementById('editNotes').value = entry.notes || '';
+    document.getElementById('editSubtotal').value = entry.subtotal || '';
+    document.getElementById('editGST').value = entry.gst_hst || '';
+    document.getElementById('editPST').value = entry.pst || '';
+    document.getElementById('editTip').value = entry.tip || '';
+    document.getElementById('editTotal').value = entry.total || '';
+    const imgWrap = document.getElementById('editImageWrap');
+    const img = document.getElementById('editImage');
+    if (entry.imageUrl) { img.src = entry.imageUrl; imgWrap.style.display = 'block'; }
+    else { imgWrap.style.display = 'none'; }
+    document.querySelectorAll('.cat-chip').forEach(c => {
+      c.classList.toggle('active', c.getAttribute('onclick').includes(entry.category));
+    });
+    document.getElementById('editModal').classList.add('visible');
+  }
+
+  function closeEdit() { document.getElementById('editModal').classList.remove('visible'); editingId = null; }
+  function selectCat(el, cat) { document.querySelectorAll('.cat-chip').forEach(c => c.classList.remove('active')); el.classList.add('active'); }
+
+  function saveEdit() {
+    const entry = receipts.find(r => r.id === editingId);
+    if (!entry) return;
+    const activeCat = document.querySelector('.cat-chip.active');
+    entry.vendor = document.getElementById('editVendor').value;
+    entry.category = activeCat ? activeCat.getAttribute('onclick').match(/'([^']+)'/)[1] : entry.category;
+    entry.date = document.getElementById('editDate').value;
+    entry.payment = document.getElementById('editPayment').value;
+    entry.notes = document.getElementById('editNotes').value;
+    entry.subtotal = document.getElementById('editSubtotal').value;
+    entry.gst_hst = document.getElementById('editGST').value;
+    entry.pst = document.getElementById('editPST').value;
+    entry.tip = document.getElementById('editTip').value;
+    entry.total = document.getElementById('editTotal').value;
+    entry.icon = ICONS[entry.category] || '📄';
+    saveToStorage();
+    refreshLedger(); updateTotal(); updateCounts();
+    closeEdit();
+    showToast('Receipt updated ✓');
+  }
+</script>
   async function handleFile(file) {
     const url = URL.createObjectURL(file);
     document.getElementById('receiptPreview').src = url;
@@ -274,89 +655,6 @@
       document.getElementById('amtTip').value=data.tip&&data.tip!=='0.00'?'$'+data.tip:'';
       document.getElementById('amtTotal').value=data.total?'$'+data.total:'';
     },400);
-  }
-  function showError(msg) { clearInterval(prog); document.getElementById('processingCard').classList.remove('visible'); document.getElementById('uploadZone').style.display=''; const e=document.getElementById('errorMsg'); e.textContent='⚠️ '+msg; e.classList.add('visible'); document.getElementById('fileInputCamera').value=''; document.getElementById('fileInputGallery').value=''; }
-  function saveReceipt() {
-    const entry={id:Date.now(),vendor:document.getElementById('resultVendor').textContent,category:document.getElementById('resultCategory').textContent,date:document.getElementById('fieldDate').value,payment:document.getElementById('fieldPayment').value,notes:document.getElementById('fieldNotes').value,subtotal:document.getElementById('amtSubtotal').value,gst_hst:document.getElementById('amtGST').value,pst:document.getElementById('amtPST').value,tip:document.getElementById('amtTip').value,total:document.getElementById('amtTotal').value,icon:ICONS[document.getElementById('resultCategory').textContent]||'📄',imageUrl:currentData?currentData._imageUrl:null};
-    receipts.push(entry); addToLedger(entry); updateTotal();
-    document.getElementById('resultCard').classList.remove('visible'); document.getElementById('uploadZone').style.display=''; document.getElementById('fileInputCamera').value=''; document.getElementById('fileInputGallery').value=''; currentData=null; document.getElementById('exportBtn').disabled=false; showToast("Skrunchi'd! ✓");
-  }
-  function discardReceipt() { document.getElementById('resultCard').classList.remove('visible'); document.getElementById('uploadZone').style.display=''; document.getElementById('fileInputCamera').value=''; document.getElementById('fileInputGallery').value=''; currentData=null; }
-  function addToLedger(entry) {
-    document.getElementById('emptyState').style.display='none'; document.getElementById('ledgerLabel').style.display='block';
-    const item=document.createElement('div'); item.className='ledger-item';
-    item.onclick = () => openEdit(entry.id);
-    const iconHtml = entry.imageUrl 
-      ? `<img class="ledger-thumb" src="${entry.imageUrl}" alt="Receipt">` 
-      : `<div class="ledger-icon">${entry.icon}</div>`;
-    item.innerHTML=`${iconHtml}<div class="ledger-info"><div class="ledger-vendor">${entry.vendor}</div><div class="ledger-meta">${entry.date} &nbsp;·&nbsp; ${entry.category}</div></div><div class="ledger-right"><div class="ledger-total">${entry.total||'—'}</div><div class="ledger-tax">${entry.gst_hst?'GST/HST '+entry.gst_hst:''}${entry.pst&&entry.pst!=='$0.00'?' · PST '+entry.pst:''}${entry.tip&&entry.tip!=='$0.00'?' · Tip '+entry.tip:''}</div></div>`;
-    document.getElementById('ledger').appendChild(item);
-  }
-  function updateTotal() { let t=0; receipts.forEach(r=>{ const v=parseFloat((r.total||'0').replace(/[^0-9.]/g,'')); if(!isNaN(v))t+=v; }); document.getElementById('totalPill').textContent='$'+t.toFixed(2)+' logged'; }
-  function exportCSV() {
-    if(!receipts.length) return;
-    const h=['Date','Vendor','Category','Subtotal','GST/HST','PST','Tip','Total','Payment Method','Notes'];
-    const rows=receipts.map(r=>[r.date,r.vendor,r.category,r.subtotal.replace('$',''),r.gst_hst.replace('$',''),r.pst?r.pst.replace('$',''):'0.00',r.tip?r.tip.replace('$',''):'0.00',r.total.replace('$',''),r.payment,r.notes].map(v=>`"${(v||'').replace(/"/g,'""')}"`).join(','));
-    const csv=[h.join(','),...rows].join('\n'); const blob=new Blob([csv],{type:'text/csv'}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download='skrunchi_'+new Date().toISOString().slice(0,10)+'.csv'; a.click(); URL.revokeObjectURL(url); showToast('CSV Downloaded ✓');
-  }
-  function showToast(msg) { const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2500); }
-
-  // EDIT MODAL
-  let editingId = null;
-  function openEdit(id) {
-    const entry = receipts.find(r => r.id === id);
-    if (!entry) return;
-    editingId = id;
-    document.getElementById('editVendor').value = entry.vendor || '';
-    document.getElementById('editDate').value = entry.date || '';
-    document.getElementById('editPayment').value = entry.payment || '';
-    document.getElementById('editNotes').value = entry.notes || '';
-    document.getElementById('editSubtotal').value = entry.subtotal || '';
-    document.getElementById('editGST').value = entry.gst_hst || '';
-    document.getElementById('editPST').value = entry.pst || '';
-    document.getElementById('editTip').value = entry.tip || '';
-    document.getElementById('editTotal').value = entry.total || '';
-    // Show receipt image if available
-    const imgWrap = document.getElementById('editImageWrap');
-    const img = document.getElementById('editImage');
-    if (entry.imageUrl) { img.src = entry.imageUrl; imgWrap.style.display = 'block'; }
-    else { imgWrap.style.display = 'none'; }
-    document.querySelectorAll('.cat-chip').forEach(c => {
-      c.classList.toggle('active', c.getAttribute('onclick').includes(entry.category));
-    });
-    document.getElementById('editModal').classList.add('visible');
-  }
-  function closeEdit() { document.getElementById('editModal').classList.remove('visible'); editingId = null; }
-  function selectCat(el, cat) { document.querySelectorAll('.cat-chip').forEach(c => c.classList.remove('active')); el.classList.add('active'); }
-  function saveEdit() {
-    const entry = receipts.find(r => r.id === editingId);
-    if (!entry) return;
-    const activeCat = document.querySelector('.cat-chip.active');
-    entry.vendor = document.getElementById('editVendor').value;
-    entry.category = activeCat ? activeCat.getAttribute('onclick').match(/'([^']+)'/)[1] : entry.category;
-    entry.date = document.getElementById('editDate').value;
-    entry.payment = document.getElementById('editPayment').value;
-    entry.notes = document.getElementById('editNotes').value;
-    entry.subtotal = document.getElementById('editSubtotal').value;
-    entry.gst_hst = document.getElementById('editGST').value;
-    entry.pst = document.getElementById('editPST').value;
-    entry.tip = document.getElementById('editTip').value;
-    entry.total = document.getElementById('editTotal').value;
-    entry.icon = ICONS[entry.category] || '📄';
-    // Refresh ledger display
-    refreshLedger();
-    updateTotal();
-    closeEdit();
-    showToast('Receipt updated ✓');
-  }
-  function refreshLedger() {
-    const ledger = document.getElementById('ledger');
-    const empty = document.getElementById('emptyState');
-    ledger.innerHTML = '';
-    ledger.appendChild(empty);
-    if (receipts.length === 0) { empty.style.display = ''; return; }
-    empty.style.display = 'none';
-    receipts.forEach(entry => addToLedger(entry));
   }
 </script>
 </body>
