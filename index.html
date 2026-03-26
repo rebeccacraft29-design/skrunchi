@@ -609,53 +609,5 @@
     showToast('Receipt updated ✓');
   }
 </script>
-  async function handleFile(file) {
-    const url = URL.createObjectURL(file);
-    document.getElementById('receiptPreview').src = url;
-    document.getElementById('uploadZone').style.display = 'none';
-    document.getElementById('resultCard').classList.remove('visible');
-    document.getElementById('errorMsg').classList.remove('visible');
-    document.getElementById('processingCard').classList.add('visible');
-    animateProgress();
-    try { 
-      const b64 = await fileToBase64(file);
-      const result = await analyzeReceipt(b64, file.type||'image/jpeg');
-      result._imageUrl = url;
-      showResult(result); 
-    }
-    catch(err) { showError(err.message||'Could not read receipt. Please try again.'); }
-  }
-  function fileToBase64(file) { return new Promise((res,rej)=>{ const r=new FileReader(); r.onload=()=>res(r.result.split(',')[1]); r.onerror=rej; r.readAsDataURL(file); }); }
-  let prog;
-  function animateProgress() {
-    let pct=0; const fill=document.getElementById('analyzingFill'),label=document.getElementById('analyzingLabel'),pctEl=document.getElementById('analyzingPct');
-    const steps=[[20,'Reading receipt...'],[45,'Finding amounts...'],[65,'Detecting taxes & tip...'],[85,'Categorizing...'],[93,'Almost done...']]; let idx=0;
-    prog=setInterval(()=>{ if(idx<steps.length&&pct>=steps[idx][0]-1){label.textContent=steps[idx][1];idx++;} if(pct<93)pct++; fill.style.width=pct+'%'; pctEl.textContent=pct+'%'; },80);
-  }
-  function finishProgress() { clearInterval(prog); document.getElementById('analyzingLabel').textContent='Done!'; document.getElementById('analyzingFill').style.width='100%'; document.getElementById('analyzingPct').textContent='100%'; }
-  async function analyzeReceipt(b64, mime) {
-    const r=await fetch('/api/analyze',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({image:b64,mediaType:mime})});
-    const data=await r.json();
-    if(!r.ok || data.error) throw new Error(data.error||'Could not read receipt. Please try again.');
-    return data;
-  }
-  function showResult(data) {
-    finishProgress(); currentData=data;
-    setTimeout(()=>{
-      document.getElementById('processingCard').classList.remove('visible');
-      document.getElementById('resultCard').classList.add('visible');
-      document.getElementById('resultVendor').textContent=data.vendor||'Unknown Vendor';
-      document.getElementById('resultCategory').textContent=data.category||'Other';
-      document.getElementById('fieldDate').value=data.date||'';
-      document.getElementById('fieldPayment').value=data.payment_method||'';
-      document.getElementById('fieldNotes').value=data.notes||'';
-      document.getElementById('amtSubtotal').value=data.subtotal?'$'+data.subtotal:'';
-      document.getElementById('amtGST').value=data.gst_hst?'$'+data.gst_hst:'';
-      document.getElementById('amtPST').value=data.pst&&data.pst!=='0.00'?'$'+data.pst:'';
-      document.getElementById('amtTip').value=data.tip&&data.tip!=='0.00'?'$'+data.tip:'';
-      document.getElementById('amtTotal').value=data.total?'$'+data.total:'';
-    },400);
-  }
-</script>
 </body>
 </html>
