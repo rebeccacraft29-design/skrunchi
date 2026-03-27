@@ -28,8 +28,8 @@ header{padding:16px 20px 12px;display:flex;align-items:center;justify-content:sp
 .gear-btn:hover{border-color:var(--accent);}
 .page{display:none;}
 .page.active{display:block;}
-.slide-page{position:fixed;inset:0;background:var(--bg);z-index:40;max-width:480px;margin:0 auto;overflow-y:auto;transform:translateX(100%);transition:transform 0.3s ease;padding-bottom:40px;}
-.slide-page.visible{transform:translateX(0);}
+.slide-page{position:fixed;inset:0;background:var(--bg);z-index:40;max-width:480px;margin:0 auto;overflow-y:auto;display:none;padding-bottom:40px;}
+.slide-page.visible{display:block;}
 .page-header{padding:16px 20px 12px;display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--border);position:sticky;top:0;background:var(--bg);z-index:1;}
 .back-btn{width:34px;height:34px;border-radius:10px;background:var(--surface2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:17px;flex-shrink:0;}
 .back-btn:hover{border-color:var(--accent);}
@@ -487,6 +487,23 @@ header{padding:16px 20px 12px;display:flex;align-items:center;justify-content:sp
   <div class="settings-section">
     <button onclick="saveSettings()" class="btn btn-primary" style="width:100%;padding:13px;">Save Settings</button>
   </div>
+  <div class="settings-section">
+    <div class="settings-section-title">Account</div>
+    <div class="settings-card">
+      <div class="settings-input-wrap" style="cursor:pointer;" onclick="logOut()">
+        <div style="font-size:13px;font-weight:800;color:var(--blue);">Log Out</div>
+        <div style="font-size:11px;color:var(--muted2);font-weight:600;margin-top:3px;">Your receipts stay saved. You can log back in anytime.</div>
+      </div>
+      <div class="settings-input-wrap" style="cursor:pointer;" onclick="softReset()">
+        <div style="font-size:13px;font-weight:800;color:var(--accent);">Reset Setup</div>
+        <div style="font-size:11px;color:var(--muted2);font-weight:600;margin-top:3px;">Clears your name, role and company info but keeps all your receipts.</div>
+      </div>
+      <div class="settings-input-wrap" style="cursor:pointer;" onclick="hardReset()">
+        <div style="font-size:13px;font-weight:800;color:#ff5c5c;">Reset Everything</div>
+        <div style="font-size:11px;color:var(--muted2);font-weight:600;margin-top:3px;">Clears all data including receipts. Cannot be undone.</div>
+      </div>
+    </div>
+  </div>
 </div>
 
 <!-- EDIT MODAL -->
@@ -660,6 +677,7 @@ function completeSetup() {
   }
 }
 
+function connectGoogle() { window.location.href = '/api/auth'; }
 function connectGoogleAdmin() { window.location.href = '/api/auth'; }
 
 async function createCompanyForm() {
@@ -716,7 +734,9 @@ function showPage(page) {
   }
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.getElementById('page-' + page).classList.add('active');
-  document.getElementById('exportBar').style.display = page === 'ledger' ? 'block' : 'none';
+  const pending = receipts.filter(r => !r.exported && !r.paid).length;
+  // Show export bar on dashboard and ledger when there are pending receipts
+  document.getElementById('exportBar').style.display = (page === 'ledger' || (page === 'dashboard' && pending > 0)) ? 'block' : 'none';
   if (page === 'dashboard') renderDashboard();
   if (page === 'ledger') refreshLedger();
 }
@@ -726,7 +746,8 @@ function hideSlidePage(page) { document.getElementById('page-' + page).classList
 function goHome() {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.getElementById('page-dashboard').classList.add('active');
-  document.getElementById('exportBar').style.display = 'none';
+  const pending = receipts.filter(r => !r.exported && !r.paid).length;
+  document.getElementById('exportBar').style.display = pending > 0 ? 'block' : 'none';
   renderDashboard();
   document.getElementById('uploadZone').style.display = '';
   document.getElementById('resultCard').classList.remove('visible');
@@ -775,8 +796,10 @@ function renderDashboard() {
     viewAll.innerHTML = '<button onclick="showPage(\'ledger\')" style="background:transparent;color:var(--blue);border:none;font-family:Nunito,sans-serif;font-size:12px;font-weight:800;cursor:pointer;">View All Receipts</button>';
     container.appendChild(viewAll);
   }
-  // Respect collapsed state
+  // Respect collapsed state and update export bar
   container.style.display = dashReceiptsOpen ? '' : 'none';
+  const pendingCount = receipts.filter(r => !r.exported && !r.paid).length;
+  document.getElementById('exportBar').style.display = pendingCount > 0 ? 'block' : 'none';
 }
 
 // GOOGLE
@@ -795,7 +818,43 @@ function updateGoogleStatus() {
   updateCounts();
 }
 
-function connectGoogle() { window.location.href = '/api/auth'; }
+function logOut() {
+  if (!confirm('Log out? Your receipts will be saved and waiting when you log back in.')) return;
+  employeeName = '';
+  userRole = '';
+  companyName = '';
+  localStorage.removeItem('employee_name');
+  localStorage.removeItem('user_role');
+  localStorage.removeItem('company_name');
+  hideSlidePage('settings');
+  location.reload();
+}
+
+function softReset() {
+  if (!confirm('Reset your setup? This clears your name, role and company info but keeps all your receipts.')) return;
+  employeeName = '';
+  userRole = '';
+  companyName = '';
+  formUrl = '';
+  googleAccessToken = null;
+  spreadsheetId = null;
+  localStorage.removeItem('employee_name');
+  localStorage.removeItem('user_role');
+  localStorage.removeItem('company_name');
+  localStorage.removeItem('skrunchi_form_url');
+  localStorage.removeItem('google_access_token');
+  localStorage.removeItem('google_refresh_token');
+  localStorage.removeItem('skrunchi_spreadsheet_id');
+  hideSlidePage('settings');
+  location.reload();
+}
+
+function hardReset() {
+  if (!confirm('Reset EVERYTHING? This deletes all your receipts and cannot be undone.')) return;
+  if (!confirm('Are you absolutely sure? All receipts will be permanently deleted.')) return;
+  localStorage.clear();
+  location.reload();
+}
 function disconnectGoogle() {
   googleAccessToken = null;
   localStorage.removeItem('google_access_token');
