@@ -307,20 +307,23 @@ header{padding:16px 20px 12px;display:flex;align-items:center;justify-content:sp
 <div class="page active" id="page-dashboard">
   <div class="dash-greeting" id="dashGreeting">Hey there 👋</div>
   <div class="dash-stats">
-    <div class="stat-card orange">
+    <div class="stat-card orange" onclick="showPage('history')" style="cursor:pointer;">
       <div class="stat-label">Pending Reimbursement</div>
       <div class="stat-value" id="dashPendingAmt">$0.00</div>
       <div class="stat-sub" id="dashPendingSub">0 receipts</div>
     </div>
-    <div class="stat-card blue">
+    <div class="stat-card blue" onclick="showPage('ledger')" style="cursor:pointer;">
       <div class="stat-label">Ready to Export</div>
       <div class="stat-value" id="dashExportCount">0</div>
       <div class="stat-sub" id="dashExportSub">receipts</div>
     </div>
   </div>
   <button class="snap-btn" onclick="showPage('scan')">📷 &nbsp; Snap a Receipt</button>
-  <div class="dash-section-label">Recent Receipts</div>
-  <div id="dashReceipts">
+  <div class="collapsible-header" onclick="toggleDashReceipts()" style="padding:16px 20px 8px;">
+    <span class="section-title" style="font-size:11px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:0.8px;">Recent Receipts</span>
+    <span class="section-toggle" id="dashReceiptsToggle">SHOW</span>
+  </div>
+  <div id="dashReceipts" style="display:none;">
     <div class="dash-empty"><span class="dash-empty-icon">🧾</span>No receipts yet.<br>Tap Snap a Receipt to get started!</div>
   </div>
 </div>
@@ -604,6 +607,8 @@ window.addEventListener('load', () => {
   if (saved) { try { receipts = JSON.parse(saved); } catch(e) { receipts = []; } }
   if (!employeeName) {
     document.getElementById('setupOverlay').classList.add('visible');
+    // Make sure settings is hidden during setup
+    document.getElementById('page-settings').classList.remove('visible');
   }
   updateGoogleStatus();
   renderDashboard();
@@ -698,6 +703,11 @@ function finishAdminSetup() {
 
 // PAGE NAVIGATION
 function showPage(page) {
+  // Block navigation during setup
+  if (!employeeName && (page === 'settings' || page === 'history')) {
+    showToast('Complete setup first');
+    return;
+  }
   if (page === 'history' || page === 'settings') {
     if (page === 'history') renderHistory();
     if (page === 'settings') loadSettingsFields();
@@ -724,7 +734,14 @@ function goHome() {
   document.getElementById('errorMsg').classList.remove('visible');
 }
 
-// DASHBOARD
+let dashReceiptsOpen = false;
+
+function toggleDashReceipts() {
+  dashReceiptsOpen = !dashReceiptsOpen;
+  document.getElementById('dashReceipts').style.display = dashReceiptsOpen ? '' : 'none';
+  document.getElementById('dashReceiptsToggle').textContent = dashReceiptsOpen ? 'HIDE' : 'SHOW';
+}
+
 function renderDashboard() {
   const name = employeeName ? employeeName.split(' ')[0] : 'there';
   document.getElementById('dashGreeting').innerHTML = 'Hey <span>' + name + '</span> 👋';
@@ -739,27 +756,27 @@ function renderDashboard() {
   const recent = receipts.slice().reverse().slice(0, 8);
   if (recent.length === 0) {
     container.innerHTML = '<div class="dash-empty"><span class="dash-empty-icon">🧾</span>No receipts yet.<br>Tap Snap a Receipt to get started!</div>';
-    return;
-  }
-  container.innerHTML = '';
-  recent.forEach(r => {
-    const isPending = !r.exported && !r.paid;
-    const isExported = r.exported && !r.paid;
-    const isPaid = r.paid;
-    const totalColor = isPaid ? 'green' : isExported ? 'blue' : '';
-    const tag = isPending ? '<span class="item-tag export">to export</span>' : isExported ? '<span class="item-tag awaiting">awaiting payment</span>' : '<span class="item-tag paid">paid</span>';
-    const div = document.createElement('div');
-    div.className = 'receipt-item';
-    div.onclick = () => openDetail(r.id);
-    div.innerHTML = '<div class="item-icon">' + (r.icon||'📄') + '</div><div class="item-info"><div class="item-vendor">' + (r.vendor||'') + '</div><div class="item-meta">' + (r.date||'') + ' &middot; ' + (r.category||'') + '</div></div><div class="item-right"><div class="item-total ' + totalColor + '">' + (r.total||'-') + '</div>' + tag + '</div>';
-    container.appendChild(div);
-  });
-  if (receipts.length > 0) {
+  } else {
+    container.innerHTML = '';
+    recent.forEach(r => {
+      const isPending = !r.exported && !r.paid;
+      const isExported = r.exported && !r.paid;
+      const isPaid = r.paid;
+      const totalColor = isPaid ? 'green' : isExported ? 'blue' : '';
+      const tag = isPending ? '<span class="item-tag export">to export</span>' : isExported ? '<span class="item-tag awaiting">awaiting payment</span>' : '<span class="item-tag paid">paid</span>';
+      const div = document.createElement('div');
+      div.className = 'receipt-item';
+      div.onclick = () => openDetail(r.id);
+      div.innerHTML = '<div class="item-icon">' + (r.icon||'📄') + '</div><div class="item-info"><div class="item-vendor">' + (r.vendor||'') + '</div><div class="item-meta">' + (r.date||'') + ' &middot; ' + (r.category||'') + '</div></div><div class="item-right"><div class="item-total ' + totalColor + '">' + (r.total||'-') + '</div>' + tag + '</div>';
+      container.appendChild(div);
+    });
     const viewAll = document.createElement('div');
     viewAll.style.cssText = 'text-align:center;padding:10px 20px 0;';
     viewAll.innerHTML = '<button onclick="showPage(\'ledger\')" style="background:transparent;color:var(--blue);border:none;font-family:Nunito,sans-serif;font-size:12px;font-weight:800;cursor:pointer;">View All Receipts</button>';
     container.appendChild(viewAll);
   }
+  // Respect collapsed state
+  container.style.display = dashReceiptsOpen ? '' : 'none';
 }
 
 // GOOGLE
@@ -1256,16 +1273,19 @@ function addHistSection(container, title, groups, isPaid) {
   container.appendChild(lbl);
   Object.entries(groups).forEach(([period, items]) => {
     const total = items.reduce((s,r) => s + parseFloat((r.total||'0').replace(/[^0-9.]/g,'')), 0);
-    const isOpen = {v:true};
+    // Paid sections start collapsed, awaiting starts open
+    const isOpen = {v: !isPaid};
     const group = document.createElement('div'); group.className = 'period-group';
     const header = document.createElement('div'); header.className = 'period-header';
-    const toggleLbl = document.createElement('div'); toggleLbl.className = 'period-toggle'; toggleLbl.textContent = 'HIDE';
+    const toggleLbl = document.createElement('div'); toggleLbl.className = 'period-toggle';
+    toggleLbl.textContent = isOpen.v ? 'HIDE' : 'SHOW';
     const right = document.createElement('div'); right.style.textAlign = 'right';
     right.innerHTML = '<div class="period-total" style="color:' + color + '">$' + total.toFixed(2) + '</div>';
     right.appendChild(toggleLbl);
     header.innerHTML = '<div><h4>' + period + '</h4><div class="period-meta-text">' + items.length + ' receipt' + (items.length !== 1 ? 's' : '') + '</div></div>';
     header.appendChild(right);
     const itemsEl = document.createElement('div'); itemsEl.className = 'period-items';
+    itemsEl.style.display = isOpen.v ? '' : 'none';
     header.onclick = () => { isOpen.v = !isOpen.v; itemsEl.style.display = isOpen.v ? '' : 'none'; toggleLbl.textContent = isOpen.v ? 'HIDE' : 'SHOW'; };
     items.forEach(entry => {
       const hitem = document.createElement('div'); hitem.className = 'history-item';
