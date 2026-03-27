@@ -436,9 +436,20 @@ window.addEventListener('load', () => {
 });
 
 function saveToStorage() {
-  // Strip blob URLs — they dont persist between sessions
-  const toSave = receipts.map(r => Object.assign({}, r, {imageUrl: null}));
-  localStorage.setItem('skrunchi_receipts', JSON.stringify(toSave));
+  // Save imageB64 for persistence, but cap size — if too large skip it
+  const toSave = receipts.map(r => {
+    const copy = Object.assign({}, r);
+    // Keep base64 if under 500kb, otherwise drop it
+    if (copy.imageB64 && copy.imageB64.length > 500000) copy.imageB64 = null;
+    copy.imageUrl = null; // blob URLs never persist
+    return copy;
+  });
+  try { localStorage.setItem('skrunchi_receipts', JSON.stringify(toSave)); }
+  catch(e) {
+    // If storage full, save without images
+    const minimal = receipts.map(r => Object.assign({}, r, {imageUrl: null, imageB64: null}));
+    localStorage.setItem('skrunchi_receipts', JSON.stringify(minimal));
+  }
 }
 
 // GOOGLE
@@ -544,6 +555,7 @@ async function handleFile(file) {
     const b64 = await fileToBase64(file);
     const result = await analyzeReceipt(b64, file.type || 'image/jpeg');
     result._imageUrl = url;
+    result._imageB64 = 'data:' + (file.type || 'image/jpeg') + ';base64,' + b64;
     showResult(result);
   } catch(err) { showError(err.message || 'Could not read receipt. Please try again.'); }
 }
@@ -636,6 +648,7 @@ function saveReceipt() {
     total: document.getElementById('amtTotal').value,
     icon: ICONS[document.getElementById('resultCategory').textContent] || '📄',
     imageUrl: currentData ? currentData._imageUrl : null,
+    imageB64: currentData ? currentData._imageB64 : null,
     exported: false,
     paid: false
   };
@@ -831,7 +844,8 @@ function openEdit(id) {
   document.getElementById('editTotal').value = entry.total || '';
   const imgWrap = document.getElementById('editImageWrap');
   const img = document.getElementById('editImage');
-  if (entry.imageUrl) { img.src = entry.imageUrl; imgWrap.style.display = 'block'; }
+  const imgSrc = entry.imageUrl || entry.imageB64;
+  if (imgSrc) { img.src = imgSrc; imgWrap.style.display = 'block'; }
   else { imgWrap.style.display = 'none'; }
   document.querySelectorAll('.cat-chip').forEach(c => {
     c.classList.toggle('active', c.getAttribute('onclick').includes(entry.category));
@@ -961,7 +975,8 @@ function openDetail(id) {
   document.getElementById('detailVendor').textContent = entry.vendor || 'Receipt';
   const imgWrap = document.getElementById('detailImageWrap');
   const img = document.getElementById('detailImage');
-  if (entry.imageUrl) { img.src = entry.imageUrl; imgWrap.style.display = 'block'; }
+  const imgSrc = entry.imageUrl || entry.imageB64;
+  if (imgSrc) { img.src = imgSrc; imgWrap.style.display = 'block'; }
   else { imgWrap.style.display = 'none'; }
   const fields = document.getElementById('detailFields');
   const rows = [
