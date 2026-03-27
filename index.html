@@ -5,254 +5,396 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>Skrunchi — Snap it. Skrunchi it. Done.</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap');
-  :root {
-    --bg: #111318; --surface: #1a1d24; --surface2: #22262f; --border: #2e3340;
-    --accent: #ff7b35; --accent-soft: rgba(255,123,53,0.12);
-    --blue: #4d9fff; --blue-soft: rgba(77,159,255,0.12);
-    --text: #eef0f6; --muted: #6b7280; --muted2: #9aa3b0; --radius: 18px;
-    --green: #4ade80; --green-soft: rgba(74,222,128,0.1);
-  }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: 'Nunito', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; max-width: 480px; margin: 0 auto; padding-bottom: 100px; }
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap');
+:root {
+  --bg:#111318;--surface:#1a1d24;--surface2:#22262f;--border:#2e3340;
+  --accent:#ff7b35;--accent-soft:rgba(255,123,53,0.12);
+  --blue:#4d9fff;--blue-soft:rgba(77,159,255,0.12);
+  --text:#eef0f6;--muted:#6b7280;--muted2:#9aa3b0;--radius:18px;
+  --green:#4ade80;--green-soft:rgba(74,222,128,0.1);
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;max-width:480px;margin:0 auto;padding-bottom:100px;}
 
-  /* HEADER */
-  header { padding: 18px 20px 14px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border); position: sticky; top: 0; background: var(--bg); z-index: 10; }
-  .logo-wrap { display: flex; align-items: center; gap: 10px; }
-  .logo-icon { width: 36px; height: 36px; background: var(--accent); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; }
-  .logo-text { font-size: 22px; font-weight: 900; color: var(--text); letter-spacing: -0.5px; }
-  .logo-text span { color: var(--accent); }
-  .tagline { font-size: 9px; color: var(--muted); letter-spacing: 0.8px; margin-top: 1px; font-weight: 600; }
-  .total-pill { background: var(--surface2); border: 1px solid var(--border); border-radius: 100px; padding: 7px 14px; font-size: 12px; color: var(--blue); font-weight: 700; cursor: pointer; transition: all 0.15s; }
-  .total-pill:hover { border-color: var(--blue); background: var(--blue-soft); }
+/* HEADER */
+header{padding:16px 20px 12px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);position:sticky;top:0;background:var(--bg);z-index:10;}
+.logo-wrap{display:flex;align-items:center;gap:10px;cursor:pointer;}
+.logo-icon{width:34px;height:34px;background:var(--accent);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:17px;}
+.logo-text{font-size:20px;font-weight:900;color:var(--text);letter-spacing:-0.5px;}
+.logo-text span{color:var(--accent);}
+.tagline{font-size:9px;color:var(--muted);letter-spacing:0.8px;margin-top:1px;font-weight:600;}
+.header-right{display:flex;align-items:center;gap:8px;}
+.total-pill{background:var(--surface2);border:1px solid var(--border);border-radius:100px;padding:6px 12px;font-size:11px;color:var(--blue);font-weight:700;cursor:pointer;transition:all 0.15s;white-space:nowrap;}
+.total-pill:hover{border-color:var(--blue);background:var(--blue-soft);}
+.gear-btn{width:30px;height:30px;border-radius:9px;background:var(--surface2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:15px;flex-shrink:0;}
+.gear-btn:hover{border-color:var(--accent);}
 
-  /* UPLOAD */
-  .upload-zone { margin: 20px 16px; border: 2px dashed var(--border); border-radius: var(--radius); padding: 36px 20px; text-align: center; cursor: pointer; transition: all 0.2s; position: relative; background: var(--surface); }
-  .upload-zone:hover { border-color: var(--accent); background: #1e1a16; }
-  .upload-icon { width: 68px; height: 68px; background: var(--accent-soft); border: 2px solid rgba(255,123,53,0.25); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; font-size: 28px; }
-  .upload-zone h3 { font-size: 20px; font-weight: 800; margin-bottom: 8px; }
-  .upload-zone p { font-size: 13px; color: var(--muted2); line-height: 1.6; font-weight: 500; }
-  .upload-buttons { display: flex; gap: 10px; margin-top: 18px; justify-content: center; }
-  .upload-btn { flex: 1; max-width: 155px; padding: 12px 14px; border-radius: 12px; border: none; font-family: 'Nunito', sans-serif; font-size: 13px; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; transition: all 0.15s; position: relative; overflow: hidden; }
-  .upload-btn input { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; font-size: 0; }
-  .upload-btn.camera { background: var(--accent); color: #fff; }
-  .upload-btn.camera:hover { background: #ff8f50; }
-  .upload-btn.gallery { background: var(--surface2); color: var(--text); border: 1px solid var(--border); }
-  .upload-btn.gallery:hover { border-color: var(--blue); color: var(--blue); }
+/* PAGES */
+.page{display:none;}
+.page.active{display:block;}
+.slide-page{position:fixed;inset:0;background:var(--bg);z-index:40;max-width:480px;margin:0 auto;overflow-y:auto;transform:translateX(100%);transition:transform 0.3s ease;padding-bottom:40px;}
+.slide-page.visible{transform:translateX(0);}
+.page-header{padding:16px 20px 12px;display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--border);position:sticky;top:0;background:var(--bg);z-index:1;}
+.back-btn{width:34px;height:34px;border-radius:10px;background:var(--surface2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:17px;flex-shrink:0;}
+.back-btn:hover{border-color:var(--accent);}
+.page-title{font-size:17px;font-weight:900;}
 
-  /* PROCESSING */
-  .processing-card { margin: 0 16px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; display: none; }
-  .processing-card.visible { display: block; }
-  .receipt-preview { width: 100%; max-height: 180px; object-fit: cover; border-radius: 12px; margin-bottom: 16px; }
-  .analyzing-bar { background: var(--surface2); border-radius: 100px; height: 6px; overflow: hidden; margin-bottom: 8px; }
-  .analyzing-fill { height: 100%; background: linear-gradient(90deg, var(--accent), var(--blue)); border-radius: 100px; width: 0%; transition: width 0.4s ease; }
-  .analyzing-label { font-size: 12px; color: var(--muted2); display: flex; justify-content: space-between; font-weight: 600; }
+/* DASHBOARD */
+.dash-greeting{padding:20px 20px 0;font-size:20px;font-weight:900;}
+.dash-greeting span{color:var(--accent);}
+.dash-stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:14px 16px 0;}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:14px 16px;}
+.stat-card.orange{border-color:rgba(255,123,53,0.3);background:var(--accent-soft);}
+.stat-card.blue{border-color:rgba(77,159,255,0.25);background:var(--blue-soft);}
+.stat-label{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:0.7px;font-weight:700;margin-bottom:6px;}
+.stat-value{font-size:24px;font-weight:900;}
+.stat-card.orange .stat-value{color:var(--accent);}
+.stat-card.blue .stat-value{color:var(--blue);}
+.stat-sub{font-size:10px;color:var(--muted2);font-weight:600;margin-top:3px;}
+.snap-btn{display:block;margin:14px 16px 0;width:calc(100% - 32px);padding:16px;background:var(--accent);border:none;border-radius:14px;color:#fff;font-family:'Nunito',sans-serif;font-size:16px;font-weight:900;cursor:pointer;letter-spacing:0.2px;transition:all 0.15s;}
+.snap-btn:hover{background:#ff8f50;}
+.dash-section-label{padding:16px 20px 8px;font-size:11px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:0.8px;}
+.dash-empty{text-align:center;padding:30px 20px;color:var(--muted2);font-size:13px;font-weight:600;line-height:2;}
+.dash-empty-icon{font-size:32px;display:block;margin-bottom:8px;opacity:0.4;}
 
-  /* RESULT CARD */
-  .result-card { margin: 0 16px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; display: none; animation: slideUp 0.3s ease; }
-  .result-card.visible { display: block; }
-  @keyframes slideUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
-  .result-header { background: var(--surface2); padding: 14px 18px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border); }
-  .result-header h4 { font-size: 17px; font-weight: 800; }
-  .category-tag { font-size: 11px; padding: 4px 12px; border-radius: 100px; background: var(--blue-soft); color: var(--blue); border: 1px solid rgba(77,159,255,0.25); font-weight: 700; }
-  .fields { padding: 14px 18px; display: grid; gap: 10px; }
-  .field-row { display: flex; align-items: center; gap: 10px; }
-  .field-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.6px; min-width: 80px; font-weight: 700; }
-  .field-value { font-size: 13px; color: var(--text); flex: 1; background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; padding: 8px 12px; font-family: 'Nunito', sans-serif; font-weight: 600; width: 100%; transition: border-color 0.15s; }
-  .field-value:focus { outline: none; border-color: var(--blue); }
-  .amounts-section { padding: 0 18px 16px; }
-  .amounts-title { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 10px; font-weight: 700; }
-  .amounts-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 7px; margin-bottom: 7px; }
-  .amounts-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; }
-  .amount-box { background: var(--surface2); border: 1px solid var(--border); border-radius: 12px; padding: 11px 8px; text-align: center; }
-  .amount-box.total { border-color: rgba(255,123,53,0.35); background: var(--accent-soft); }
-  .amount-box label { display: block; font-size: 9px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 5px; font-weight: 700; }
-  .amount-box input { width: 100%; background: transparent; border: none; font-family: 'Nunito', sans-serif; font-size: 15px; font-weight: 800; color: var(--text); text-align: center; padding: 0; }
-  .amount-box input:focus { outline: none; }
-  .amount-box.total input { color: var(--accent); }
-  .action-row { padding: 14px 18px; display: flex; gap: 8px; border-top: 1px solid var(--border); }
-  .btn { flex: 1; padding: 13px; border-radius: 12px; border: none; font-family: 'Nunito', sans-serif; font-size: 15px; font-weight: 800; cursor: pointer; transition: all 0.15s; }
-  .btn-primary { background: var(--accent); color: #fff; }
-  .btn-primary:hover { background: #ff8f50; }
-  .btn-ghost { background: transparent; color: var(--muted2); border: 1px solid var(--border); }
-  .btn-ghost:hover { border-color: var(--muted); color: var(--text); }
+/* LEDGER ITEMS */
+.receipt-item{background:var(--surface);border:1px solid var(--border);border-radius:13px;padding:12px 14px;display:flex;align-items:center;gap:11px;cursor:pointer;transition:border-color 0.15s;margin:0 16px 6px;}
+.receipt-item:hover{border-color:var(--accent);}
+.item-icon{width:40px;height:40px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;background:var(--surface2);border:1px solid var(--border);}
+.item-info{flex:1;min-width:0;}
+.item-vendor{font-size:14px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.item-meta{font-size:10px;color:var(--muted2);margin-top:2px;font-weight:600;}
+.item-badge{font-size:9px;font-weight:700;margin-top:3px;}
+.item-badge.export{color:var(--blue);}
+.item-badge.exported{color:var(--green);}
+.item-badge.paid{color:var(--green);}
+.item-right{text-align:right;flex-shrink:0;}
+.item-total{font-size:15px;font-weight:900;color:var(--accent);}
+.item-total.blue{color:var(--blue);}
+.item-total.green{color:var(--green);}
+.item-tag{font-size:9px;border-radius:100px;padding:2px 7px;font-weight:700;margin-top:3px;display:inline-block;}
+.item-tag.export{background:rgba(77,159,255,0.15);color:var(--blue);}
+.item-tag.awaiting{background:rgba(255,123,53,0.15);color:var(--accent);}
+.item-tag.paid{background:rgba(74,222,128,0.15);color:var(--green);}
 
-  /* ERROR */
-  .error-msg { margin: 0 16px 16px; background: #1a0e0e; border: 1px solid #3a2020; border-radius: 12px; padding: 12px 16px; font-size: 12px; color: #ff9090; display: none; font-weight: 600; }
-  .error-msg.visible { display: block; }
+/* SCAN PAGE */
+.upload-zone{margin:16px;border:2px dashed var(--border);border-radius:var(--radius);padding:32px 20px;text-align:center;background:var(--surface);}
+.upload-zone:hover{border-color:var(--accent);}
+.upload-icon{width:64px;height:64px;background:var(--accent-soft);border:2px solid rgba(255,123,53,0.25);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;font-size:26px;}
+.upload-zone h3{font-size:18px;font-weight:800;margin-bottom:6px;}
+.upload-zone p{font-size:12px;color:var(--muted2);font-weight:500;}
+.upload-buttons{display:flex;gap:10px;margin-top:16px;justify-content:center;}
+.upload-btn{flex:1;max-width:145px;padding:12px;border-radius:12px;border:none;font-family:'Nunito',sans-serif;font-size:13px;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;position:relative;overflow:hidden;}
+.upload-btn input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;font-size:0;}
+.upload-btn.camera{background:var(--accent);color:#fff;}
+.upload-btn.gallery{background:var(--surface2);color:var(--text);border:1px solid var(--border);}
 
-  /* LEDGER SECTIONS */
-  .collapsible-header { display: flex; align-items: center; justify-content: space-between; padding: 14px 20px 10px; cursor: pointer; user-select: none; }
-  .collapsible-header:hover .section-title-text { color: var(--accent); }
-  .section-title-text { font-size: 13px; font-weight: 800; color: var(--text); }
-  .section-count { font-size: 13px; font-weight: 700; color: var(--muted2); margin-left: 6px; }
-  .section-toggle { font-size: 11px; color: var(--muted); font-weight: 700; letter-spacing: 0.5px; }
-  .ledger { margin: 0 16px; display: flex; flex-direction: column; gap: 8px; margin-bottom: 8px; }
-  .ledger-item { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 13px 15px; display: flex; align-items: flex-start; gap: 12px; animation: slideUp 0.25s ease; cursor: pointer; transition: border-color 0.15s; }
-  .ledger-item:hover { border-color: var(--accent); }
-  .ledger-icon { width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0; background: var(--surface2); border: 1px solid var(--border); }
-  .ledger-info { flex: 1; min-width: 0; }
-  .ledger-vendor { font-size: 15px; font-weight: 800; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .ledger-meta { font-size: 11px; color: var(--muted2); margin-top: 3px; font-weight: 600; }
-  .ledger-right { text-align: right; flex-shrink: 0; }
-  .ledger-total { font-size: 16px; font-weight: 900; color: var(--accent); }
-  .ledger-tax { font-size: 10px; color: var(--muted); margin-top: 2px; font-weight: 600; }
-  .exported-badge { font-size: 9px; color: var(--blue); font-weight: 700; letter-spacing: 0.5px; margin-top: 3px; }
-  .empty-state { text-align: center; padding: 28px 20px; color: var(--muted2); font-size: 13px; line-height: 2; font-weight: 600; }
-  .empty-icon { font-size: 36px; margin-bottom: 10px; display: block; opacity: 0.5; }
-  .mark-paid-btn { background: var(--green-soft); color: var(--green); border: 1px solid rgba(74,222,128,0.3); border-radius: 8px; padding: 4px 10px; font-family: 'Nunito', sans-serif; font-size: 10px; font-weight: 800; cursor: pointer; transition: all 0.15s; }
-  .mark-paid-btn:hover { background: rgba(74,222,128,0.2); }
-  .re-export-btn { background: transparent; color: var(--muted2); border: 1px solid var(--border); border-radius: 8px; padding: 4px 10px; font-family: 'Nunito', sans-serif; font-size: 10px; font-weight: 700; cursor: pointer; }
+/* PROCESSING */
+.processing-card{margin:0 16px 16px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px;display:none;}
+.processing-card.visible{display:block;}
+.receipt-preview{width:100%;max-height:170px;object-fit:cover;border-radius:12px;margin-bottom:14px;}
+.analyzing-bar{background:var(--surface2);border-radius:100px;height:6px;overflow:hidden;margin-bottom:6px;}
+.analyzing-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--blue));border-radius:100px;width:0%;transition:width 0.4s ease;}
+.analyzing-label{font-size:11px;color:var(--muted2);display:flex;justify-content:space-between;font-weight:600;}
 
-  /* EXPORT BAR */
-  .export-bar { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 480px; background: var(--bg); border-top: 1px solid var(--border); z-index: 9; }
-  .export-bar-inner { padding: 10px 16px; display: flex; flex-direction: column; gap: 6px; }
-  .btn-export { width: 100%; padding: 14px; border-radius: 12px; border: none; background: var(--blue); color: #fff; font-family: 'Nunito', sans-serif; font-size: 15px; font-weight: 800; cursor: pointer; transition: all 0.15s; }
-  .btn-export:hover { background: #6aadff; }
-  .btn-export:disabled { background: var(--surface2); color: var(--muted); cursor: not-allowed; }
-  .google-status-mini { display: flex; align-items: center; gap: 8px; padding: 0 4px; }
-  .google-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--muted); flex-shrink: 0; }
-  .google-dot.connected { background: var(--green); }
-  .google-status-mini span { font-size: 11px; color: var(--muted); font-weight: 600; flex: 1; }
-  .google-mini-btn { font-size: 11px; font-weight: 800; color: var(--blue); background: transparent; border: none; cursor: pointer; font-family: 'Nunito', sans-serif; padding: 2px 6px; }
-  .google-mini-btn.reset { color: var(--muted); }
+/* RESULT CARD */
+.result-card{margin:0 16px 16px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;display:none;animation:slideUp 0.3s ease;}
+.result-card.visible{display:block;}
+@keyframes slideUp{from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:translateY(0);}}
+.result-header{background:var(--surface2);padding:13px 16px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);}
+.result-header h4{font-size:16px;font-weight:800;}
+.category-tag{font-size:11px;padding:4px 10px;border-radius:100px;background:var(--blue-soft);color:var(--blue);border:1px solid rgba(77,159,255,0.25);font-weight:700;}
+.fields{padding:12px 16px;display:grid;gap:8px;}
+.field-row{display:flex;align-items:center;gap:10px;}
+.field-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.6px;min-width:72px;font-weight:700;}
+.field-value{font-size:13px;color:var(--text);flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:9px;padding:8px 10px;font-family:'Nunito',sans-serif;font-weight:600;width:100%;}
+.field-value:focus{outline:none;border-color:var(--blue);}
+.amounts-section{padding:0 16px 14px;}
+.amounts-title{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.6px;margin-bottom:8px;font-weight:700;}
+.amounts-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:6px;}
+.amounts-grid-2{display:grid;grid-template-columns:1fr 1fr;gap:6px;}
+.amount-box{background:var(--surface2);border:1px solid var(--border);border-radius:11px;padding:10px 6px;text-align:center;}
+.amount-box.total{border-color:rgba(255,123,53,0.35);background:var(--accent-soft);}
+.amount-box label{display:block;font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;font-weight:700;}
+.amount-box input{width:100%;background:transparent;border:none;font-family:'Nunito',sans-serif;font-size:14px;font-weight:800;color:var(--text);text-align:center;padding:0;}
+.amount-box input:focus{outline:none;}
+.amount-box.total input{color:var(--accent);}
+.reimb-row{display:flex;align-items:center;gap:0;margin:0 16px 14px;background:var(--surface2);border:1px solid var(--border);border-radius:11px;overflow:hidden;}
+.reimb-opt{flex:1;padding:10px 6px;text-align:center;font-size:12px;font-weight:800;cursor:pointer;color:var(--muted2);transition:all 0.15s;}
+.reimb-opt.active.r{background:var(--green-soft);color:var(--green);}
+.reimb-opt.active.c{background:var(--blue-soft);color:var(--blue);}
+.action-row{padding:12px 16px;display:flex;gap:8px;border-top:1px solid var(--border);}
+.btn{flex:1;padding:12px;border-radius:11px;border:none;font-family:'Nunito',sans-serif;font-size:14px;font-weight:800;cursor:pointer;transition:all 0.15s;}
+.btn-primary{background:var(--accent);color:#fff;}
+.btn-primary:hover{background:#ff8f50;}
+.btn-ghost{background:transparent;color:var(--muted2);border:1px solid var(--border);}
+.btn-ghost:hover{border-color:var(--muted);color:var(--text);}
+.error-msg{margin:0 16px 16px;background:#1a0e0e;border:1px solid #3a2020;border-radius:11px;padding:10px 14px;font-size:12px;color:#ff9090;display:none;font-weight:600;}
+.error-msg.visible{display:block;}
 
-  /* TOAST */
-  .toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-80px); background: var(--accent); color: #fff; font-family: 'Nunito', sans-serif; font-weight: 800; font-size: 14px; padding: 12px 24px; border-radius: 100px; z-index: 100; transition: transform 0.3s ease; white-space: nowrap; }
-  .toast.show { transform: translateX(-50%) translateY(0); }
+/* LEDGER PAGE */
+.collapsible-header{display:flex;align-items:center;justify-content:space-between;padding:14px 20px 8px;cursor:pointer;user-select:none;}
+.collapsible-header:hover .section-title{color:var(--accent);}
+.section-title{font-size:13px;font-weight:800;}
+.section-count{font-size:13px;font-weight:700;color:var(--muted2);margin-left:6px;}
+.section-toggle{font-size:11px;color:var(--muted);font-weight:700;letter-spacing:0.5px;}
+.ledger-list{margin:0 16px;display:flex;flex-direction:column;gap:7px;margin-bottom:8px;}
+.ledger-item{background:var(--surface);border:1px solid var(--border);border-radius:13px;padding:12px 14px;display:flex;align-items:flex-start;gap:11px;cursor:pointer;transition:border-color 0.15s;animation:slideUp 0.25s ease;}
+.ledger-item:hover{border-color:var(--accent);}
+.ledger-icon{width:40px;height:40px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;background:var(--surface2);border:1px solid var(--border);}
+.ledger-info{flex:1;min-width:0;}
+.ledger-vendor{font-size:14px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.ledger-meta{font-size:10px;color:var(--muted2);margin-top:2px;font-weight:600;}
+.ledger-right{text-align:right;flex-shrink:0;}
+.ledger-total{font-size:15px;font-weight:900;color:var(--accent);}
+.ledger-tax{font-size:10px;color:var(--muted);margin-top:2px;font-weight:600;}
+.exported-badge{font-size:9px;color:var(--blue);font-weight:700;margin-top:3px;}
+.mark-paid-btn{background:var(--green-soft);color:var(--green);border:1px solid rgba(74,222,128,0.3);border-radius:7px;padding:4px 9px;font-family:'Nunito',sans-serif;font-size:10px;font-weight:800;cursor:pointer;}
+.re-export-btn{background:transparent;color:var(--muted2);border:1px solid var(--border);border-radius:7px;padding:4px 9px;font-family:'Nunito',sans-serif;font-size:10px;font-weight:700;cursor:pointer;}
 
-  /* MODALS */
-  .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 50; display: none; align-items: flex-end; justify-content: center; backdrop-filter: blur(4px); }
-  .modal-overlay.visible { display: flex; }
-  .modal { background: var(--surface); border: 1px solid var(--border); border-radius: 24px 24px 0 0; width: 100%; max-width: 480px; max-height: 90vh; overflow-y: auto; animation: slideUp 0.3s ease; padding-bottom: 32px; }
-  .cycle-modal { background: var(--surface); border: 1px solid var(--border); border-radius: 24px 24px 0 0; width: 100%; max-width: 480px; animation: slideUp 0.3s ease; padding-bottom: 32px; }
-  .modal-header { padding: 20px 18px 14px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border); position: sticky; top: 0; background: var(--surface); z-index: 1; }
-  .modal-header h3 { font-size: 18px; font-weight: 900; }
-  .modal-close { width: 32px; height: 32px; border-radius: 50%; background: var(--surface2); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 16px; color: var(--muted2); }
-  .modal-close:hover { border-color: #ff5c5c; color: #ff5c5c; }
-  .modal-category { display: flex; flex-wrap: wrap; gap: 6px; padding: 14px 18px; border-bottom: 1px solid var(--border); }
-  .modal-category-title { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.6px; font-weight: 700; width: 100%; margin-bottom: 2px; }
-  .cat-chip { font-size: 11px; padding: 5px 12px; border-radius: 100px; background: var(--surface2); color: var(--muted2); border: 1px solid var(--border); font-weight: 700; cursor: pointer; transition: all 0.15s; }
-  .cat-chip.active { background: var(--blue-soft); color: var(--blue); border-color: rgba(77,159,255,0.35); }
-  .modal-actions { padding: 16px 18px 0; display: flex; gap: 8px; }
-  .cycle-option { margin: 0 18px 10px; padding: 16px; border-radius: 14px; border: 2px solid var(--border); cursor: pointer; transition: all 0.15s; }
-  .cycle-option:hover { border-color: var(--blue); }
-  .cycle-option.selected { border-color: var(--blue); background: var(--blue-soft); }
-  .cycle-option h4 { font-size: 15px; font-weight: 800; margin-bottom: 4px; }
-  .cycle-option p { font-size: 12px; color: var(--muted2); font-weight: 600; }
+/* HISTORY */
+.history-summary{margin:14px 16px 0;display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.summary-box{background:var(--surface);border:1px solid var(--border);border-radius:13px;padding:14px 14px;}
+.summary-box.orange{border-color:rgba(255,123,53,0.3);background:var(--accent-soft);}
+.summary-box.green{border-color:rgba(74,222,128,0.3);background:var(--green-soft);}
+.sum-label{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:0.7px;font-weight:700;margin-bottom:5px;}
+.sum-amount{font-size:22px;font-weight:900;}
+.summary-box.orange .sum-amount{color:var(--accent);}
+.summary-box.green .sum-amount{color:var(--green);}
+.sum-count{font-size:10px;color:var(--muted2);font-weight:600;margin-top:2px;}
+.period-group{margin:10px 16px 0;}
+.period-header{display:flex;align-items:center;justify-content:space-between;padding:11px 14px;background:var(--surface);border:1px solid var(--border);border-radius:11px;cursor:pointer;margin-bottom:5px;}
+.period-header h4{font-size:13px;font-weight:800;}
+.period-meta-text{font-size:10px;color:var(--muted2);font-weight:600;margin-top:2px;}
+.period-total{font-size:14px;font-weight:900;}
+.period-toggle{font-size:10px;color:var(--muted);font-weight:700;margin-top:2px;}
+.period-items{display:flex;flex-direction:column;gap:5px;margin-bottom:6px;}
+.history-item{background:var(--surface);border:1px solid var(--border);border-radius:11px;padding:11px 13px;display:flex;align-items:center;gap:10px;cursor:pointer;}
+.history-item:hover{border-color:var(--accent);}
 
-  /* HISTORY PAGE */
-  .history-page { position: fixed; inset: 0; background: var(--bg); z-index: 40; max-width: 480px; margin: 0 auto; overflow-y: auto; transform: translateX(100%); transition: transform 0.3s ease; padding-bottom: 40px; }
-  .history-page.visible { transform: translateX(0); }
-  .history-header { padding: 18px 20px 14px; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid var(--border); position: sticky; top: 0; background: var(--bg); z-index: 1; }
-  .history-back { width: 36px; height: 36px; border-radius: 10px; background: var(--surface2); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 18px; }
-  .history-back:hover { border-color: var(--accent); }
-  .history-title { font-size: 18px; font-weight: 900; }
-  .history-summary { margin: 16px 16px 0; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-  .summary-box { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 14px 16px; }
-  .summary-box.pending-box { border-color: rgba(255,123,53,0.3); background: var(--accent-soft); }
-  .summary-box.paid-box { border-color: rgba(74,222,128,0.3); background: var(--green-soft); }
-  .summary-label { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.6px; font-weight: 700; margin-bottom: 6px; }
-  .summary-amount { font-size: 22px; font-weight: 900; }
-  .summary-box.pending-box .summary-amount { color: var(--accent); }
-  .summary-box.paid-box .summary-amount { color: var(--green); }
-  .summary-count { font-size: 11px; color: var(--muted2); font-weight: 600; margin-top: 2px; }
-  .period-group { margin: 12px 16px 0; }
-  .period-header { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; cursor: pointer; margin-bottom: 6px; }
-  .period-header h4 { font-size: 14px; font-weight: 800; }
-  .period-meta { font-size: 11px; color: var(--muted2); font-weight: 600; margin-top: 2px; }
-  .period-total { font-size: 15px; font-weight: 900; }
-  .period-items { display: flex; flex-direction: column; gap: 6px; margin-bottom: 8px; }
+/* SETTINGS */
+.settings-section{margin:14px 16px 0;}
+.settings-section-title{font-size:11px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;}
+.settings-card{background:var(--surface);border:1px solid var(--border);border-radius:13px;overflow:hidden;margin-bottom:12px;}
+.settings-input-wrap{padding:11px 14px;border-bottom:1px solid var(--border);}
+.settings-input-wrap:last-child{border-bottom:none;}
+.settings-input-label{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.6px;margin-bottom:5px;}
+.settings-input{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:9px;padding:9px 11px;font-family:'Nunito',sans-serif;font-size:13px;font-weight:600;color:var(--text);outline:none;}
+.settings-input:focus{border-color:var(--blue);}
+.gl-tags{padding:10px 14px 6px;border-bottom:1px solid var(--border);display:flex;flex-wrap:wrap;gap:5px;}
+.gl-tag{display:inline-flex;align-items:center;gap:5px;background:var(--surface2);border:1px solid var(--border);border-radius:100px;padding:4px 10px 4px 11px;font-size:11px;font-weight:700;}
+.gl-remove{width:15px;height:15px;border-radius:50%;background:var(--border);border:none;cursor:pointer;font-size:10px;color:var(--muted2);padding:0;display:flex;align-items:center;justify-content:center;}
+.gl-remove:hover{background:#ff5c5c;color:#fff;}
+.gl-add-row{display:flex;gap:7px;padding:9px 14px;}
 
-  /* HISTORY ITEM */
-  .history-item { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 12px 14px; display: flex; align-items: flex-start; gap: 10px; cursor: pointer; }
-  .history-item:hover { border-color: var(--accent); }
-  .history-icon { width: 38px; height: 38px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; background: var(--surface2); border: 1px solid var(--border); }
-  .paid-badge { font-size: 10px; color: var(--green); font-weight: 700; margin-top: 3px; }
+/* DETAIL MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:50;display:none;align-items:flex-end;justify-content:center;backdrop-filter:blur(4px);}
+.modal-overlay.visible{display:flex;}
+.modal{background:var(--surface);border:1px solid var(--border);border-radius:22px 22px 0 0;width:100%;max-width:480px;max-height:90vh;overflow-y:auto;animation:slideUp 0.3s ease;padding-bottom:28px;}
+.modal-header{padding:18px 16px 12px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);position:sticky;top:0;background:var(--surface);z-index:1;}
+.modal-header h3{font-size:17px;font-weight:900;}
+.modal-close{width:30px;height:30px;border-radius:50%;background:var(--surface2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:15px;color:var(--muted2);}
+.modal-close:hover{border-color:#ff5c5c;color:#ff5c5c;}
+.detail-image{width:100%;max-height:220px;object-fit:contain;border-radius:11px;border:1px solid var(--border);background:var(--surface2);}
+.detail-row{display:flex;justify-content:space-between;align-items:center;padding:10px 16px;border-bottom:1px solid var(--border);}
+.detail-row:last-child{border-bottom:none;}
+.detail-label{font-size:11px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:0.5px;}
+.detail-value{font-size:13px;font-weight:700;text-align:right;}
+.detail-total{font-size:17px;font-weight:900;color:var(--accent);}
+.modal-actions{padding:14px 16px 0;display:flex;gap:8px;}
+.modal-category{display:flex;flex-wrap:wrap;gap:5px;padding:12px 16px;border-bottom:1px solid var(--border);}
+.modal-category-title{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:0.6px;font-weight:700;width:100%;margin-bottom:2px;}
+.cat-chip{font-size:11px;padding:5px 11px;border-radius:100px;background:var(--surface2);color:var(--muted2);border:1px solid var(--border);font-weight:700;cursor:pointer;}
+.cat-chip.active{background:var(--blue-soft);color:var(--blue);border-color:rgba(77,159,255,0.35);}
 
-  /* SETTINGS PAGE */
-  .settings-page { position: fixed; inset: 0; background: var(--bg); z-index: 40; max-width: 480px; margin: 0 auto; overflow-y: auto; transform: translateX(100%); transition: transform 0.3s ease; padding-bottom: 40px; }
-  .settings-page.visible { transform: translateX(0); }
-  .settings-header { padding: 18px 20px 14px; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid var(--border); position: sticky; top: 0; background: var(--bg); z-index: 1; }
-  .settings-back { width: 36px; height: 36px; border-radius: 10px; background: var(--surface2); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 18px; }
-  .settings-back:hover { border-color: var(--accent); }
-  .settings-section { margin: 16px 16px 0; }
-  .settings-section-title { font-size: 11px; font-weight: 800; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; }
-  .settings-card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; margin-bottom: 12px; }
-  .settings-row { padding: 14px 16px; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid var(--border); }
-  .settings-row:last-child { border-bottom: none; }
-  .settings-label { font-size: 13px; font-weight: 700; flex: 1; }
-  .settings-sublabel { font-size: 11px; color: var(--muted2); font-weight: 600; margin-top: 2px; }
-  .settings-input { width: 100%; background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; padding: 10px 12px; font-family: 'Nunito', sans-serif; font-size: 14px; font-weight: 600; color: var(--text); outline: none; transition: border-color 0.15s; }
-  .settings-input:focus { border-color: var(--blue); }
-  .settings-input-wrap { padding: 12px 16px; border-bottom: 1px solid var(--border); }
-  .settings-input-wrap:last-child { border-bottom: none; }
-  .settings-input-label { font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 6px; }
-  .gl-tag { display: inline-flex; align-items: center; gap: 6px; background: var(--surface2); border: 1px solid var(--border); border-radius: 100px; padding: 5px 10px 5px 12px; font-size: 12px; font-weight: 700; margin: 3px; }
-  .gl-tag-remove { width: 16px; height: 16px; border-radius: 50%; background: var(--border); border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 10px; color: var(--muted2); padding: 0; }
-  .gl-tag-remove:hover { background: #ff5c5c; color: #fff; }
-  .gl-add-row { display: flex; gap: 8px; padding: 10px 16px; }
-  .setup-overlay { position: fixed; inset: 0; background: var(--bg); z-index: 60; max-width: 480px; margin: 0 auto; overflow-y: auto; display: none; padding-bottom: 40px; }
-  .setup-overlay.visible { display: block; }
-  /* REIMBURSABLE TOGGLE */
-  .reimb-toggle-row { display: flex; align-items: center; gap: 0; margin: 0 18px 16px; background: var(--surface2); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
-  .reimb-option { flex: 1; padding: 11px 8px; text-align: center; font-size: 12px; font-weight: 800; cursor: pointer; transition: all 0.15s; color: var(--muted2); }
-  .reimb-option.active.reimbursable { background: var(--green-soft); color: var(--green); border-color: var(--green); }
-  .reimb-option.active.company { background: var(--blue-soft); color: var(--blue); }
-  .detail-image { width: 100%; max-height: 240px; object-fit: contain; border-radius: 12px; border: 1px solid var(--border); background: var(--surface2); margin-bottom: 4px; }
-  .detail-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 18px; border-bottom: 1px solid var(--border); }
-  .detail-row:last-child { border-bottom: none; }
-  .detail-label { font-size: 11px; color: var(--muted); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
-  .detail-value { font-size: 13px; font-weight: 700; color: var(--text); text-align: right; }
-  .detail-total { font-size: 18px; font-weight: 900; color: var(--accent); }
+/* EXPORT BAR */
+.export-bar{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;background:var(--bg);border-top:1px solid var(--border);z-index:9;padding:10px 16px;}
+.btn-export{width:100%;padding:13px;border-radius:12px;border:none;background:var(--blue);color:#fff;font-family:'Nunito',sans-serif;font-size:14px;font-weight:800;cursor:pointer;transition:all 0.15s;margin-bottom:6px;}
+.btn-export:hover{background:#6aadff;}
+.btn-export:disabled{background:var(--surface2);color:var(--muted);cursor:not-allowed;}
+.google-mini{display:flex;align-items:center;gap:7px;}
+.g-dot{width:6px;height:6px;border-radius:50%;background:var(--muted);flex-shrink:0;}
+.g-dot.on{background:var(--green);}
+.g-text{font-size:10px;color:var(--muted);font-weight:600;flex:1;}
+.g-btn{font-size:11px;font-weight:800;color:var(--blue);background:transparent;border:none;cursor:pointer;font-family:'Nunito',sans-serif;padding:2px 5px;}
+.g-btn.reset{color:var(--muted);}
+
+/* SETUP OVERLAY */
+.setup-overlay{position:fixed;inset:0;background:var(--bg);z-index:60;max-width:480px;margin:0 auto;overflow-y:auto;display:none;padding-bottom:40px;}
+.setup-overlay.visible{display:block;}
+
+/* CYCLE MODAL */
+.cycle-modal{background:var(--surface);border:1px solid var(--border);border-radius:22px 22px 0 0;width:100%;max-width:480px;animation:slideUp 0.3s ease;padding-bottom:28px;}
+.cycle-option{margin:0 16px 8px;padding:14px;border-radius:13px;border:2px solid var(--border);cursor:pointer;transition:all 0.15s;}
+.cycle-option:hover{border-color:var(--blue);}
+.cycle-option.selected{border-color:var(--blue);background:var(--blue-soft);}
+.cycle-option h4{font-size:14px;font-weight:800;margin-bottom:3px;}
+.cycle-option p{font-size:11px;color:var(--muted2);font-weight:600;}
+
+/* TOAST */
+.toast{position:fixed;top:20px;left:50%;transform:translateX(-50%) translateY(-80px);background:var(--accent);color:#fff;font-family:'Nunito',sans-serif;font-weight:800;font-size:13px;padding:11px 22px;border-radius:100px;z-index:100;transition:transform 0.3s ease;white-space:nowrap;}
+.toast.show{transform:translateX(-50%) translateY(0);}
 </style>
 </head>
 <body>
 
 <header>
-  <div class="logo-wrap">
-    <div class="logo-icon" onclick="openSettings()" style="cursor:pointer;" title="Settings">🧾</div>
+  <div class="logo-wrap" onclick="goHome()">
+    <div class="logo-icon">🧾</div>
     <div>
       <div class="logo-text">Skr<span>u</span>nchi</div>
       <div class="tagline">Snap it. Skrunchi it. Done.</div>
     </div>
   </div>
-  <div style="display:flex;align-items:center;gap:8px;">
-    <div class="total-pill" id="totalPill" onclick="openHistory()">$0.00 pending</div>
-    <div onclick="openSettings()" style="width:32px;height:32px;border-radius:10px;background:var(--surface2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px;flex-shrink:0;" title="Settings">⚙️</div>
+  <div class="header-right">
+    <div class="total-pill" id="totalPill" onclick="showPage('history')">$0.00 pending</div>
+    <div class="gear-btn" onclick="showPage('settings')">⚙️</div>
   </div>
 </header>
 
-<!-- FIRST TIME SETUP OVERLAY -->
+<!-- SETUP OVERLAY -->
 <div class="setup-overlay" id="setupOverlay">
   <div style="padding:40px 20px 20px;">
-    <div style="text-align:center;margin-bottom:32px;">
-      <div style="font-size:48px;margin-bottom:12px;">🧾</div>
-      <div style="font-size:26px;font-weight:900;">Welcome to Skrunchi</div>
-      <div style="font-size:13px;color:var(--muted2);font-weight:600;margin-top:6px;">Set up your account before you start scanning</div>
+    <div style="text-align:center;margin-bottom:28px;">
+      <div style="font-size:52px;margin-bottom:12px;">🧾</div>
+      <div style="font-size:24px;font-weight:900;">Welcome to Skrunchi</div>
+      <div style="font-size:13px;color:var(--muted2);font-weight:600;margin-top:6px;line-height:1.6;">Set up your account to start scanning</div>
     </div>
-    <div style="background:var(--surface);border:1px solid var(--border);border-radius:14px;overflow:hidden;margin-bottom:16px;">
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:13px;overflow:hidden;margin-bottom:14px;">
       <div class="settings-input-wrap">
         <div class="settings-input-label">Your Name</div>
         <input class="settings-input" id="setupName" type="text" placeholder="e.g. Rebecca Smith">
       </div>
       <div class="settings-input-wrap">
         <div class="settings-input-label">Company Google Sheet URL</div>
-        <input class="settings-input" id="setupSheetUrl" type="url" placeholder="Paste the shared Google Sheet link here">
-        <div style="font-size:11px;color:var(--muted);font-weight:600;margin-top:6px;">Your admin will send you this link. Leave blank if you are the admin — you can set it up later in Settings.</div>
+        <input class="settings-input" id="setupSheetUrl" type="url" placeholder="Paste your company sheet link here">
+        <div style="font-size:11px;color:var(--muted);font-weight:600;margin-top:5px;line-height:1.5;">Your admin will send you this link. You can also add it later in Settings.</div>
       </div>
     </div>
-    <button class="btn btn-primary" onclick="completeSetup()" style="width:100%;padding:16px;font-size:16px;">Get Started</button>
+    <button class="btn btn-primary" onclick="completeSetup()" style="width:100%;padding:15px;font-size:15px;">Get Started</button>
   </div>
 </div>
 
-<!-- SETTINGS PAGE -->
-<div class="settings-page" id="settingsPage">
-  <div class="settings-header">
-    <div class="settings-back" onclick="closeSettings()">←</div>
-    <div style="font-size:18px;font-weight:900;">Settings</div>
+<!-- DASHBOARD PAGE -->
+<div class="page active" id="page-dashboard">
+  <div class="dash-greeting" id="dashGreeting">Hey there 👋</div>
+  <div class="dash-stats">
+    <div class="stat-card orange">
+      <div class="stat-label">Pending Reimbursement</div>
+      <div class="stat-value" id="dashPendingAmt">$0.00</div>
+      <div class="stat-sub" id="dashPendingSub">0 receipts</div>
+    </div>
+    <div class="stat-card blue">
+      <div class="stat-label">Ready to Export</div>
+      <div class="stat-value" id="dashExportCount">0</div>
+      <div class="stat-sub" id="dashExportSub">receipts</div>
+    </div>
   </div>
+  <button class="snap-btn" onclick="showPage('scan')">📷 &nbsp; Snap a Receipt</button>
+  <div class="dash-section-label">Recent Receipts</div>
+  <div id="dashReceipts">
+    <div class="dash-empty"><span class="dash-empty-icon">🧾</span>No receipts yet.<br>Tap Snap a Receipt to get started!</div>
+  </div>
+</div>
 
+<!-- SCAN PAGE -->
+<div class="page" id="page-scan">
+  <div style="padding:12px 16px 0;display:flex;align-items:center;gap:10px;">
+    <div class="back-btn" onclick="goHome()">←</div>
+    <div style="font-size:16px;font-weight:900;">New Receipt</div>
+  </div>
+  <div style="height:10px;"></div>
+  <div class="upload-zone" id="uploadZone">
+    <div class="upload-icon">📷</div>
+    <h3>Snap a Receipt</h3>
+    <p>Skrunchi reads vendor, taxes, tip — everything.</p>
+    <div class="upload-buttons">
+      <label class="upload-btn camera">📷 Take Photo<input type="file" accept="image/*" capture="environment" id="fileInputCamera"></label>
+      <label class="upload-btn gallery">🖼️ Choose Photo<input type="file" accept="image/*" id="fileInputGallery"></label>
+    </div>
+  </div>
+  <div class="processing-card" id="processingCard">
+    <img id="receiptPreview" class="receipt-preview" src="" alt="Receipt">
+    <div class="analyzing-bar"><div class="analyzing-fill" id="analyzingFill"></div></div>
+    <div class="analyzing-label"><span id="analyzingLabel">Reading receipt...</span><span id="analyzingPct">0%</span></div>
+  </div>
+  <div class="error-msg" id="errorMsg"></div>
+  <div class="result-card" id="resultCard">
+    <div class="result-header">
+      <h4 id="resultVendor">—</h4>
+      <div class="category-tag" id="resultCategory">—</div>
+    </div>
+    <div class="fields">
+      <div class="field-row"><span class="field-label">Date</span><input class="field-value" id="fieldDate" type="text" placeholder="YYYY-MM-DD"></div>
+      <div class="field-row"><span class="field-label">Payment</span><input class="field-value" id="fieldPayment" type="text" placeholder="e.g. Visa, Cash"></div>
+      <div class="field-row"><span class="field-label">Notes</span><input class="field-value" id="fieldNotes" type="text" placeholder="Optional"></div>
+    </div>
+    <div class="amounts-section">
+      <div class="amounts-title">Amounts</div>
+      <div class="amounts-grid">
+        <div class="amount-box"><label>Subtotal</label><input id="amtSubtotal" type="text" placeholder="$0.00"></div>
+        <div class="amount-box"><label>GST/HST</label><input id="amtGST" type="text" placeholder="$0.00"></div>
+        <div class="amount-box"><label>PST</label><input id="amtPST" type="text" placeholder="$0.00"></div>
+      </div>
+      <div class="amounts-grid-2">
+        <div class="amount-box"><label>Tip</label><input id="amtTip" type="text" placeholder="$0.00"></div>
+        <div class="amount-box total"><label>Total</label><input id="amtTotal" type="text" placeholder="$0.00"></div>
+      </div>
+    </div>
+    <div class="reimb-row">
+      <div class="reimb-opt r active" id="reimbPersonal" onclick="setReimbursable(true)">💳 Reimbursable</div>
+      <div class="reimb-opt c" id="reimbCompany" onclick="setReimbursable(false)">🏢 Company Card</div>
+    </div>
+    <div class="action-row">
+      <button class="btn btn-ghost" onclick="discardReceipt()">Discard</button>
+      <button class="btn btn-primary" onclick="saveReceipt()">Save to Ledger</button>
+    </div>
+  </div>
+</div>
+
+<!-- LEDGER PAGE -->
+<div class="page" id="page-ledger">
+  <div style="padding:12px 16px 0;display:flex;align-items:center;gap:10px;">
+    <div class="back-btn" onclick="goHome()">←</div>
+    <div style="font-size:16px;font-weight:900;">All Receipts</div>
+  </div>
+  <div id="pendingSection">
+    <div class="collapsible-header" onclick="toggleSection('pending')">
+      <div style="display:flex;align-items:center;"><span class="section-title">Ready to Export</span><span class="section-count" id="pendingCount">(0)</span></div>
+      <span class="section-toggle" id="pendingToggle">HIDE</span>
+    </div>
+    <div class="ledger-list" id="pendingList">
+      <div style="text-align:center;padding:20px;color:var(--muted2);font-size:13px;font-weight:600;" id="emptyState">No receipts yet.</div>
+    </div>
+  </div>
+  <div id="exportedSection" style="display:none;">
+    <div class="collapsible-header" onclick="toggleSection('exported')">
+      <div style="display:flex;align-items:center;"><span class="section-title">Exported — Awaiting Payment</span><span class="section-count" id="exportedCount">(0)</span></div>
+      <span class="section-toggle" id="exportedToggle">SHOW</span>
+    </div>
+    <div class="ledger-list" id="exportedList" style="display:none;"></div>
+  </div>
+</div>
+
+<!-- HISTORY PAGE -->
+<div class="slide-page" id="page-history">
+  <div class="page-header">
+    <div class="back-btn" onclick="hideSlidePage('history')">←</div>
+    <div class="page-title">Expense History</div>
+  </div>
+  <div class="history-summary">
+    <div class="summary-box orange"><div class="sum-label">Awaiting Reimbursement</div><div class="sum-amount" id="histAwaitAmt">$0.00</div><div class="sum-count" id="histAwaitCount">0 receipts</div></div>
+    <div class="summary-box green"><div class="sum-label">Total Paid Back</div><div class="sum-amount" id="histPaidAmt">$0.00</div><div class="sum-count" id="histPaidCount">0 receipts</div></div>
+  </div>
+  <div id="historyContent" style="margin-top:6px;"></div>
+</div>
+
+<!-- SETTINGS PAGE -->
+<div class="slide-page" id="page-settings">
+  <div class="page-header">
+    <div class="back-btn" onclick="hideSlidePage('settings')">←</div>
+    <div class="page-title">Settings</div>
+  </div>
   <div class="settings-section">
     <div class="settings-section-title">Your Profile</div>
     <div class="settings-card">
@@ -262,222 +404,54 @@
       </div>
     </div>
   </div>
-
   <div class="settings-section">
     <div class="settings-section-title">Company Google Sheet</div>
     <div class="settings-card">
       <div class="settings-input-wrap">
         <div class="settings-input-label">Shared Sheet URL</div>
         <input class="settings-input" id="settingsSheetUrl" type="url" placeholder="Paste company Google Sheet link">
-        <div style="font-size:11px;color:var(--muted);font-weight:600;margin-top:6px;">All your exports will go to this sheet automatically.</div>
+        <div style="font-size:11px;color:var(--muted);font-weight:600;margin-top:5px;line-height:1.5;">All exports go to this sheet automatically.</div>
       </div>
     </div>
   </div>
-
   <div class="settings-section">
     <div class="settings-section-title">GL Account Categories</div>
     <div class="settings-card">
-      <div style="padding:12px 16px;border-bottom:1px solid var(--border);">
-        <div style="font-size:12px;color:var(--muted2);font-weight:600;margin-bottom:10px;">Your categories — tap × to remove</div>
-        <div id="glTagsContainer"></div>
-      </div>
+      <div class="gl-tags" id="glTagsContainer"></div>
       <div class="gl-add-row">
-        <input class="settings-input" id="glNewCategory" type="text" placeholder="Add a custom category..." style="flex:1;">
-        <button onclick="addGLCategory()" style="background:var(--accent);color:#fff;border:none;border-radius:10px;padding:10px 16px;font-family:Nunito,sans-serif;font-size:13px;font-weight:800;cursor:pointer;">Add</button>
+        <input class="settings-input" id="glNewCat" type="text" placeholder="Add a custom category..." style="flex:1;">
+        <button onclick="addGLCategory()" style="background:var(--accent);color:#fff;border:none;border-radius:9px;padding:9px 14px;font-family:'Nunito',sans-serif;font-size:13px;font-weight:800;cursor:pointer;">Add</button>
       </div>
     </div>
   </div>
-
   <div class="settings-section">
-    <button onclick="saveSettings()" class="btn btn-primary" style="width:100%;padding:14px;">Save Settings</button>
-  </div>
-</div>
-
-<!-- HISTORY PAGE -->
-<div class="history-page" id="historyPage">
-  <div class="history-header">
-    <div class="history-back" onclick="closeHistory()">←</div>
-    <div class="history-title">Expense History</div>
-  </div>
-  <div class="history-summary">
-    <div class="summary-box pending-box">
-      <div class="summary-label">Awaiting Reimbursement</div>
-      <div class="summary-amount" id="histPendingAmt">$0.00</div>
-      <div class="summary-count" id="histPendingCount">0 receipts</div>
-    </div>
-    <div class="summary-box paid-box">
-      <div class="summary-label">Total Paid Back</div>
-      <div class="summary-amount" id="histPaidAmt">$0.00</div>
-      <div class="summary-count" id="histPaidCount">0 receipts</div>
-    </div>
-  </div>
-  <div id="historyContent" style="margin-top:4px;"></div>
-</div>
-
-<!-- RECEIPT DETAIL MODAL (for history) -->
-<div class="modal-overlay" id="detailModal">
-  <div class="modal">
-    <div class="modal-header">
-      <h3 id="detailVendor">Receipt</h3>
-      <div class="modal-close" onclick="closeDetail()">✕</div>
-    </div>
-    <div style="padding:14px 18px 0;" id="detailImageWrap">
-      <img id="detailImage" src="" alt="Receipt" class="detail-image">
-    </div>
-    <div id="detailFields"></div>
-    <div class="modal-actions" id="detailActions"></div>
-  </div>
-</div>
-
-<div class="upload-zone" id="uploadZone">
-  <div class="upload-icon">📷</div>
-  <h3>Snap a Receipt</h3>
-  <p>Skrunchi reads vendor, taxes, tip — everything.</p>
-  <div class="upload-buttons">
-    <label class="upload-btn camera">
-      📷 Take Photo
-      <input type="file" accept="image/*" capture="environment" id="fileInputCamera">
-    </label>
-    <label class="upload-btn gallery">
-      🖼️ Choose Photo
-      <input type="file" accept="image/*" id="fileInputGallery">
-    </label>
-  </div>
-</div>
-
-<div class="processing-card" id="processingCard">
-  <img id="receiptPreview" class="receipt-preview" src="" alt="Receipt">
-  <div class="analyzing-bar"><div class="analyzing-fill" id="analyzingFill"></div></div>
-  <div class="analyzing-label"><span id="analyzingLabel">Reading receipt...</span><span id="analyzingPct">0%</span></div>
-</div>
-
-<div class="error-msg" id="errorMsg"></div>
-
-<div class="result-card" id="resultCard">
-  <div class="result-header">
-    <h4 id="resultVendor">—</h4>
-    <div class="category-tag" id="resultCategory">—</div>
-  </div>
-  <div class="fields">
-    <div class="field-row"><span class="field-label">Date</span><input class="field-value" id="fieldDate" type="text" placeholder="YYYY-MM-DD"></div>
-    <div class="field-row"><span class="field-label">Payment</span><input class="field-value" id="fieldPayment" type="text" placeholder="e.g. Visa, Cash"></div>
-    <div class="field-row"><span class="field-label">Notes</span><input class="field-value" id="fieldNotes" type="text" placeholder="Optional description"></div>
-  </div>
-  <div class="amounts-section">
-    <div class="amounts-title">Amounts</div>
-    <div class="amounts-grid">
-      <div class="amount-box"><label>Subtotal</label><input id="amtSubtotal" type="text" placeholder="$0.00"></div>
-      <div class="amount-box"><label>GST / HST</label><input id="amtGST" type="text" placeholder="$0.00"></div>
-      <div class="amount-box"><label>PST</label><input id="amtPST" type="text" placeholder="$0.00"></div>
-    </div>
-    <div class="amounts-grid-2">
-      <div class="amount-box"><label>Tip</label><input id="amtTip" type="text" placeholder="$0.00"></div>
-      <div class="amount-box total"><label>Total</label><input id="amtTotal" type="text" placeholder="$0.00"></div>
-    </div>
-  </div>
-  <div class="reimb-toggle-row">
-    <div class="reimb-option reimbursable active" id="reimbTogglePersonal" onclick="setReimbursable(true)">
-      💳 Reimbursable
-    </div>
-    <div class="reimb-option company" id="reimbToggleCompany" onclick="setReimbursable(false)">
-      🏢 Company Card
-    </div>
-  </div>
-  <div class="action-row">
-    <button class="btn btn-ghost" onclick="discardReceipt()">Discard</button>
-    <button class="btn btn-primary" onclick="saveReceipt()">Save to Ledger</button>
-  </div>
-</div>
-
-<!-- READY TO EXPORT SECTION -->
-<div id="pendingSection">
-  <div class="collapsible-header" onclick="toggleSection('pending')">
-    <div style="display:flex;align-items:center;">
-      <span class="section-title-text">Ready to Export</span>
-      <span class="section-count" id="pendingCount">(0)</span>
-    </div>
-    <span class="section-toggle" id="pendingToggle">HIDE</span>
-  </div>
-  <div id="pendingList" class="ledger">
-    <div class="empty-state" id="emptyState"><span class="empty-icon">🧾</span>No receipts yet.<br>Snap your first one above!</div>
-  </div>
-</div>
-
-<!-- EXPORTED SECTION -->
-<div id="exportedSection" style="display:none;">
-  <div class="collapsible-header" onclick="toggleSection('exported')">
-    <div style="display:flex;align-items:center;">
-      <span class="section-title-text">Exported — Awaiting Payment</span>
-      <span class="section-count" id="exportedCount">(0)</span>
-    </div>
-    <span class="section-toggle" id="exportedToggle">SHOW</span>
-  </div>
-  <div id="exportedList" class="ledger" style="display:none;"></div>
-</div>
-
-<!-- EXPORT BAR (bottom) -->
-<div class="export-bar">
-  <div class="export-bar-inner">
-    <button class="btn-export" id="exportBtn" disabled onclick="startExport()">📊 Export to Google Sheets</button>
-    <div class="google-status-mini" id="googleStatusMini">
-      <div class="google-dot" id="googleDot"></div>
-      <span id="googleStatusText">Not connected to Google</span>
-      <button class="google-mini-btn" id="googleConnectBtn" onclick="connectGoogle()">Connect</button>
-      <button class="google-mini-btn reset" id="resetSheetBtn" onclick="resetSheet()" style="display:none;">Reset</button>
-    </div>
-  </div>
-</div>
-
-<div class="toast" id="toast"></div>
-
-<!-- CYCLE SETUP MODAL -->
-<div class="modal-overlay" id="cycleModal">
-  <div class="cycle-modal">
-    <div class="modal-header"><h3>Set Up Your Accounting Cycle</h3></div>
-    <p style="padding:14px 18px 10px;font-size:13px;color:var(--muted2);font-weight:600;">Choose how your accounting periods work. Set once, remembered forever.</p>
-    <div class="cycle-option selected" id="cycleMonthly" onclick="selectCycle('monthly')">
-      <h4>📅 Calendar Month</h4><p>May 1 – May 31, June 1 – June 30...</p>
-    </div>
-    <div class="cycle-option" id="cycleMidMonth" onclick="selectCycle('midmonth')">
-      <h4>📅 Mid-Month to Mid-Month</h4><p>May 15 – June 14, June 15 – July 14...</p>
-    </div>
-    <div class="cycle-option" id="cycleCustom" onclick="selectCycle('custom')">
-      <h4>📅 Custom Date Range</h4><p>Set your own start and end day</p>
-    </div>
-    <div id="customDayFields" style="display:none;padding:0 18px;flex-direction:column;gap:10px;">
-      <div style="display:flex;gap:10px;margin-top:8px;">
-        <div style="flex:1;"><label style="font-size:11px;color:var(--muted);font-weight:700;display:block;margin-bottom:6px;">Start Day</label><input id="customStartDay" type="number" min="1" max="28" placeholder="e.g. 20" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:10px 12px;font-family:Nunito,sans-serif;font-size:15px;font-weight:700;color:var(--text);outline:none;"></div>
-        <div style="flex:1;"><label style="font-size:11px;color:var(--muted);font-weight:700;display:block;margin-bottom:6px;">End Day</label><input id="customEndDay" type="number" min="1" max="28" placeholder="e.g. 19" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:10px 12px;font-family:Nunito,sans-serif;font-size:15px;font-weight:700;color:var(--text);outline:none;"></div>
+    <div class="settings-section-title">Google Sheets Connection</div>
+    <div class="settings-card">
+      <div class="settings-input-wrap" style="display:flex;align-items:center;justify-content:space-between;">
+        <div>
+          <div class="settings-input-label">Status</div>
+          <div style="font-size:13px;font-weight:700;" id="settingsGoogleStatus">Not connected</div>
+        </div>
+        <button id="settingsGoogleBtn" onclick="connectGoogle()" style="background:var(--blue);color:#fff;border:none;border-radius:9px;padding:9px 14px;font-family:'Nunito',sans-serif;font-size:12px;font-weight:800;cursor:pointer;">Connect</button>
       </div>
-      <p style="font-size:11px;color:var(--muted2);font-weight:600;padding-bottom:8px;">e.g. Start 20, End 19 means May 20 to June 19</p>
+      <div class="settings-input-wrap" id="resetSheetRow" style="display:none;">
+        <button onclick="resetSheet()" style="background:transparent;color:var(--muted2);border:1px solid var(--border);border-radius:9px;padding:8px 14px;font-family:'Nunito',sans-serif;font-size:12px;font-weight:700;cursor:pointer;width:100%;">Reset Sheet Connection</button>
+      </div>
     </div>
-    <div style="padding:16px 18px 0;"><button class="btn btn-primary" onclick="saveCycle()" style="width:100%;">Save & Continue</button></div>
+  </div>
+  <div class="settings-section">
+    <button onclick="saveSettings()" class="btn btn-primary" style="width:100%;padding:13px;">Save Settings</button>
   </div>
 </div>
 
 <!-- EDIT MODAL -->
 <div class="modal-overlay" id="editModal">
   <div class="modal">
-    <div class="modal-header">
-      <h3>Edit Receipt</h3>
-      <div class="modal-close" onclick="closeEdit()">✕</div>
-    </div>
-    <div id="editImageWrap" style="padding:14px 18px 0;display:none;">
-      <img id="editImage" src="" alt="Receipt" style="width:100%;max-height:220px;object-fit:contain;border-radius:12px;border:1px solid var(--border);background:var(--surface2);">
-    </div>
+    <div class="modal-header"><h3>Edit Receipt</h3><div class="modal-close" onclick="closeEdit()">✕</div></div>
+    <div id="editImageWrap" style="padding:12px 16px 0;display:none;"><img id="editImage" src="" alt="Receipt" style="width:100%;max-height:200px;object-fit:contain;border-radius:11px;border:1px solid var(--border);background:var(--surface2);"></div>
     <div class="modal-category">
       <div class="modal-category-title">Category</div>
-      <div class="cat-chip" onclick="selectCat(this,'Meals & Entertainment')">🍽️ Meals</div>
-      <div class="cat-chip" onclick="selectCat(this,'Travel')">✈️ Travel</div>
-      <div class="cat-chip" onclick="selectCat(this,'Office Supplies')">📎 Office</div>
-      <div class="cat-chip" onclick="selectCat(this,'Software & Subscriptions')">💻 Software</div>
-      <div class="cat-chip" onclick="selectCat(this,'Fuel & Transportation')">⛽ Fuel</div>
-      <div class="cat-chip" onclick="selectCat(this,'Accommodation')">🏨 Hotel</div>
-      <div class="cat-chip" onclick="selectCat(this,'Marketing & Advertising')">📣 Marketing</div>
-      <div class="cat-chip" onclick="selectCat(this,'Professional Services')">💼 Professional</div>
-      <div class="cat-chip" onclick="selectCat(this,'Equipment')">🔧 Equipment</div>
-      <div class="cat-chip" onclick="selectCat(this,'Utilities')">💡 Utilities</div>
-      <div class="cat-chip" onclick="selectCat(this,'Other')">📄 Other</div>
+      <div id="editCategoryChips"></div>
     </div>
     <div class="fields">
       <div class="field-row"><span class="field-label">Vendor</span><input class="field-value" id="editVendor" type="text"></div>
@@ -489,7 +463,7 @@
       <div class="amounts-title">Amounts</div>
       <div class="amounts-grid">
         <div class="amount-box"><label>Subtotal</label><input id="editSubtotal" type="text" placeholder="$0.00"></div>
-        <div class="amount-box"><label>GST / HST</label><input id="editGST" type="text" placeholder="$0.00"></div>
+        <div class="amount-box"><label>GST/HST</label><input id="editGST" type="text" placeholder="$0.00"></div>
         <div class="amount-box"><label>PST</label><input id="editPST" type="text" placeholder="$0.00"></div>
       </div>
       <div class="amounts-grid-2">
@@ -504,19 +478,51 @@
   </div>
 </div>
 
-<script>
-const DEFAULT_GL_CATEGORIES = [
-  'Meals & Entertainment','Travel','Office Supplies','Fuel & Transportation',
-  'Professional Services','Software & Subscriptions','Equipment','Marketing & Advertising',
-  'Utilities','Accommodation','Other'
-];
+<!-- DETAIL MODAL -->
+<div class="modal-overlay" id="detailModal">
+  <div class="modal">
+    <div class="modal-header"><h3 id="detailVendor">Receipt</h3><div class="modal-close" onclick="closeDetail()">✕</div></div>
+    <div id="detailImageWrap" style="padding:12px 16px 0;display:none;"><img id="detailImage" src="" alt="Receipt" class="detail-image"></div>
+    <div id="detailFields"></div>
+    <div class="modal-actions" id="detailActions"></div>
+  </div>
+</div>
 
-const ICONS = {
-  'Meals & Entertainment':'🍽️','Travel':'✈️','Office Supplies':'📎',
-  'Software & Subscriptions':'💻','Fuel & Transportation':'⛽','Accommodation':'🏨',
-  'Marketing & Advertising':'📣','Professional Services':'💼','Equipment':'🔧',
-  'Utilities':'💡','Other':'📄'
-};
+<!-- CYCLE MODAL -->
+<div class="modal-overlay" id="cycleModal">
+  <div class="cycle-modal">
+    <div class="modal-header"><h3>Accounting Cycle</h3></div>
+    <p style="padding:10px 16px;font-size:12px;color:var(--muted2);font-weight:600;">How are your accounting periods structured? Set once, remembered forever.</p>
+    <div class="cycle-option selected" id="cycleMonthly" onclick="selectCycle('monthly')"><h4>📅 Calendar Month</h4><p>May 1 – May 31, June 1 – June 30...</p></div>
+    <div class="cycle-option" id="cycleMidMonth" onclick="selectCycle('midmonth')"><h4>📅 Mid-Month to Mid-Month</h4><p>May 15 – June 14, June 15 – July 14...</p></div>
+    <div class="cycle-option" id="cycleCustom" onclick="selectCycle('custom')"><h4>📅 Custom Date Range</h4><p>Set your own start and end day</p></div>
+    <div id="customDayFields" style="display:none;padding:0 16px;flex-direction:column;gap:8px;">
+      <div style="display:flex;gap:10px;margin-top:8px;">
+        <div style="flex:1;"><label style="font-size:10px;color:var(--muted);font-weight:700;display:block;margin-bottom:5px;">Start Day</label><input id="customStartDay" type="number" min="1" max="28" placeholder="e.g. 20" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:9px;padding:9px 11px;font-family:Nunito,sans-serif;font-size:14px;font-weight:700;color:var(--text);outline:none;"></div>
+        <div style="flex:1;"><label style="font-size:10px;color:var(--muted);font-weight:700;display:block;margin-bottom:5px;">End Day</label><input id="customEndDay" type="number" min="1" max="28" placeholder="e.g. 19" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:9px;padding:9px 11px;font-family:Nunito,sans-serif;font-size:14px;font-weight:700;color:var(--text);outline:none;"></div>
+      </div>
+      <p style="font-size:11px;color:var(--muted2);font-weight:600;padding-bottom:8px;">e.g. Start 20, End 19 means May 20 to June 19</p>
+    </div>
+    <div style="padding:14px 16px 0;"><button class="btn btn-primary" onclick="saveCycle()" style="width:100%;">Save & Export</button></div>
+  </div>
+</div>
+
+<!-- EXPORT BAR -->
+<div class="export-bar" id="exportBar">
+  <button class="btn-export" id="exportBtn" disabled onclick="startExport()">📊 Export to Google Sheets</button>
+  <div class="google-mini">
+    <div class="g-dot" id="gDot"></div>
+    <span class="g-text" id="gText">Not connected to Google</span>
+    <button class="g-btn" id="gBtn" onclick="connectGoogle()">Connect</button>
+    <button class="g-btn reset" id="gResetBtn" onclick="resetSheet()" style="display:none;">Reset</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const DEFAULT_GL = ['Meals & Entertainment','Travel','Office Supplies','Fuel & Transportation','Professional Services','Software & Subscriptions','Equipment','Marketing & Advertising','Utilities','Accommodation','Other'];
+const ICONS = {'Meals & Entertainment':'🍽️','Travel':'✈️','Office Supplies':'📎','Software & Subscriptions':'💻','Fuel & Transportation':'⛽','Accommodation':'🏨','Marketing & Advertising':'📣','Professional Services':'💼','Equipment':'🔧','Utilities':'💡','Other':'📄'};
 
 let receipts = [];
 let currentData = null;
@@ -525,12 +531,13 @@ let exportedOpen = false;
 let editingId = null;
 let selectedCycle = 'monthly';
 let isReimbursable = true;
+let currentPage = 'dashboard';
 let googleAccessToken = localStorage.getItem('google_access_token') || null;
 let spreadsheetId = localStorage.getItem('skrunchi_sheet_id') || null;
 let accountingCycle = localStorage.getItem('accounting_cycle') || null;
 let employeeName = localStorage.getItem('employee_name') || '';
 let companySheetUrl = localStorage.getItem('company_sheet_url') || '';
-let glCategories = JSON.parse(localStorage.getItem('gl_categories') || 'null') || DEFAULT_GL_CATEGORIES;
+let glCategories = JSON.parse(localStorage.getItem('gl_categories') || 'null') || DEFAULT_GL.slice();
 
 // INIT
 window.addEventListener('load', () => {
@@ -549,156 +556,115 @@ window.addEventListener('load', () => {
     window.history.replaceState({}, '', '/');
   }
   if (err) { showToast('Google connection failed'); window.history.replaceState({}, '', '/'); }
-  updateGoogleStatus();
   const saved = localStorage.getItem('skrunchi_receipts');
-  if (saved) {
-    try { receipts = JSON.parse(saved); } catch(e) { receipts = []; }
-  }
-  refreshLedger();
-  updateTotal();
+  if (saved) { try { receipts = JSON.parse(saved); } catch(e) { receipts = []; } }
+  updateGoogleStatus();
+  renderDashboard();
   updateCounts();
-  updateCategoryChips();
-  // Show first-time setup if no name set
-  if (!employeeName) {
-    document.getElementById('setupOverlay').classList.add('visible');
-  }
+  buildEditCategoryChips();
+  if (!employeeName) document.getElementById('setupOverlay').classList.add('visible');
 });
 
+// STORAGE
 function saveToStorage() {
-  // Save imageB64 for persistence, but cap size — if too large skip it
-  const toSave = receipts.map(r => {
-    const copy = Object.assign({}, r);
-    // Keep base64 if under 500kb, otherwise drop it
-    if (copy.imageB64 && copy.imageB64.length > 500000) copy.imageB64 = null;
-    copy.imageUrl = null; // blob URLs never persist
-    return copy;
-  });
+  const toSave = receipts.map(r => Object.assign({}, r, {imageUrl: null}));
   try { localStorage.setItem('skrunchi_receipts', JSON.stringify(toSave)); }
   catch(e) {
-    // If storage full, save without images
-    const minimal = receipts.map(r => Object.assign({}, r, {imageUrl: null, imageB64: null}));
-    localStorage.setItem('skrunchi_receipts', JSON.stringify(minimal));
+    const min = receipts.map(r => Object.assign({}, r, {imageUrl: null, imageB64: null}));
+    localStorage.setItem('skrunchi_receipts', JSON.stringify(min));
+  }
+}
+
+// PAGE NAVIGATION
+function showPage(page) {
+  if (page === 'history' || page === 'settings') {
+    if (page === 'history') renderHistory();
+    if (page === 'settings') loadSettingsFields();
+    document.getElementById('page-' + page).classList.add('visible');
+    return;
+  }
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-' + page).classList.add('active');
+  currentPage = page;
+  document.getElementById('exportBar').style.display = (page === 'ledger') ? 'block' : 'none';
+  if (page === 'dashboard') renderDashboard();
+  if (page === 'ledger') refreshLedger();
+}
+
+function hideSlidePage(page) {
+  document.getElementById('page-' + page).classList.remove('visible');
+}
+
+function goHome() {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-dashboard').classList.add('active');
+  currentPage = 'dashboard';
+  document.getElementById('exportBar').style.display = 'none';
+  renderDashboard();
+  // reset scan page
+  document.getElementById('uploadZone').style.display = '';
+  document.getElementById('resultCard').classList.remove('visible');
+  document.getElementById('processingCard').classList.remove('visible');
+  document.getElementById('errorMsg').classList.remove('visible');
+}
+
+// DASHBOARD
+function renderDashboard() {
+  const name = employeeName ? employeeName.split(' ')[0] : 'there';
+  document.getElementById('dashGreeting').innerHTML = 'Hey <span>' + name + '</span> 👋';
+  const pending = receipts.filter(r => !r.exported && !r.paid);
+  const exported = receipts.filter(r => r.exported && !r.paid);
+  const pendingTotal = pending.reduce((s,r) => s + parseFloat((r.total||'0').replace(/[^0-9.]/g,'')), 0);
+  document.getElementById('dashPendingAmt').textContent = '$' + pendingTotal.toFixed(2);
+  document.getElementById('dashPendingSub').textContent = pending.length + ' receipt' + (pending.length !== 1 ? 's' : '');
+  document.getElementById('dashExportCount').textContent = pending.length;
+  document.getElementById('dashExportSub').textContent = pending.length === 1 ? 'receipt' : 'receipts';
+  document.getElementById('totalPill').textContent = '$' + pendingTotal.toFixed(2) + ' pending';
+  const container = document.getElementById('dashReceipts');
+  const recent = receipts.slice().reverse().slice(0, 8);
+  if (recent.length === 0) {
+    container.innerHTML = '<div class="dash-empty"><span class="dash-empty-icon">🧾</span>No receipts yet.<br>Tap Snap a Receipt to get started!</div>';
+    return;
+  }
+  container.innerHTML = '';
+  recent.forEach(r => {
+    const isPending = !r.exported && !r.paid;
+    const isExported = r.exported && !r.paid;
+    const isPaid = r.paid;
+    const totalColor = isPaid ? 'green' : isExported ? 'blue' : '';
+    const tag = isPending ? '<span class="item-tag export">to export</span>' : isExported ? '<span class="item-tag awaiting">awaiting payment</span>' : '<span class="item-tag paid">paid</span>';
+    const div = document.createElement('div');
+    div.className = 'receipt-item';
+    div.onclick = () => openDetail(r.id);
+    div.innerHTML = '<div class="item-icon">' + (r.icon||'📄') + '</div>' +
+      '<div class="item-info"><div class="item-vendor">' + (r.vendor||'') + '</div>' +
+      '<div class="item-meta">' + (r.date||'') + ' &nbsp;&middot;&nbsp; ' + (r.category||'') + '</div></div>' +
+      '<div class="item-right"><div class="item-total ' + totalColor + '">' + (r.total||'-') + '</div>' + tag + '</div>';
+    container.appendChild(div);
+  });
+  if (receipts.length > 0) {
+    const viewAll = document.createElement('div');
+    viewAll.style.cssText = 'text-align:center;padding:10px 20px 0;';
+    viewAll.innerHTML = '<button onclick="showPage(\'ledger\')" style="background:transparent;color:var(--blue);border:none;font-family:Nunito,sans-serif;font-size:12px;font-weight:800;cursor:pointer;">View All Receipts</button>';
+    container.appendChild(viewAll);
   }
 }
 
 // GOOGLE
 function updateGoogleStatus() {
-  const dot = document.getElementById('googleDot');
-  const txt = document.getElementById('googleStatusText');
-  const btn = document.getElementById('googleConnectBtn');
-  const resetBtn = document.getElementById('resetSheetBtn');
-  if (googleAccessToken) {
-    dot.classList.add('connected');
-    txt.textContent = 'Connected to Google Sheets';
-    btn.textContent = 'Disconnect';
-    btn.onclick = disconnectGoogle;
-    if (resetBtn) resetBtn.style.display = spreadsheetId ? 'inline' : 'none';
-  } else {
-    dot.classList.remove('connected');
-    txt.textContent = 'Not connected to Google';
-    btn.textContent = 'Connect';
-    btn.onclick = connectGoogle;
-    if (resetBtn) resetBtn.style.display = 'none';
-  }
+  const connected = !!googleAccessToken;
+  document.getElementById('gDot').classList.toggle('on', connected);
+  document.getElementById('gText').textContent = connected ? 'Connected to Google Sheets' : 'Not connected to Google';
+  document.getElementById('gBtn').textContent = connected ? 'Disconnect' : 'Connect';
+  document.getElementById('gBtn').onclick = connected ? disconnectGoogle : connectGoogle;
+  document.getElementById('gResetBtn').style.display = connected && spreadsheetId ? 'inline' : 'none';
+  const sStatus = document.getElementById('settingsGoogleStatus');
+  const sBtn = document.getElementById('settingsGoogleBtn');
+  const sReset = document.getElementById('resetSheetRow');
+  if (sStatus) sStatus.textContent = connected ? 'Connected' : 'Not connected';
+  if (sBtn) { sBtn.textContent = connected ? 'Disconnect' : 'Connect'; sBtn.onclick = connected ? disconnectGoogle : connectGoogle; }
+  if (sReset) sReset.style.display = connected && spreadsheetId ? 'block' : 'none';
   updateCounts();
-}
-
-// SETTINGS
-function openSettings() {
-  document.getElementById('settingsName').value = employeeName;
-  document.getElementById('settingsSheetUrl').value = companySheetUrl;
-  renderGLTags();
-  document.getElementById('settingsPage').classList.add('visible');
-}
-function closeSettings() { document.getElementById('settingsPage').classList.remove('visible'); }
-
-function saveSettings() {
-  const name = document.getElementById('settingsName').value.trim();
-  const url = document.getElementById('settingsSheetUrl').value.trim();
-  if (!name) { showToast('Please enter your name'); return; }
-  employeeName = name;
-  companySheetUrl = url;
-  localStorage.setItem('employee_name', employeeName);
-  localStorage.setItem('company_sheet_url', companySheetUrl);
-  localStorage.setItem('gl_categories', JSON.stringify(glCategories));
-  closeSettings();
-  updateCounts();
-  showToast('Settings saved!');
-}
-
-function completeSetup() {
-  const name = document.getElementById('setupName').value.trim();
-  const url = document.getElementById('setupSheetUrl').value.trim();
-  if (!name) { showToast('Please enter your name to continue'); return; }
-  employeeName = name;
-  companySheetUrl = url;
-  localStorage.setItem('employee_name', employeeName);
-  if (url) localStorage.setItem('company_sheet_url', companySheetUrl);
-  document.getElementById('setupOverlay').classList.remove('visible');
-  updateCounts();
-  showToast('Welcome to Skrunchi, ' + employeeName + '!');
-}
-
-function renderGLTags() {
-  const container = document.getElementById('glTagsContainer');
-  container.innerHTML = '';
-  glCategories.forEach((cat, i) => {
-    const tag = document.createElement('span');
-    tag.className = 'gl-tag';
-    tag.innerHTML = cat + '<button class="gl-tag-remove" onclick="removeGLCategory(' + i + ')">×</button>';
-    container.appendChild(tag);
-  });
-}
-
-function addGLCategory() {
-  const input = document.getElementById('glNewCategory');
-  const val = input.value.trim();
-  if (!val) return;
-  if (glCategories.includes(val)) { showToast('Category already exists'); return; }
-  glCategories.push(val);
-  input.value = '';
-  renderGLTags();
-  updateCategoryChips();
-}
-
-function removeGLCategory(index) {
-  glCategories.splice(index, 1);
-  renderGLTags();
-  updateCategoryChips();
-}
-
-function updateCategoryChips() {
-  // Update the category chips in the result card and edit modal
-  ['resultCategoryChips', 'editCategoryChips'].forEach(containerId => {
-    const container = document.getElementById(containerId);
-    if (!container) return;
-    container.innerHTML = '';
-    glCategories.forEach(cat => {
-      const chip = document.createElement('div');
-      chip.className = 'cat-chip';
-      chip.textContent = (ICONS[cat] || '📄') + ' ' + cat;
-      chip.setAttribute('data-cat', cat);
-      chip.onclick = () => selectCatChip(chip, cat, containerId);
-      container.appendChild(chip);
-    });
-  });
-}
-
-function selectCatChip(el, cat, containerId) {
-  const container = document.getElementById(containerId);
-  if (container) container.querySelectorAll('.cat-chip').forEach(c => c.classList.remove('active'));
-  el.classList.add('active');
-  // Update the hidden display value
-  if (containerId === 'resultCategoryChips') {
-    document.getElementById('resultCategory').textContent = cat;
-  }
-}
-
-// REIMBURSABLE TOGGLE
-function setReimbursable(val) {
-  isReimbursable = val;
-  document.getElementById('reimbTogglePersonal').classList.toggle('active', val);
-  document.getElementById('reimbToggleCompany').classList.toggle('active', !val);
 }
 
 function connectGoogle() { window.location.href = '/api/auth'; }
@@ -715,6 +681,98 @@ function resetSheet() {
   localStorage.removeItem('skrunchi_sheet_id');
   showToast('Sheet reset');
   updateGoogleStatus();
+}
+
+// SETTINGS
+function loadSettingsFields() {
+  document.getElementById('settingsName').value = employeeName;
+  document.getElementById('settingsSheetUrl').value = companySheetUrl;
+  renderGLTags();
+  updateGoogleStatus();
+}
+
+function saveSettings() {
+  const name = document.getElementById('settingsName').value.trim();
+  const url = document.getElementById('settingsSheetUrl').value.trim();
+  if (!name) { showToast('Please enter your name'); return; }
+  employeeName = name;
+  companySheetUrl = url;
+  localStorage.setItem('employee_name', employeeName);
+  localStorage.setItem('company_sheet_url', companySheetUrl);
+  localStorage.setItem('gl_categories', JSON.stringify(glCategories));
+  hideSlidePage('settings');
+  renderDashboard();
+  updateCounts();
+  showToast('Settings saved!');
+}
+
+function completeSetup() {
+  const name = document.getElementById('setupName').value.trim();
+  const url = document.getElementById('setupSheetUrl').value.trim();
+  if (!name) { showToast('Please enter your name to continue'); return; }
+  employeeName = name;
+  companySheetUrl = url;
+  localStorage.setItem('employee_name', employeeName);
+  if (url) localStorage.setItem('company_sheet_url', companySheetUrl);
+  document.getElementById('setupOverlay').classList.remove('visible');
+  renderDashboard();
+  updateCounts();
+  showToast('Welcome to Skrunchi, ' + name.split(' ')[0] + '!');
+}
+
+// GL CATEGORIES
+function renderGLTags() {
+  const container = document.getElementById('glTagsContainer');
+  container.innerHTML = '';
+  glCategories.forEach((cat, i) => {
+    const tag = document.createElement('span');
+    tag.className = 'gl-tag';
+    tag.innerHTML = (ICONS[cat]||'📄') + ' ' + cat + '<button class="gl-remove" onclick="removeGLCategory(' + i + ')">×</button>';
+    container.appendChild(tag);
+  });
+}
+
+function addGLCategory() {
+  const input = document.getElementById('glNewCat');
+  const val = input.value.trim();
+  if (!val) return;
+  if (glCategories.includes(val)) { showToast('Already exists'); return; }
+  glCategories.push(val);
+  input.value = '';
+  renderGLTags();
+  buildEditCategoryChips();
+  localStorage.setItem('gl_categories', JSON.stringify(glCategories));
+}
+
+function removeGLCategory(i) {
+  glCategories.splice(i, 1);
+  renderGLTags();
+  buildEditCategoryChips();
+  localStorage.setItem('gl_categories', JSON.stringify(glCategories));
+}
+
+function buildEditCategoryChips() {
+  const container = document.getElementById('editCategoryChips');
+  if (!container) return;
+  container.innerHTML = '';
+  glCategories.forEach(cat => {
+    const chip = document.createElement('div');
+    chip.className = 'cat-chip';
+    chip.setAttribute('data-cat', cat);
+    chip.textContent = (ICONS[cat]||'📄') + ' ' + cat;
+    chip.onclick = () => {
+      container.querySelectorAll('.cat-chip').forEach(c => c.classList.remove('active'));
+      chip.classList.add('active');
+    };
+    container.appendChild(chip);
+  });
+}
+
+// REIMBURSABLE
+function setReimbursable(val) {
+  isReimbursable = val;
+  document.getElementById('reimbPersonal').classList.toggle('active', val);
+  document.getElementById('reimbCompany').classList.toggle('active', !val);
 }
 
 // CYCLE
@@ -742,28 +800,18 @@ function saveCycle() {
 
 function getTabName(date) {
   const d = date ? new Date(date + 'T12:00:00') : new Date();
-  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const M = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
   if (accountingCycle === 'midmonth') {
-    if (d.getDate() >= 15) {
-      const next = new Date(d.getFullYear(), d.getMonth() + 1, 1);
-      return months[d.getMonth()] + ' 15 - ' + months[next.getMonth()] + ' 14 ' + next.getFullYear();
-    } else {
-      const prev = new Date(d.getFullYear(), d.getMonth() - 1, 1);
-      return months[prev.getMonth()] + ' 15 - ' + months[d.getMonth()] + ' 14 ' + d.getFullYear();
-    }
+    if (d.getDate() >= 15) { const n = new Date(d.getFullYear(), d.getMonth()+1, 1); return M[d.getMonth()]+' 15 - '+M[n.getMonth()]+' 14 '+n.getFullYear(); }
+    else { const p = new Date(d.getFullYear(), d.getMonth()-1, 1); return M[p.getMonth()]+' 15 - '+M[d.getMonth()]+' 14 '+d.getFullYear(); }
   }
   if (accountingCycle === 'custom') {
-    const sd = parseInt(localStorage.getItem('custom_start_day') || '1');
-    const ed = parseInt(localStorage.getItem('custom_end_day') || '31');
-    if (d.getDate() >= sd) {
-      const next = new Date(d.getFullYear(), d.getMonth() + 1, 1);
-      return months[d.getMonth()] + ' ' + sd + ' - ' + months[next.getMonth()] + ' ' + ed + ' ' + next.getFullYear();
-    } else {
-      const prev = new Date(d.getFullYear(), d.getMonth() - 1, 1);
-      return months[prev.getMonth()] + ' ' + sd + ' - ' + months[d.getMonth()] + ' ' + ed + ' ' + d.getFullYear();
-    }
+    const sd = parseInt(localStorage.getItem('custom_start_day')||'1');
+    const ed = parseInt(localStorage.getItem('custom_end_day')||'31');
+    if (d.getDate() >= sd) { const n = new Date(d.getFullYear(), d.getMonth()+1, 1); return M[d.getMonth()]+' '+sd+' - '+M[n.getMonth()]+' '+ed+' '+n.getFullYear(); }
+    else { const p = new Date(d.getFullYear(), d.getMonth()-1, 1); return M[p.getMonth()]+' '+sd+' - '+M[d.getMonth()]+' '+ed+' '+d.getFullYear(); }
   }
-  return months[d.getMonth()] + ' ' + d.getFullYear();
+  return M[d.getMonth()] + ' ' + d.getFullYear();
 }
 
 // FILE HANDLING
@@ -780,20 +828,15 @@ async function handleFile(file) {
   animateProgress();
   try {
     const b64 = await fileToBase64(file);
-    const result = await analyzeReceipt(b64, file.type || 'image/jpeg');
+    const result = await analyzeReceipt(b64, file.type||'image/jpeg');
     result._imageUrl = url;
-    result._imageB64 = 'data:' + (file.type || 'image/jpeg') + ';base64,' + b64;
+    result._imageB64 = 'data:' + (file.type||'image/jpeg') + ';base64,' + b64;
     showResult(result);
-  } catch(err) { showError(err.message || 'Could not read receipt. Please try again.'); }
+  } catch(err) { showError(err.message||'Could not read receipt. Please try again.'); }
 }
 
 function fileToBase64(file) {
-  return new Promise((res, rej) => {
-    const r = new FileReader();
-    r.onload = () => res(r.result.split(',')[1]);
-    r.onerror = rej;
-    r.readAsDataURL(file);
-  });
+  return new Promise((res,rej) => { const r = new FileReader(); r.onload = () => res(r.result.split(',')[1]); r.onerror = rej; r.readAsDataURL(file); });
 }
 
 let prog;
@@ -802,10 +845,10 @@ function animateProgress() {
   const fill = document.getElementById('analyzingFill');
   const label = document.getElementById('analyzingLabel');
   const pctEl = document.getElementById('analyzingPct');
-  const steps = [[20,'Reading receipt...'],[45,'Finding amounts...'],[65,'Detecting taxes & tip...'],[85,'Categorizing...'],[93,'Almost done...']];
+  const steps = [[20,'Reading receipt...'],[45,'Finding amounts...'],[65,'Detecting taxes...'],[85,'Categorizing...'],[93,'Almost done...']];
   let idx = 0;
   prog = setInterval(() => {
-    if (idx < steps.length && pct >= steps[idx][0] - 1) { label.textContent = steps[idx][1]; idx++; }
+    if (idx < steps.length && pct >= steps[idx][0]-1) { label.textContent = steps[idx][1]; idx++; }
     if (pct < 93) pct++;
     fill.style.width = pct + '%';
     pctEl.textContent = pct + '%';
@@ -820,32 +863,27 @@ function finishProgress() {
 }
 
 async function analyzeReceipt(b64, mime) {
-  const r = await fetch('/api/analyze', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ image: b64, mediaType: mime })
-  });
+  const r = await fetch('/api/analyze', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({image:b64, mediaType:mime}) });
   const data = await r.json();
-  if (!r.ok || data.error) throw new Error(data.error || 'Could not read receipt.');
+  if (!r.ok || data.error) throw new Error(data.error||'Could not read receipt.');
   return data;
 }
 
 function showResult(data) {
-  finishProgress();
-  currentData = data;
+  finishProgress(); currentData = data;
   setTimeout(() => {
     document.getElementById('processingCard').classList.remove('visible');
     document.getElementById('resultCard').classList.add('visible');
-    document.getElementById('resultVendor').textContent = data.vendor || 'Unknown Vendor';
-    document.getElementById('resultCategory').textContent = data.category || 'Other';
-    document.getElementById('fieldDate').value = data.date || '';
-    document.getElementById('fieldPayment').value = data.payment_method || '';
-    document.getElementById('fieldNotes').value = data.notes || '';
-    document.getElementById('amtSubtotal').value = data.subtotal ? '$' + data.subtotal : '';
-    document.getElementById('amtGST').value = data.gst_hst ? '$' + data.gst_hst : '';
-    document.getElementById('amtPST').value = data.pst && data.pst !== '0.00' ? '$' + data.pst : '';
-    document.getElementById('amtTip').value = data.tip && data.tip !== '0.00' ? '$' + data.tip : '';
-    document.getElementById('amtTotal').value = data.total ? '$' + data.total : '';
+    document.getElementById('resultVendor').textContent = data.vendor||'Unknown Vendor';
+    document.getElementById('resultCategory').textContent = data.category||'Other';
+    document.getElementById('fieldDate').value = data.date||'';
+    document.getElementById('fieldPayment').value = data.payment_method||'';
+    document.getElementById('fieldNotes').value = data.notes||'';
+    document.getElementById('amtSubtotal').value = data.subtotal ? '$'+data.subtotal : '';
+    document.getElementById('amtGST').value = data.gst_hst ? '$'+data.gst_hst : '';
+    document.getElementById('amtPST').value = data.pst && data.pst !== '0.00' ? '$'+data.pst : '';
+    document.getElementById('amtTip').value = data.tip && data.tip !== '0.00' ? '$'+data.tip : '';
+    document.getElementById('amtTotal').value = data.total ? '$'+data.total : '';
   }, 400);
 }
 
@@ -861,10 +899,11 @@ function showError(msg) {
 }
 
 function saveReceipt() {
+  const cat = document.getElementById('resultCategory').textContent;
   const entry = {
     id: Date.now(),
     vendor: document.getElementById('resultVendor').textContent,
-    category: document.getElementById('resultCategory').textContent,
+    category: cat,
     date: document.getElementById('fieldDate').value,
     payment: document.getElementById('fieldPayment').value,
     notes: document.getElementById('fieldNotes').value,
@@ -873,13 +912,12 @@ function saveReceipt() {
     pst: document.getElementById('amtPST').value,
     tip: document.getElementById('amtTip').value,
     total: document.getElementById('amtTotal').value,
-    icon: ICONS[document.getElementById('resultCategory').textContent] || '📄',
+    icon: ICONS[cat]||'📄',
     imageUrl: currentData ? currentData._imageUrl : null,
     imageB64: currentData ? currentData._imageB64 : null,
-    exported: false,
-    paid: false,
+    exported: false, paid: false,
     reimbursable: isReimbursable,
-    submittedBy: employeeName || 'Unknown'
+    submittedBy: employeeName||'Unknown'
   };
   receipts.push(entry);
   saveToStorage();
@@ -887,17 +925,14 @@ function saveReceipt() {
   document.getElementById('uploadZone').style.display = '';
   document.getElementById('fileInputCamera').value = '';
   document.getElementById('fileInputGallery').value = '';
-  currentData = null;
-  isReimbursable = true;
-  setReimbursable(true);
-  refreshLedger();
-  updateTotal();
-  updateCounts();
+  currentData = null; isReimbursable = true; setReimbursable(true);
+  goHome();
   showToast('Skrunchi\'d!');
 }
 
 function discardReceipt() {
   document.getElementById('resultCard').classList.remove('visible');
+  document.getElementById('processingCard').classList.remove('visible');
   document.getElementById('uploadZone').style.display = '';
   document.getElementById('fileInputCamera').value = '';
   document.getElementById('fileInputGallery').value = '';
@@ -905,8 +940,8 @@ function discardReceipt() {
 }
 
 // LEDGER
-function toggleSection(section) {
-  if (section === 'pending') {
+function toggleSection(s) {
+  if (s === 'pending') {
     pendingOpen = !pendingOpen;
     document.getElementById('pendingList').style.display = pendingOpen ? '' : 'none';
     document.getElementById('pendingToggle').textContent = pendingOpen ? 'HIDE' : 'SHOW';
@@ -917,82 +952,54 @@ function toggleSection(section) {
   }
 }
 
-function makeItem(entry) {
-  const icon = '<div class="ledger-icon">' + (entry.icon || '📄') + '</div>';
-  const exportedBadge = (entry.exported && !entry.paid) ? '<div class="exported-badge">Exported ' + (entry.exportedDate || '') + '</div>' : '';
-  const btnRow = (entry.exported && !entry.paid) ? (
-    '<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:5px;">' +
-    '<button class="re-export-btn" onclick="event.stopPropagation();reExport(' + entry.id + ')">Re-export</button>' +
-    '<button class="mark-paid-btn" onclick="event.stopPropagation();markPaid(' + entry.id + ')">Mark as Paid</button>' +
-    '</div>'
-  ) : '';
-  const taxParts = [
-    entry.gst_hst && entry.gst_hst !== '$0.00' ? 'GST/HST ' + entry.gst_hst : '',
-    entry.pst && entry.pst !== '$0.00' ? 'PST ' + entry.pst : '',
-    entry.tip && entry.tip !== '$0.00' ? 'Tip ' + entry.tip : ''
-  ].filter(Boolean).join(' · ');
-  const item = document.createElement('div');
-  item.className = 'ledger-item';
-  item.onclick = () => openEdit(entry.id);
-  item.innerHTML = icon +
-    '<div class="ledger-info">' +
-    '<div class="ledger-vendor">' + (entry.vendor || '') + '</div>' +
-    '<div class="ledger-meta">' + (entry.date || '') + ' &nbsp;&middot;&nbsp; ' + (entry.category || '') + '</div>' +
-    exportedBadge + btnRow +
-    '</div>' +
-    '<div class="ledger-right">' +
-    '<div class="ledger-total">' + (entry.total || '-') + '</div>' +
-    '<div class="ledger-tax">' + taxParts + '</div>' +
-    '</div>';
-  return item;
+function makeLedgerItem(entry) {
+  const exportedBadge = entry.exported && !entry.paid ? '<div class="exported-badge">Exported ' + (entry.exportedDate||'') + '</div>' : '';
+  const btns = entry.exported && !entry.paid ? '<div style="display:flex;gap:5px;flex-wrap:wrap;margin-top:5px;"><button class="re-export-btn" onclick="event.stopPropagation();reExport(' + entry.id + ')">Re-export</button><button class="mark-paid-btn" onclick="event.stopPropagation();markPaid(' + entry.id + ')">Mark as Paid</button></div>' : '';
+  const taxParts = [entry.gst_hst && entry.gst_hst !== '$0.00' ? 'GST/HST '+entry.gst_hst : '', entry.pst && entry.pst !== '$0.00' ? 'PST '+entry.pst : '', entry.tip && entry.tip !== '$0.00' ? 'Tip '+entry.tip : ''].filter(Boolean).join(' · ');
+  const el = document.createElement('div');
+  el.className = 'ledger-item';
+  el.onclick = () => openEdit(entry.id);
+  el.innerHTML = '<div class="ledger-icon">' + (entry.icon||'📄') + '</div>' +
+    '<div class="ledger-info"><div class="ledger-vendor">' + (entry.vendor||'') + '</div>' +
+    '<div class="ledger-meta">' + (entry.date||'') + ' &nbsp;&middot;&nbsp; ' + (entry.category||'') + '</div>' +
+    exportedBadge + btns + '</div>' +
+    '<div class="ledger-right"><div class="ledger-total">' + (entry.total||'-') + '</div>' +
+    '<div class="ledger-tax">' + taxParts + '</div></div>';
+  return el;
 }
 
 function refreshLedger() {
   const pendingItems = receipts.filter(r => !r.exported && !r.paid);
   const exportedItems = receipts.filter(r => r.exported && !r.paid);
-
+  const emptyState = document.getElementById('emptyState');
   const pendingList = document.getElementById('pendingList');
   const exportedList = document.getElementById('exportedList');
-  const exportedSection = document.getElementById('exportedSection');
-  const emptyState = document.getElementById('emptyState');
-
-  // Detach emptyState safely
   if (emptyState && emptyState.parentNode) emptyState.parentNode.removeChild(emptyState);
-
-  // Rebuild pending
   pendingList.innerHTML = '';
   if (pendingItems.length === 0) {
     emptyState.style.display = '';
     pendingList.appendChild(emptyState);
   } else {
     emptyState.style.display = 'none';
-    pendingItems.forEach(e => pendingList.appendChild(makeItem(e)));
+    pendingItems.forEach(e => pendingList.appendChild(makeLedgerItem(e)));
   }
   pendingList.style.display = pendingOpen ? '' : 'none';
-
-  // Rebuild exported
   exportedList.innerHTML = '';
-  exportedItems.forEach(e => exportedList.appendChild(makeItem(e)));
-  exportedSection.style.display = exportedItems.length > 0 ? '' : 'none';
+  exportedItems.forEach(e => exportedList.appendChild(makeLedgerItem(e)));
+  document.getElementById('exportedSection').style.display = exportedItems.length > 0 ? '' : 'none';
   exportedList.style.display = exportedOpen ? '' : 'none';
-}
-
-function updateTotal() {
-  const t = receipts.filter(r => !r.exported && !r.paid)
-    .reduce((sum, r) => sum + parseFloat((r.total || '0').replace(/[^0-9.]/g, '')), 0);
-  document.getElementById('totalPill').textContent = '$' + t.toFixed(2) + ' pending';
 }
 
 function updateCounts() {
   const p = receipts.filter(r => !r.exported && !r.paid).length;
   const e = receipts.filter(r => r.exported && !r.paid).length;
-  document.getElementById('pendingCount').textContent = '(' + p + ')';
-  document.getElementById('exportedCount').textContent = '(' + e + ')';
-  const canExport = p > 0 && employeeName && companySheetUrl;
-  document.getElementById('exportBtn').disabled = !canExport;
-  if (!employeeName || !companySheetUrl) {
-    document.getElementById('exportBtn').title = 'Complete setup in Settings first';
-  }
+  const pEl = document.getElementById('pendingCount');
+  const eEl = document.getElementById('exportedCount');
+  if (pEl) pEl.textContent = '(' + p + ')';
+  if (eEl) eEl.textContent = '(' + e + ')';
+  const canExport = p > 0 && !!employeeName && !!companySheetUrl;
+  const btn = document.getElementById('exportBtn');
+  if (btn) btn.disabled = !canExport;
 }
 
 function markPaid(id) {
@@ -1001,24 +1008,24 @@ function markPaid(id) {
   entry.paid = true;
   entry.paidDate = new Date().toLocaleDateString('en-CA');
   saveToStorage();
-  refreshLedger(); updateTotal(); updateCounts();
+  refreshLedger(); renderDashboard(); updateCounts();
   showToast('Marked as paid!');
 }
 
 function reExport(id) {
   const entry = receipts.find(r => r.id === id);
   if (!entry) return;
-  entry.exported = false;
-  entry.exportedDate = null;
+  entry.exported = false; entry.exportedDate = null;
   saveToStorage();
-  refreshLedger(); updateTotal(); updateCounts();
+  refreshLedger(); renderDashboard(); updateCounts();
   showToast('Moved back to Ready to Export');
 }
 
 // EXPORT
 function startExport() {
-  if (!employeeName) { showToast('Set your name in Settings first'); openSettings(); return; }
-  if (!companySheetUrl) { showToast('Add the company sheet URL in Settings first'); openSettings(); return; }
+  if (!employeeName) { showToast('Set your name in Settings first'); showPage('settings'); return; }
+  if (!companySheetUrl) { showToast('Add the company sheet URL in Settings first'); showPage('settings'); return; }
+  if (!googleAccessToken) { connectGoogle(); return; }
   if (!accountingCycle) { document.getElementById('cycleModal').classList.add('visible'); return; }
   doExport();
 }
@@ -1026,34 +1033,16 @@ function startExport() {
 async function doExport() {
   const pending = receipts.filter(r => !r.exported && !r.paid);
   if (!pending.length) { showToast('Nothing to export'); return; }
-  if (!employeeName) { showToast('Set your name in Settings first'); openSettings(); return; }
-  if (!companySheetUrl) { showToast('Add the company sheet URL in Settings first'); openSettings(); return; }
-  if (!googleAccessToken) { connectGoogle(); return; }
-
   const btn = document.getElementById('exportBtn');
-  btn.textContent = 'Exporting...';
-  btn.disabled = true;
-
+  btn.textContent = 'Exporting...'; btn.disabled = true;
   const groups = {};
-  pending.forEach(r => {
-    const tab = getTabName(r.date);
-    if (!groups[tab]) groups[tab] = [];
-    groups[tab].push(r);
-  });
-
+  pending.forEach(r => { const tab = getTabName(r.date); if (!groups[tab]) groups[tab] = []; groups[tab].push(r); });
   try {
     let sid = spreadsheetId;
     for (const [tabName, tabReceipts] of Object.entries(groups)) {
       const res = await fetch('/api/sheets', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          accessToken: googleAccessToken,
-          receipts: tabReceipts,
-          tabName,
-          spreadsheetId: sid,
-          sheetUrl: companySheetUrl
-        })
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({accessToken:googleAccessToken, receipts:tabReceipts, tabName, spreadsheetId:sid, sheetUrl:companySheetUrl})
       });
       const data = await res.json();
       if (data.error) throw new Error(data.error);
@@ -1065,13 +1054,10 @@ async function doExport() {
     receipts.forEach(r => { if (!r.exported && !r.paid) { r.exported = true; r.exportedDate = today; } });
     saveToStorage();
     exportedOpen = true;
-    document.getElementById('exportedToggle').textContent = 'HIDE';
-    refreshLedger(); updateTotal(); updateCounts();
-    updateGoogleStatus();
+    if (document.getElementById('exportedToggle')) document.getElementById('exportedToggle').textContent = 'HIDE';
+    refreshLedger(); renderDashboard(); updateCounts(); updateGoogleStatus();
     showToast('Exported to Google Sheets!');
-  } catch(err) {
-    showToast('Export failed: ' + err.message);
-  }
+  } catch(err) { showToast('Export failed: ' + err.message); }
   btn.textContent = 'Export to Google Sheets';
   updateCounts();
 }
@@ -1081,35 +1067,32 @@ function openEdit(id) {
   const entry = receipts.find(r => r.id === id);
   if (!entry) return;
   editingId = id;
-  document.getElementById('editVendor').value = entry.vendor || '';
-  document.getElementById('editDate').value = entry.date || '';
-  document.getElementById('editPayment').value = entry.payment || '';
-  document.getElementById('editNotes').value = entry.notes || '';
-  document.getElementById('editSubtotal').value = entry.subtotal || '';
-  document.getElementById('editGST').value = entry.gst_hst || '';
-  document.getElementById('editPST').value = entry.pst || '';
-  document.getElementById('editTip').value = entry.tip || '';
-  document.getElementById('editTotal').value = entry.total || '';
+  document.getElementById('editVendor').value = entry.vendor||'';
+  document.getElementById('editDate').value = entry.date||'';
+  document.getElementById('editPayment').value = entry.payment||'';
+  document.getElementById('editNotes').value = entry.notes||'';
+  document.getElementById('editSubtotal').value = entry.subtotal||'';
+  document.getElementById('editGST').value = entry.gst_hst||'';
+  document.getElementById('editPST').value = entry.pst||'';
+  document.getElementById('editTip').value = entry.tip||'';
+  document.getElementById('editTotal').value = entry.total||'';
+  const imgSrc = entry.imageUrl || entry.imageB64;
   const imgWrap = document.getElementById('editImageWrap');
   const img = document.getElementById('editImage');
-  const imgSrc = entry.imageUrl || entry.imageB64;
-  if (imgSrc) { img.src = imgSrc; imgWrap.style.display = 'block'; }
-  else { imgWrap.style.display = 'none'; }
-  document.querySelectorAll('.cat-chip').forEach(c => {
-    c.classList.toggle('active', c.getAttribute('onclick').includes(entry.category));
-  });
+  if (imgSrc) { img.src = imgSrc; imgWrap.style.display = 'block'; } else { imgWrap.style.display = 'none'; }
+  const chips = document.getElementById('editCategoryChips');
+  chips.querySelectorAll('.cat-chip').forEach(c => c.classList.toggle('active', c.getAttribute('data-cat') === entry.category));
   document.getElementById('editModal').classList.add('visible');
 }
 
 function closeEdit() { document.getElementById('editModal').classList.remove('visible'); editingId = null; }
-function selectCat(el, cat) { document.querySelectorAll('.cat-chip').forEach(c => c.classList.remove('active')); el.classList.add('active'); }
 
 function saveEdit() {
   const entry = receipts.find(r => r.id === editingId);
   if (!entry) return;
-  const ac = document.querySelector('.cat-chip.active');
+  const ac = document.querySelector('#editCategoryChips .cat-chip.active');
   entry.vendor = document.getElementById('editVendor').value;
-  entry.category = ac ? ac.getAttribute('onclick').match(/'([^']+)'/)[1] : entry.category;
+  entry.category = ac ? ac.getAttribute('data-cat') : entry.category;
   entry.date = document.getElementById('editDate').value;
   entry.payment = document.getElementById('editPayment').value;
   entry.notes = document.getElementById('editNotes').value;
@@ -1118,27 +1101,46 @@ function saveEdit() {
   entry.pst = document.getElementById('editPST').value;
   entry.tip = document.getElementById('editTip').value;
   entry.total = document.getElementById('editTotal').value;
-  entry.icon = ICONS[entry.category] || '📄';
+  entry.icon = ICONS[entry.category]||'📄';
   saveToStorage();
-  refreshLedger(); updateTotal(); updateCounts();
+  refreshLedger(); renderDashboard(); updateCounts();
   closeEdit();
   showToast('Receipt updated!');
 }
 
-// HISTORY PAGE
-function openHistory() {
-  renderHistory();
-  document.getElementById('historyPage').classList.add('visible');
+// DETAIL MODAL
+function openDetail(id) {
+  const entry = receipts.find(r => r.id === id);
+  if (!entry) return;
+  document.getElementById('detailVendor').textContent = entry.vendor||'Receipt';
+  const imgSrc = entry.imageUrl || entry.imageB64;
+  const imgWrap = document.getElementById('detailImageWrap');
+  const img = document.getElementById('detailImage');
+  if (imgSrc) { img.src = imgSrc; imgWrap.style.display = 'block'; } else { imgWrap.style.display = 'none'; }
+  const rows = [
+    ['Date', entry.date], ['Category', entry.category], ['Payment', entry.payment],
+    ['Submitted By', entry.submittedBy], ['Type', entry.reimbursable === false ? 'Company Card' : 'Reimbursable'],
+    ['Subtotal', entry.subtotal], ['GST/HST', entry.gst_hst], ['PST', entry.pst], ['Tip', entry.tip], ['Notes', entry.notes]
+  ].filter(r => r[1] && r[1] !== '$0.00');
+  document.getElementById('detailFields').innerHTML =
+    rows.map(([l,v]) => '<div class="detail-row"><span class="detail-label">'+l+'</span><span class="detail-value">'+v+'</span></div>').join('') +
+    '<div class="detail-row"><span class="detail-label">Total</span><span class="detail-value detail-total">'+(entry.total||'-')+'</span></div>';
+  const actions = document.getElementById('detailActions');
+  actions.innerHTML = entry.exported && !entry.paid
+    ? '<button class="btn btn-primary" onclick="markPaid('+entry.id+');closeDetail();" style="flex:1;">Mark as Paid</button>'
+    : '';
+  document.getElementById('detailModal').classList.add('visible');
 }
-function closeHistory() { document.getElementById('historyPage').classList.remove('visible'); }
+function closeDetail() { document.getElementById('detailModal').classList.remove('visible'); }
 
+// HISTORY
 function renderHistory() {
   const awaiting = receipts.filter(r => r.exported && !r.paid);
   const paid = receipts.filter(r => r.paid);
   const awaitTotal = awaiting.reduce((s,r) => s + parseFloat((r.total||'0').replace(/[^0-9.]/g,'')), 0);
   const paidTotal = paid.reduce((s,r) => s + parseFloat((r.total||'0').replace(/[^0-9.]/g,'')), 0);
-  document.getElementById('histPendingAmt').textContent = '$' + awaitTotal.toFixed(2);
-  document.getElementById('histPendingCount').textContent = awaiting.length + ' receipt' + (awaiting.length !== 1 ? 's' : '');
+  document.getElementById('histAwaitAmt').textContent = '$' + awaitTotal.toFixed(2);
+  document.getElementById('histAwaitCount').textContent = awaiting.length + ' receipt' + (awaiting.length !== 1 ? 's' : '');
   document.getElementById('histPaidAmt').textContent = '$' + paidTotal.toFixed(2);
   document.getElementById('histPaidCount').textContent = paid.length + ' receipt' + (paid.length !== 1 ? 's' : '');
   const content = document.getElementById('historyContent');
@@ -1148,115 +1150,64 @@ function renderHistory() {
     items.forEach(r => { const p = getTabName(r.date); if (!g[p]) g[p] = []; g[p].push(r); });
     return g;
   };
-  if (awaiting.length > 0) {
-    addHistorySection(content, 'Awaiting Reimbursement', groupBy(awaiting), false, 'var(--accent)');
-  }
-  if (paid.length > 0) {
-    addHistorySection(content, 'Paid', groupBy(paid), true, 'var(--green)');
-  }
+  if (awaiting.length > 0) addHistSection(content, 'Awaiting Reimbursement', groupBy(awaiting), false);
+  if (paid.length > 0) addHistSection(content, 'Paid', groupBy(paid), true);
   if (!awaiting.length && !paid.length) {
     content.innerHTML = '<div style="text-align:center;padding:40px 20px;color:var(--muted2);font-size:13px;font-weight:600;">No history yet.<br>Export receipts to start tracking.</div>';
   }
 }
 
-function addHistorySection(container, title, groups, isPaid, color) {
-  const label = document.createElement('div');
-  label.style.cssText = 'padding:16px 20px 6px;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:' + color;
-  label.textContent = title;
-  container.appendChild(label);
+function addHistSection(container, title, groups, isPaid) {
+  const color = isPaid ? 'var(--green)' : 'var(--accent)';
+  const lbl = document.createElement('div');
+  lbl.style.cssText = 'padding:14px 20px 5px;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:' + color;
+  lbl.textContent = title;
+  container.appendChild(lbl);
   Object.entries(groups).forEach(([period, items]) => {
     const total = items.reduce((s,r) => s + parseFloat((r.total||'0').replace(/[^0-9.]/g,'')), 0);
-    const isOpen = {v: true};
+    const isOpen = {v:true};
     const group = document.createElement('div');
     group.className = 'period-group';
     const header = document.createElement('div');
     header.className = 'period-header';
-    const toggleLabel = document.createElement('div');
-    toggleLabel.style.cssText = 'font-size:10px;color:var(--muted);font-weight:700;margin-top:2px;';
-    toggleLabel.textContent = 'HIDE';
-    header.innerHTML = '<div><h4>' + period + '</h4><div class="period-meta">' + items.length + ' receipt' + (items.length !== 1 ? 's' : '') + '</div></div>';
+    const toggleLbl = document.createElement('div');
+    toggleLbl.className = 'period-toggle';
+    toggleLbl.textContent = 'HIDE';
     const right = document.createElement('div');
     right.style.textAlign = 'right';
-    const amt = document.createElement('div');
-    amt.className = 'period-total';
-    amt.style.color = color;
-    amt.textContent = '$' + total.toFixed(2);
-    right.appendChild(amt);
-    right.appendChild(toggleLabel);
+    right.innerHTML = '<div class="period-total" style="color:' + color + '">$' + total.toFixed(2) + '</div>';
+    right.appendChild(toggleLbl);
+    header.innerHTML = '<div><h4>' + period + '</h4><div class="period-meta-text">' + items.length + ' receipt' + (items.length !== 1 ? 's' : '') + '</div></div>';
     header.appendChild(right);
     const itemsEl = document.createElement('div');
     itemsEl.className = 'period-items';
-    header.onclick = () => {
-      isOpen.v = !isOpen.v;
-      itemsEl.style.display = isOpen.v ? '' : 'none';
-      toggleLabel.textContent = isOpen.v ? 'HIDE' : 'SHOW';
-    };
+    header.onclick = () => { isOpen.v = !isOpen.v; itemsEl.style.display = isOpen.v ? '' : 'none'; toggleLbl.textContent = isOpen.v ? 'HIDE' : 'SHOW'; };
     items.forEach(entry => {
       const hitem = document.createElement('div');
       hitem.className = 'history-item';
-      hitem.innerHTML = '<div class="history-icon">' + (entry.icon || '📄') + '</div>' +
-        '<div class="ledger-info">' +
-        '<div class="ledger-vendor">' + (entry.vendor || '') + '</div>' +
-        '<div class="ledger-meta">' + (entry.date || '') + ' &nbsp;&middot;&nbsp; ' + (entry.category || '') + '</div>' +
-        (isPaid ? '<div class="paid-badge">Paid ' + (entry.paidDate || '') + '</div>' : '') +
-        (!isPaid ? '<div style="margin-top:5px;"><button class="mark-paid-btn" onclick="event.stopPropagation();markPaidAndRefresh(' + entry.id + ')">Mark as Paid</button></div>' : '') +
-        '</div>' +
-        '<div class="ledger-right"><div class="ledger-total" style="color:' + color + '">' + (entry.total || '-') + '</div></div>';
       hitem.onclick = () => openDetail(entry.id);
+      const btn = !isPaid
+        ? '<button class="mark-paid-btn" onclick="event.stopPropagation();markPaid('+entry.id+');renderHistory();">Mark as Paid</button>'
+        : '<div style="font-size:10px;color:var(--green);font-weight:700;">Paid ' + (entry.paidDate||'') + '</div>';
+      hitem.innerHTML = '<div class="item-icon">' + (entry.icon||'📄') + '</div>' +
+        '<div class="item-info"><div class="item-vendor">' + (entry.vendor||'') + '</div>' +
+        '<div class="item-meta">' + (entry.date||'') + ' &nbsp;&middot;&nbsp; ' + (entry.category||'') + '</div>' +
+        '<div style="margin-top:4px;">' + btn + '</div></div>' +
+        '<div class="item-right"><div class="item-total" style="color:' + color + '">' + (entry.total||'-') + '</div></div>';
       itemsEl.appendChild(hitem);
     });
-    group.appendChild(header);
-    group.appendChild(itemsEl);
-    container.appendChild(group);
+    group.appendChild(header); group.appendChild(itemsEl); container.appendChild(group);
   });
 }
 
-function markPaidAndRefresh(id) {
-  markPaid(id);
-  renderHistory();
-}
-
-// DETAIL MODAL (shows photo for history items)
-function openDetail(id) {
-  const entry = receipts.find(r => r.id === id);
-  if (!entry) return;
-  document.getElementById('detailVendor').textContent = entry.vendor || 'Receipt';
-  const imgWrap = document.getElementById('detailImageWrap');
-  const img = document.getElementById('detailImage');
-  const imgSrc = entry.imageUrl || entry.imageB64;
-  if (imgSrc) { img.src = imgSrc; imgWrap.style.display = 'block'; }
-  else { imgWrap.style.display = 'none'; }
-  const fields = document.getElementById('detailFields');
-  const rows = [
-    ['Date', entry.date],
-    ['Category', entry.category],
-    ['Payment', entry.payment],
-    ['Subtotal', entry.subtotal],
-    ['GST / HST', entry.gst_hst],
-    ['PST', entry.pst],
-    ['Tip', entry.tip],
-    ['Notes', entry.notes]
-  ].filter(r => r[1] && r[1] !== '$0.00');
-  fields.innerHTML = rows.map(([l,v]) =>
-    '<div class="detail-row"><span class="detail-label">' + l + '</span><span class="detail-value">' + v + '</span></div>'
-  ).join('') +
-  '<div class="detail-row"><span class="detail-label">Total</span><span class="detail-value detail-total">' + (entry.total || '-') + '</span></div>';
-  const actions = document.getElementById('detailActions');
-  if (entry.exported && !entry.paid) {
-    actions.innerHTML = '<button class="btn btn-primary" onclick="markPaid(' + entry.id + ');closeDetail();renderHistory();" style="flex:1;">Mark as Paid</button>';
-  } else {
-    actions.innerHTML = '';
-  }
-  document.getElementById('detailModal').classList.add('visible');
-}
-function closeDetail() { document.getElementById('detailModal').classList.remove('visible'); }
-
 function showToast(msg) {
   const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
+  t.textContent = msg; t.classList.add('show');
   setTimeout(() => t.classList.remove('show'), 3000);
 }
+
+// Init export bar hidden on dashboard
+document.getElementById('exportBar').style.display = 'none';
 </script>
 </body>
 </html>
