@@ -15,8 +15,6 @@
 }
 *{box-sizing:border-box;margin:0;padding:0;}
 body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;max-width:480px;margin:0 auto;padding-bottom:100px;}
-
-/* HEADER */
 header{padding:16px 20px 12px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);position:sticky;top:0;background:var(--bg);z-index:10;}
 .logo-wrap{display:flex;align-items:center;gap:10px;cursor:pointer;}
 .logo-icon{width:34px;height:34px;background:var(--accent);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:17px;}
@@ -28,8 +26,6 @@ header{padding:16px 20px 12px;display:flex;align-items:center;justify-content:sp
 .total-pill:hover{border-color:var(--blue);background:var(--blue-soft);}
 .gear-btn{width:30px;height:30px;border-radius:9px;background:var(--surface2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:15px;flex-shrink:0;}
 .gear-btn:hover{border-color:var(--accent);}
-
-/* PAGES */
 .page{display:none;}
 .page.active{display:block;}
 .slide-page{position:fixed;inset:0;background:var(--bg);z-index:40;max-width:480px;margin:0 auto;overflow-y:auto;transform:translateX(100%);transition:transform 0.3s ease;padding-bottom:40px;}
@@ -38,8 +34,6 @@ header{padding:16px 20px 12px;display:flex;align-items:center;justify-content:sp
 .back-btn{width:34px;height:34px;border-radius:10px;background:var(--surface2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:17px;flex-shrink:0;}
 .back-btn:hover{border-color:var(--accent);}
 .page-title{font-size:17px;font-weight:900;}
-
-/* DASHBOARD */
 .dash-greeting{padding:20px 20px 0;font-size:20px;font-weight:900;}
 .dash-greeting span{color:var(--accent);}
 .dash-stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:14px 16px 0;}
@@ -51,23 +45,17 @@ header{padding:16px 20px 12px;display:flex;align-items:center;justify-content:sp
 .stat-card.orange .stat-value{color:var(--accent);}
 .stat-card.blue .stat-value{color:var(--blue);}
 .stat-sub{font-size:10px;color:var(--muted2);font-weight:600;margin-top:3px;}
-.snap-btn{display:block;margin:14px 16px 0;width:calc(100% - 32px);padding:16px;background:var(--accent);border:none;border-radius:14px;color:#fff;font-family:'Nunito',sans-serif;font-size:16px;font-weight:900;cursor:pointer;letter-spacing:0.2px;transition:all 0.15s;}
+.snap-btn{display:block;margin:14px 16px 0;width:calc(100% - 32px);padding:16px;background:var(--accent);border:none;border-radius:14px;color:#fff;font-family:'Nunito',sans-serif;font-size:16px;font-weight:900;cursor:pointer;transition:all 0.15s;}
 .snap-btn:hover{background:#ff8f50;}
 .dash-section-label{padding:16px 20px 8px;font-size:11px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:0.8px;}
 .dash-empty{text-align:center;padding:30px 20px;color:var(--muted2);font-size:13px;font-weight:600;line-height:2;}
 .dash-empty-icon{font-size:32px;display:block;margin-bottom:8px;opacity:0.4;}
-
-/* LEDGER ITEMS */
 .receipt-item{background:var(--surface);border:1px solid var(--border);border-radius:13px;padding:12px 14px;display:flex;align-items:center;gap:11px;cursor:pointer;transition:border-color 0.15s;margin:0 16px 6px;}
 .receipt-item:hover{border-color:var(--accent);}
 .item-icon{width:40px;height:40px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;background:var(--surface2);border:1px solid var(--border);}
 .item-info{flex:1;min-width:0;}
 .item-vendor{font-size:14px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .item-meta{font-size:10px;color:var(--muted2);margin-top:2px;font-weight:600;}
-.item-badge{font-size:9px;font-weight:700;margin-top:3px;}
-.item-badge.export{color:var(--blue);}
-.item-badge.exported{color:var(--green);}
-.item-badge.paid{color:var(--green);}
 .item-right{text-align:right;flex-shrink:0;}
 .item-total{font-size:15px;font-weight:900;color:var(--accent);}
 .item-total.blue{color:var(--blue);}
@@ -76,8 +64,6 @@ header{padding:16px 20px 12px;display:flex;align-items:center;justify-content:sp
 .item-tag.export{background:rgba(77,159,255,0.15);color:var(--blue);}
 .item-tag.awaiting{background:rgba(255,123,53,0.15);color:var(--accent);}
 .item-tag.paid{background:rgba(74,222,128,0.15);color:var(--green);}
-
-/* SCAN PAGE */
 .upload-zone{margin:16px;border:2px dashed var(--border);border-radius:var(--radius);padding:32px 20px;text-align:center;background:var(--surface);}
 .upload-zone:hover{border-color:var(--accent);}
 .upload-icon{width:64px;height:64px;background:var(--accent-soft);border:2px solid rgba(255,123,53,0.25);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;font-size:26px;}
@@ -88,16 +74,12 @@ header{padding:16px 20px 12px;display:flex;align-items:center;justify-content:sp
 .upload-btn input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;font-size:0;}
 .upload-btn.camera{background:var(--accent);color:#fff;}
 .upload-btn.gallery{background:var(--surface2);color:var(--text);border:1px solid var(--border);}
-
-/* PROCESSING */
 .processing-card{margin:0 16px 16px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px;display:none;}
 .processing-card.visible{display:block;}
 .receipt-preview{width:100%;max-height:170px;object-fit:cover;border-radius:12px;margin-bottom:14px;}
 .analyzing-bar{background:var(--surface2);border-radius:100px;height:6px;overflow:hidden;margin-bottom:6px;}
 .analyzing-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--blue));border-radius:100px;width:0%;transition:width 0.4s ease;}
 .analyzing-label{font-size:11px;color:var(--muted2);display:flex;justify-content:space-between;font-weight:600;}
-
-/* RESULT CARD */
 .result-card{margin:0 16px 16px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;display:none;animation:slideUp 0.3s ease;}
 .result-card.visible{display:block;}
 @keyframes slideUp{from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:translateY(0);}}
@@ -131,8 +113,6 @@ header{padding:16px 20px 12px;display:flex;align-items:center;justify-content:sp
 .btn-ghost:hover{border-color:var(--muted);color:var(--text);}
 .error-msg{margin:0 16px 16px;background:#1a0e0e;border:1px solid #3a2020;border-radius:11px;padding:10px 14px;font-size:12px;color:#ff9090;display:none;font-weight:600;}
 .error-msg.visible{display:block;}
-
-/* LEDGER PAGE */
 .collapsible-header{display:flex;align-items:center;justify-content:space-between;padding:14px 20px 8px;cursor:pointer;user-select:none;}
 .collapsible-header:hover .section-title{color:var(--accent);}
 .section-title{font-size:13px;font-weight:800;}
@@ -151,8 +131,6 @@ header{padding:16px 20px 12px;display:flex;align-items:center;justify-content:sp
 .exported-badge{font-size:9px;color:var(--blue);font-weight:700;margin-top:3px;}
 .mark-paid-btn{background:var(--green-soft);color:var(--green);border:1px solid rgba(74,222,128,0.3);border-radius:7px;padding:4px 9px;font-family:'Nunito',sans-serif;font-size:10px;font-weight:800;cursor:pointer;}
 .re-export-btn{background:transparent;color:var(--muted2);border:1px solid var(--border);border-radius:7px;padding:4px 9px;font-family:'Nunito',sans-serif;font-size:10px;font-weight:700;cursor:pointer;}
-
-/* HISTORY */
 .history-summary{margin:14px 16px 0;display:grid;grid-template-columns:1fr 1fr;gap:10px;}
 .summary-box{background:var(--surface);border:1px solid var(--border);border-radius:13px;padding:14px 14px;}
 .summary-box.orange{border-color:rgba(255,123,53,0.3);background:var(--accent-soft);}
@@ -171,8 +149,6 @@ header{padding:16px 20px 12px;display:flex;align-items:center;justify-content:sp
 .period-items{display:flex;flex-direction:column;gap:5px;margin-bottom:6px;}
 .history-item{background:var(--surface);border:1px solid var(--border);border-radius:11px;padding:11px 13px;display:flex;align-items:center;gap:10px;cursor:pointer;}
 .history-item:hover{border-color:var(--accent);}
-
-/* SETTINGS */
 .settings-section{margin:14px 16px 0;}
 .settings-section-title{font-size:11px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;}
 .settings-card{background:var(--surface);border:1px solid var(--border);border-radius:13px;overflow:hidden;margin-bottom:12px;}
@@ -186,8 +162,9 @@ header{padding:16px 20px 12px;display:flex;align-items:center;justify-content:sp
 .gl-remove{width:15px;height:15px;border-radius:50%;background:var(--border);border:none;cursor:pointer;font-size:10px;color:var(--muted2);padding:0;display:flex;align-items:center;justify-content:center;}
 .gl-remove:hover{background:#ff5c5c;color:#fff;}
 .gl-add-row{display:flex;gap:7px;padding:9px 14px;}
-
-/* DETAIL MODAL */
+.form-link-box{background:var(--surface2);border:1px solid var(--border);border-radius:9px;padding:10px 12px;display:flex;align-items:center;gap:8px;margin-top:6px;}
+.form-link-text{font-size:11px;color:var(--muted2);font-weight:600;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.copy-btn{background:var(--accent);color:#fff;border:none;border-radius:7px;padding:6px 12px;font-family:'Nunito',sans-serif;font-size:11px;font-weight:800;cursor:pointer;flex-shrink:0;}
 .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:50;display:none;align-items:flex-end;justify-content:center;backdrop-filter:blur(4px);}
 .modal-overlay.visible{display:flex;}
 .modal{background:var(--surface);border:1px solid var(--border);border-radius:22px 22px 0 0;width:100%;max-width:480px;max-height:90vh;overflow-y:auto;animation:slideUp 0.3s ease;padding-bottom:28px;}
@@ -206,8 +183,12 @@ header{padding:16px 20px 12px;display:flex;align-items:center;justify-content:sp
 .modal-category-title{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:0.6px;font-weight:700;width:100%;margin-bottom:2px;}
 .cat-chip{font-size:11px;padding:5px 11px;border-radius:100px;background:var(--surface2);color:var(--muted2);border:1px solid var(--border);font-weight:700;cursor:pointer;}
 .cat-chip.active{background:var(--blue-soft);color:var(--blue);border-color:rgba(77,159,255,0.35);}
-
-/* EXPORT BAR */
+.cycle-modal{background:var(--surface);border:1px solid var(--border);border-radius:22px 22px 0 0;width:100%;max-width:480px;animation:slideUp 0.3s ease;padding-bottom:28px;}
+.cycle-option{margin:0 16px 8px;padding:14px;border-radius:13px;border:2px solid var(--border);cursor:pointer;transition:all 0.15s;}
+.cycle-option:hover{border-color:var(--blue);}
+.cycle-option.selected{border-color:var(--blue);background:var(--blue-soft);}
+.cycle-option h4{font-size:14px;font-weight:800;margin-bottom:3px;}
+.cycle-option p{font-size:11px;color:var(--muted2);font-weight:600;}
 .export-bar{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;background:var(--bg);border-top:1px solid var(--border);z-index:9;padding:10px 16px;}
 .btn-export{width:100%;padding:13px;border-radius:12px;border:none;background:var(--blue);color:#fff;font-family:'Nunito',sans-serif;font-size:14px;font-weight:800;cursor:pointer;transition:all 0.15s;margin-bottom:6px;}
 .btn-export:hover{background:#6aadff;}
@@ -217,26 +198,96 @@ header{padding:16px 20px 12px;display:flex;align-items:center;justify-content:sp
 .g-dot.on{background:var(--green);}
 .g-text{font-size:10px;color:var(--muted);font-weight:600;flex:1;}
 .g-btn{font-size:11px;font-weight:800;color:var(--blue);background:transparent;border:none;cursor:pointer;font-family:'Nunito',sans-serif;padding:2px 5px;}
-.g-btn.reset{color:var(--muted);}
-
-/* SETUP OVERLAY */
 .setup-overlay{position:fixed;inset:0;background:var(--bg);z-index:60;max-width:480px;margin:0 auto;overflow-y:auto;display:none;padding-bottom:40px;}
 .setup-overlay.visible{display:block;}
-
-/* CYCLE MODAL */
-.cycle-modal{background:var(--surface);border:1px solid var(--border);border-radius:22px 22px 0 0;width:100%;max-width:480px;animation:slideUp 0.3s ease;padding-bottom:28px;}
-.cycle-option{margin:0 16px 8px;padding:14px;border-radius:13px;border:2px solid var(--border);cursor:pointer;transition:all 0.15s;}
-.cycle-option:hover{border-color:var(--blue);}
-.cycle-option.selected{border-color:var(--blue);background:var(--blue-soft);}
-.cycle-option h4{font-size:14px;font-weight:800;margin-bottom:3px;}
-.cycle-option p{font-size:11px;color:var(--muted2);font-weight:600;}
-
-/* TOAST */
+.setup-card{background:var(--surface);border:1px solid var(--border);border-radius:13px;overflow:hidden;margin-bottom:14px;}
+.setup-input-wrap{padding:11px 14px;border-bottom:1px solid var(--border);}
+.setup-input-wrap:last-child{border-bottom:none;}
+.setup-input-label{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.6px;margin-bottom:5px;}
+.setup-input{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:9px;padding:9px 11px;font-family:'Nunito',sans-serif;font-size:13px;font-weight:600;color:var(--text);outline:none;}
+.setup-input:focus{border-color:var(--blue);}
+.role-option{margin:0 0 10px;padding:14px;border-radius:13px;border:2px solid var(--border);cursor:pointer;transition:all 0.15s;}
+.role-option:hover{border-color:var(--blue);}
+.role-option.selected{border-color:var(--accent);background:var(--accent-soft);}
+.role-option h4{font-size:15px;font-weight:800;margin-bottom:3px;}
+.role-option p{font-size:11px;color:var(--muted2);font-weight:600;line-height:1.5;}
 .toast{position:fixed;top:20px;left:50%;transform:translateX(-50%) translateY(-80px);background:var(--accent);color:#fff;font-family:'Nunito',sans-serif;font-weight:800;font-size:13px;padding:11px 22px;border-radius:100px;z-index:100;transition:transform 0.3s ease;white-space:nowrap;}
 .toast.show{transform:translateX(-50%) translateY(0);}
+.success-screen{text-align:center;padding:40px 20px;}
+.success-screen .big-icon{font-size:56px;margin-bottom:16px;}
+.success-screen h2{font-size:22px;font-weight:900;margin-bottom:8px;}
+.success-screen p{font-size:13px;color:var(--muted2);font-weight:600;line-height:1.6;margin-bottom:20px;}
 </style>
 </head>
 <body>
+
+<!-- SETUP OVERLAY -->
+<div class="setup-overlay" id="setupOverlay">
+  <div style="padding:40px 20px 20px;" id="setupStep1">
+    <div style="text-align:center;margin-bottom:28px;">
+      <div style="font-size:52px;margin-bottom:12px;">🧾</div>
+      <div style="font-size:24px;font-weight:900;">Welcome to Skrunchi</div>
+      <div style="font-size:13px;color:var(--muted2);font-weight:600;margin-top:6px;line-height:1.6;">Let's get you set up in 30 seconds</div>
+    </div>
+    <div class="setup-card">
+      <div class="setup-input-wrap">
+        <div class="setup-input-label">Your Name</div>
+        <input class="setup-input" id="setupName" type="text" placeholder="e.g. Rebecca Smith">
+      </div>
+      <div class="setup-input-wrap">
+        <div class="setup-input-label">Company Name</div>
+        <input class="setup-input" id="setupCompany" type="text" placeholder="e.g. Acme Inc.">
+      </div>
+    </div>
+    <div style="margin-bottom:10px;font-size:11px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:1px;">I am...</div>
+    <div class="role-option selected" id="roleAdmin" onclick="selectRole('admin')">
+      <h4>🏢 The Company Admin</h4>
+      <p>I'll set up the company expense sheet and invite my team. I need to connect my Google account.</p>
+    </div>
+    <div class="role-option" id="roleEmployee" onclick="selectRole('employee')">
+      <h4>👤 An Employee</h4>
+      <p>My admin already set things up. I just need to paste the link they sent me.</p>
+    </div>
+    <div id="employeeUrlWrap" style="display:none;margin-bottom:14px;">
+      <div class="setup-card">
+        <div class="setup-input-wrap">
+          <div class="setup-input-label">Company Form Link</div>
+          <input class="setup-input" id="setupFormUrl" type="url" placeholder="Paste the link your admin sent you">
+        </div>
+      </div>
+    </div>
+    <button class="btn btn-primary" onclick="completeSetup()" style="width:100%;padding:15px;font-size:15px;" id="setupBtn">Continue</button>
+  </div>
+
+  <!-- Admin connecting Google step -->
+  <div style="padding:40px 20px 20px;display:none;" id="setupStep2">
+    <div style="text-align:center;margin-bottom:28px;">
+      <div style="font-size:48px;margin-bottom:12px;">🔗</div>
+      <div style="font-size:22px;font-weight:900;">Connect Google</div>
+      <div style="font-size:13px;color:var(--muted2);font-weight:600;margin-top:8px;line-height:1.6;">Skrunchi will create your company expense sheet automatically. You only need to do this once.</div>
+    </div>
+    <button class="btn btn-primary" onclick="connectGoogleAdmin()" style="width:100%;padding:15px;font-size:15px;margin-bottom:12px;">Connect Google Account</button>
+    <div style="text-align:center;font-size:11px;color:var(--muted);font-weight:600;">Your data stays in your Google Drive.<br>Skrunchi never stores your expenses.</div>
+  </div>
+
+  <!-- Success screen for admin -->
+  <div style="padding:40px 20px 20px;display:none;" id="setupStep3">
+    <div class="success-screen">
+      <div class="big-icon">🎉</div>
+      <h2>You're all set!</h2>
+      <p>Your company expense sheet has been created in your Google Drive. Share the link below with your employees — that's all they need.</p>
+    </div>
+    <div style="background:var(--surface);border:1px solid rgba(255,123,53,0.3);border-radius:13px;padding:14px 16px;margin-bottom:16px;">
+      <div style="font-size:10px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:8px;">Employee Link</div>
+      <div class="form-link-box">
+        <div class="form-link-text" id="setupFormLinkText">Loading...</div>
+        <button class="copy-btn" onclick="copyFormLink()">Copy</button>
+      </div>
+      <div style="font-size:11px;color:var(--muted2);font-weight:600;margin-top:8px;line-height:1.5;">Send this to every employee. They paste it into Skrunchi during setup and their expenses will flow straight to your sheet.</div>
+    </div>
+    <button class="btn btn-primary" onclick="finishAdminSetup()" style="width:100%;padding:15px;font-size:15px;">Start Using Skrunchi</button>
+  </div>
+</div>
 
 <header>
   <div class="logo-wrap" onclick="goHome()">
@@ -252,30 +303,7 @@ header{padding:16px 20px 12px;display:flex;align-items:center;justify-content:sp
   </div>
 </header>
 
-<!-- SETUP OVERLAY -->
-<div class="setup-overlay" id="setupOverlay">
-  <div style="padding:40px 20px 20px;">
-    <div style="text-align:center;margin-bottom:28px;">
-      <div style="font-size:52px;margin-bottom:12px;">🧾</div>
-      <div style="font-size:24px;font-weight:900;">Welcome to Skrunchi</div>
-      <div style="font-size:13px;color:var(--muted2);font-weight:600;margin-top:6px;line-height:1.6;">Set up your account to start scanning</div>
-    </div>
-    <div style="background:var(--surface);border:1px solid var(--border);border-radius:13px;overflow:hidden;margin-bottom:14px;">
-      <div class="settings-input-wrap">
-        <div class="settings-input-label">Your Name</div>
-        <input class="settings-input" id="setupName" type="text" placeholder="e.g. Rebecca Smith">
-      </div>
-      <div class="settings-input-wrap">
-        <div class="settings-input-label">Company Google Sheet URL</div>
-        <input class="settings-input" id="setupSheetUrl" type="url" placeholder="Paste your company sheet link here">
-        <div style="font-size:11px;color:var(--muted);font-weight:600;margin-top:5px;line-height:1.5;">Your admin will send you this link. You can also add it later in Settings.</div>
-      </div>
-    </div>
-    <button class="btn btn-primary" onclick="completeSetup()" style="width:100%;padding:15px;font-size:15px;">Get Started</button>
-  </div>
-</div>
-
-<!-- DASHBOARD PAGE -->
+<!-- DASHBOARD -->
 <div class="page active" id="page-dashboard">
   <div class="dash-greeting" id="dashGreeting">Hey there 👋</div>
   <div class="dash-stats">
@@ -402,15 +430,35 @@ header{padding:16px 20px 12px;display:flex;align-items:center;justify-content:sp
         <div class="settings-input-label">Your Name</div>
         <input class="settings-input" id="settingsName" type="text" placeholder="e.g. Rebecca Smith">
       </div>
+      <div class="settings-input-wrap">
+        <div class="settings-input-label">Company Name</div>
+        <input class="settings-input" id="settingsCompany" type="text" placeholder="e.g. Acme Inc.">
+      </div>
+      <div class="settings-input-wrap">
+        <div class="settings-input-label">Role</div>
+        <div style="font-size:13px;font-weight:700;color:var(--muted2);" id="settingsRole">—</div>
+      </div>
     </div>
   </div>
-  <div class="settings-section">
-    <div class="settings-section-title">Company Google Sheet</div>
+  <div class="settings-section" id="adminFormSection" style="display:none;">
+    <div class="settings-section-title">Employee Link</div>
     <div class="settings-card">
       <div class="settings-input-wrap">
-        <div class="settings-input-label">Shared Sheet URL</div>
-        <input class="settings-input" id="settingsSheetUrl" type="url" placeholder="Paste company Google Sheet link">
-        <div style="font-size:11px;color:var(--muted);font-weight:600;margin-top:5px;line-height:1.5;">All exports go to this sheet automatically.</div>
+        <div class="settings-input-label">Share with employees</div>
+        <div class="form-link-box">
+          <div class="form-link-text" id="settingsFormLink">Not set up yet</div>
+          <button class="copy-btn" onclick="copyFormLink()">Copy</button>
+        </div>
+        <div style="font-size:11px;color:var(--muted);font-weight:600;margin-top:6px;line-height:1.5;">Send this link to anyone who needs to submit expenses.</div>
+      </div>
+    </div>
+  </div>
+  <div class="settings-section" id="employeeFormSection" style="display:none;">
+    <div class="settings-section-title">Company Form Link</div>
+    <div class="settings-card">
+      <div class="settings-input-wrap">
+        <div class="settings-input-label">Form URL</div>
+        <input class="settings-input" id="settingsFormUrl" type="url" placeholder="Paste company form link">
       </div>
     </div>
   </div>
@@ -424,18 +472,12 @@ header{padding:16px 20px 12px;display:flex;align-items:center;justify-content:sp
       </div>
     </div>
   </div>
-  <div class="settings-section">
-    <div class="settings-section-title">Google Sheets Connection</div>
+  <div class="settings-section" id="adminGoogleSection" style="display:none;">
+    <div class="settings-section-title">Google Account</div>
     <div class="settings-card">
       <div class="settings-input-wrap" style="display:flex;align-items:center;justify-content:space-between;">
-        <div>
-          <div class="settings-input-label">Status</div>
-          <div style="font-size:13px;font-weight:700;" id="settingsGoogleStatus">Not connected</div>
-        </div>
-        <button id="settingsGoogleBtn" onclick="connectGoogle()" style="background:var(--blue);color:#fff;border:none;border-radius:9px;padding:9px 14px;font-family:'Nunito',sans-serif;font-size:12px;font-weight:800;cursor:pointer;">Connect</button>
-      </div>
-      <div class="settings-input-wrap" id="resetSheetRow" style="display:none;">
-        <button onclick="resetSheet()" style="background:transparent;color:var(--muted2);border:1px solid var(--border);border-radius:9px;padding:8px 14px;font-family:'Nunito',sans-serif;font-size:12px;font-weight:700;cursor:pointer;width:100%;">Reset Sheet Connection</button>
+        <div><div class="settings-input-label">Status</div><div style="font-size:13px;font-weight:700;" id="settingsGoogleStatus">Not connected</div></div>
+        <button id="settingsGoogleBtn" style="background:var(--blue);color:#fff;border:none;border-radius:9px;padding:9px 14px;font-family:'Nunito',sans-serif;font-size:12px;font-weight:800;cursor:pointer;">Connect</button>
       </div>
     </div>
   </div>
@@ -449,10 +491,7 @@ header{padding:16px 20px 12px;display:flex;align-items:center;justify-content:sp
   <div class="modal">
     <div class="modal-header"><h3>Edit Receipt</h3><div class="modal-close" onclick="closeEdit()">✕</div></div>
     <div id="editImageWrap" style="padding:12px 16px 0;display:none;"><img id="editImage" src="" alt="Receipt" style="width:100%;max-height:200px;object-fit:contain;border-radius:11px;border:1px solid var(--border);background:var(--surface2);"></div>
-    <div class="modal-category">
-      <div class="modal-category-title">Category</div>
-      <div id="editCategoryChips"></div>
-    </div>
+    <div class="modal-category"><div class="modal-category-title">Category</div><div id="editCategoryChips"></div></div>
     <div class="fields">
       <div class="field-row"><span class="field-label">Vendor</span><input class="field-value" id="editVendor" type="text"></div>
       <div class="field-row"><span class="field-label">Date</span><input class="field-value" id="editDate" type="text" placeholder="YYYY-MM-DD"></div>
@@ -501,20 +540,18 @@ header{padding:16px 20px 12px;display:flex;align-items:center;justify-content:sp
         <div style="flex:1;"><label style="font-size:10px;color:var(--muted);font-weight:700;display:block;margin-bottom:5px;">Start Day</label><input id="customStartDay" type="number" min="1" max="28" placeholder="e.g. 20" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:9px;padding:9px 11px;font-family:Nunito,sans-serif;font-size:14px;font-weight:700;color:var(--text);outline:none;"></div>
         <div style="flex:1;"><label style="font-size:10px;color:var(--muted);font-weight:700;display:block;margin-bottom:5px;">End Day</label><input id="customEndDay" type="number" min="1" max="28" placeholder="e.g. 19" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:9px;padding:9px 11px;font-family:Nunito,sans-serif;font-size:14px;font-weight:700;color:var(--text);outline:none;"></div>
       </div>
-      <p style="font-size:11px;color:var(--muted2);font-weight:600;padding-bottom:8px;">e.g. Start 20, End 19 means May 20 to June 19</p>
     </div>
     <div style="padding:14px 16px 0;"><button class="btn btn-primary" onclick="saveCycle()" style="width:100%;">Save & Export</button></div>
   </div>
 </div>
 
 <!-- EXPORT BAR -->
-<div class="export-bar" id="exportBar">
+<div class="export-bar" id="exportBar" style="display:none;">
   <button class="btn-export" id="exportBtn" disabled onclick="startExport()">📊 Export to Google Sheets</button>
   <div class="google-mini">
     <div class="g-dot" id="gDot"></div>
-    <span class="g-text" id="gText">Not connected to Google</span>
+    <span class="g-text" id="gText">Not connected</span>
     <button class="g-btn" id="gBtn" onclick="connectGoogle()">Connect</button>
-    <button class="g-btn reset" id="gResetBtn" onclick="resetSheet()" style="display:none;">Reset</button>
   </div>
 </div>
 
@@ -531,15 +568,16 @@ let exportedOpen = false;
 let editingId = null;
 let selectedCycle = 'monthly';
 let isReimbursable = true;
-let currentPage = 'dashboard';
+let selectedRole = 'admin';
 let googleAccessToken = localStorage.getItem('google_access_token') || null;
-let spreadsheetId = localStorage.getItem('skrunchi_sheet_id') || null;
+let spreadsheetId = localStorage.getItem('skrunchi_spreadsheet_id') || null;
+let formUrl = localStorage.getItem('skrunchi_form_url') || '';
 let accountingCycle = localStorage.getItem('accounting_cycle') || null;
 let employeeName = localStorage.getItem('employee_name') || '';
-let companySheetUrl = localStorage.getItem('company_sheet_url') || '';
+let companyName = localStorage.getItem('company_name') || '';
+let userRole = localStorage.getItem('user_role') || '';
 let glCategories = JSON.parse(localStorage.getItem('gl_categories') || 'null') || DEFAULT_GL.slice();
 
-// INIT
 window.addEventListener('load', () => {
   const params = new URLSearchParams(window.location.search);
   const googleAuth = params.get('google_auth');
@@ -551,6 +589,12 @@ window.addEventListener('load', () => {
     if (googleAccessToken) {
       localStorage.setItem('google_access_token', googleAccessToken);
       if (rt) localStorage.setItem('google_refresh_token', rt);
+      // If admin, create the form now
+      if (userRole === 'admin' && !spreadsheetId) {
+        window.history.replaceState({}, '', '/');
+        createCompanyForm();
+        return;
+      }
       showToast('Connected to Google!');
     }
     window.history.replaceState({}, '', '/');
@@ -558,14 +602,15 @@ window.addEventListener('load', () => {
   if (err) { showToast('Google connection failed'); window.history.replaceState({}, '', '/'); }
   const saved = localStorage.getItem('skrunchi_receipts');
   if (saved) { try { receipts = JSON.parse(saved); } catch(e) { receipts = []; } }
+  if (!employeeName) {
+    document.getElementById('setupOverlay').classList.add('visible');
+  }
   updateGoogleStatus();
   renderDashboard();
   updateCounts();
   buildEditCategoryChips();
-  if (!employeeName) document.getElementById('setupOverlay').classList.add('visible');
 });
 
-// STORAGE
 function saveToStorage() {
   const toSave = receipts.map(r => Object.assign({}, r, {imageUrl: null}));
   try { localStorage.setItem('skrunchi_receipts', JSON.stringify(toSave)); }
@@ -573,6 +618,82 @@ function saveToStorage() {
     const min = receipts.map(r => Object.assign({}, r, {imageUrl: null, imageB64: null}));
     localStorage.setItem('skrunchi_receipts', JSON.stringify(min));
   }
+}
+
+// SETUP
+function selectRole(role) {
+  selectedRole = role;
+  document.getElementById('roleAdmin').classList.toggle('selected', role === 'admin');
+  document.getElementById('roleEmployee').classList.toggle('selected', role === 'employee');
+  document.getElementById('employeeUrlWrap').style.display = role === 'employee' ? 'block' : 'none';
+  document.getElementById('setupBtn').textContent = role === 'admin' ? 'Continue' : 'Get Started';
+}
+
+function completeSetup() {
+  const name = document.getElementById('setupName').value.trim();
+  const company = document.getElementById('setupCompany').value.trim();
+  if (!name) { showToast('Please enter your name'); return; }
+  if (!company) { showToast('Please enter your company name'); return; }
+  employeeName = name;
+  companyName = company;
+  userRole = selectedRole;
+  localStorage.setItem('employee_name', employeeName);
+  localStorage.setItem('company_name', companyName);
+  localStorage.setItem('user_role', userRole);
+  if (selectedRole === 'employee') {
+    const url = document.getElementById('setupFormUrl').value.trim();
+    if (!url) { showToast('Please paste the form link from your admin'); return; }
+    formUrl = url;
+    localStorage.setItem('skrunchi_form_url', formUrl);
+    document.getElementById('setupOverlay').classList.remove('visible');
+    renderDashboard(); updateCounts();
+    showToast('Welcome to Skrunchi, ' + name.split(' ')[0] + '!');
+  } else {
+    // Admin — show Google connect step
+    document.getElementById('setupStep1').style.display = 'none';
+    document.getElementById('setupStep2').style.display = 'block';
+  }
+}
+
+function connectGoogleAdmin() { window.location.href = '/api/auth'; }
+
+async function createCompanyForm() {
+  // Show loading state
+  document.getElementById('setupStep2').style.display = 'none';
+  document.getElementById('setupStep3').style.display = 'block';
+  document.getElementById('setupFormLinkText').textContent = 'Creating your sheet...';
+  try {
+    const res = await fetch('/api/forms', {
+      method: 'POST', headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ accessToken: googleAccessToken, companyName, action: 'create' })
+    });
+    const data = await res.json();
+    if (data.error) throw new Error(data.error);
+    spreadsheetId = data.spreadsheetId;
+    formUrl = data.spreadsheetId; // We use spreadsheetId as the shared reference
+    localStorage.setItem('skrunchi_spreadsheet_id', spreadsheetId);
+    localStorage.setItem('skrunchi_form_url', spreadsheetId);
+    document.getElementById('setupFormLinkText').textContent = 'skrunchi-sheet:' + spreadsheetId;
+    // Apply initial filter for current period
+    if (accountingCycle) await applySheetFilter();
+  } catch(err) {
+    showToast('Error creating sheet: ' + err.message);
+    document.getElementById('setupFormLinkText').textContent = 'Error — please try again';
+  }
+}
+
+function copyFormLink() {
+  const text = spreadsheetId || formUrl;
+  if (!text) return;
+  // Share the spreadsheet ID as the "link" employees paste
+  const shareText = 'skrunchi-sheet:' + (spreadsheetId || formUrl);
+  navigator.clipboard.writeText(shareText).then(() => showToast('Link copied!')).catch(() => showToast('Copy manually: ' + shareText));
+}
+
+function finishAdminSetup() {
+  document.getElementById('setupOverlay').classList.remove('visible');
+  renderDashboard(); updateCounts(); updateGoogleStatus();
+  showToast('Welcome to Skrunchi, ' + employeeName.split(' ')[0] + '!');
 }
 
 // PAGE NAVIGATION
@@ -585,23 +706,18 @@ function showPage(page) {
   }
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.getElementById('page-' + page).classList.add('active');
-  currentPage = page;
-  document.getElementById('exportBar').style.display = (page === 'ledger') ? 'block' : 'none';
+  document.getElementById('exportBar').style.display = page === 'ledger' ? 'block' : 'none';
   if (page === 'dashboard') renderDashboard();
   if (page === 'ledger') refreshLedger();
 }
 
-function hideSlidePage(page) {
-  document.getElementById('page-' + page).classList.remove('visible');
-}
+function hideSlidePage(page) { document.getElementById('page-' + page).classList.remove('visible'); }
 
 function goHome() {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.getElementById('page-dashboard').classList.add('active');
-  currentPage = 'dashboard';
   document.getElementById('exportBar').style.display = 'none';
   renderDashboard();
-  // reset scan page
   document.getElementById('uploadZone').style.display = '';
   document.getElementById('resultCard').classList.remove('visible');
   document.getElementById('processingCard').classList.remove('visible');
@@ -613,7 +729,6 @@ function renderDashboard() {
   const name = employeeName ? employeeName.split(' ')[0] : 'there';
   document.getElementById('dashGreeting').innerHTML = 'Hey <span>' + name + '</span> 👋';
   const pending = receipts.filter(r => !r.exported && !r.paid);
-  const exported = receipts.filter(r => r.exported && !r.paid);
   const pendingTotal = pending.reduce((s,r) => s + parseFloat((r.total||'0').replace(/[^0-9.]/g,'')), 0);
   document.getElementById('dashPendingAmt').textContent = '$' + pendingTotal.toFixed(2);
   document.getElementById('dashPendingSub').textContent = pending.length + ' receipt' + (pending.length !== 1 ? 's' : '');
@@ -636,10 +751,7 @@ function renderDashboard() {
     const div = document.createElement('div');
     div.className = 'receipt-item';
     div.onclick = () => openDetail(r.id);
-    div.innerHTML = '<div class="item-icon">' + (r.icon||'📄') + '</div>' +
-      '<div class="item-info"><div class="item-vendor">' + (r.vendor||'') + '</div>' +
-      '<div class="item-meta">' + (r.date||'') + ' &nbsp;&middot;&nbsp; ' + (r.category||'') + '</div></div>' +
-      '<div class="item-right"><div class="item-total ' + totalColor + '">' + (r.total||'-') + '</div>' + tag + '</div>';
+    div.innerHTML = '<div class="item-icon">' + (r.icon||'📄') + '</div><div class="item-info"><div class="item-vendor">' + (r.vendor||'') + '</div><div class="item-meta">' + (r.date||'') + ' &middot; ' + (r.category||'') + '</div></div><div class="item-right"><div class="item-total ' + totalColor + '">' + (r.total||'-') + '</div>' + tag + '</div>';
     container.appendChild(div);
   });
   if (receipts.length > 0) {
@@ -653,17 +765,16 @@ function renderDashboard() {
 // GOOGLE
 function updateGoogleStatus() {
   const connected = !!googleAccessToken;
-  document.getElementById('gDot').classList.toggle('on', connected);
-  document.getElementById('gText').textContent = connected ? 'Connected to Google Sheets' : 'Not connected to Google';
-  document.getElementById('gBtn').textContent = connected ? 'Disconnect' : 'Connect';
-  document.getElementById('gBtn').onclick = connected ? disconnectGoogle : connectGoogle;
-  document.getElementById('gResetBtn').style.display = connected && spreadsheetId ? 'inline' : 'none';
+  const dot = document.getElementById('gDot');
+  const txt = document.getElementById('gText');
+  const btn = document.getElementById('gBtn');
+  if (dot) { dot.classList.toggle('on', connected); }
+  if (txt) txt.textContent = connected ? 'Connected to Google' : 'Not connected';
+  if (btn) { btn.textContent = connected ? 'Disconnect' : 'Connect'; btn.onclick = connected ? disconnectGoogle : connectGoogle; }
   const sStatus = document.getElementById('settingsGoogleStatus');
   const sBtn = document.getElementById('settingsGoogleBtn');
-  const sReset = document.getElementById('resetSheetRow');
   if (sStatus) sStatus.textContent = connected ? 'Connected' : 'Not connected';
   if (sBtn) { sBtn.textContent = connected ? 'Disconnect' : 'Connect'; sBtn.onclick = connected ? disconnectGoogle : connectGoogle; }
-  if (sReset) sReset.style.display = connected && spreadsheetId ? 'block' : 'none';
   updateCounts();
 }
 
@@ -675,49 +786,42 @@ function disconnectGoogle() {
   updateGoogleStatus();
   showToast('Disconnected from Google');
 }
-function resetSheet() {
-  if (!confirm('Create a fresh Google Sheet next export? Your receipts stay safe.')) return;
-  spreadsheetId = null;
-  localStorage.removeItem('skrunchi_sheet_id');
-  showToast('Sheet reset');
-  updateGoogleStatus();
-}
 
 // SETTINGS
 function loadSettingsFields() {
   document.getElementById('settingsName').value = employeeName;
-  document.getElementById('settingsSheetUrl').value = companySheetUrl;
+  document.getElementById('settingsCompany').value = companyName;
+  document.getElementById('settingsRole').textContent = userRole === 'admin' ? 'Company Admin' : 'Employee';
+  document.getElementById('adminFormSection').style.display = userRole === 'admin' ? 'block' : 'none';
+  document.getElementById('employeeFormSection').style.display = userRole === 'employee' ? 'block' : 'none';
+  document.getElementById('adminGoogleSection').style.display = userRole === 'admin' ? 'block' : 'none';
+  if (userRole === 'admin') {
+    const fLink = document.getElementById('settingsFormLink');
+    if (fLink) fLink.textContent = spreadsheetId ? 'skrunchi-sheet:' + spreadsheetId : 'Not set up yet';
+  }
+  if (userRole === 'employee') {
+    const fUrl = document.getElementById('settingsFormUrl');
+    if (fUrl) fUrl.value = formUrl || '';
+  }
   renderGLTags();
   updateGoogleStatus();
 }
 
 function saveSettings() {
   const name = document.getElementById('settingsName').value.trim();
-  const url = document.getElementById('settingsSheetUrl').value.trim();
+  const company = document.getElementById('settingsCompany').value.trim();
   if (!name) { showToast('Please enter your name'); return; }
-  employeeName = name;
-  companySheetUrl = url;
+  employeeName = name; companyName = company;
   localStorage.setItem('employee_name', employeeName);
-  localStorage.setItem('company_sheet_url', companySheetUrl);
+  localStorage.setItem('company_name', companyName);
   localStorage.setItem('gl_categories', JSON.stringify(glCategories));
+  if (userRole === 'employee') {
+    const url = document.getElementById('settingsFormUrl').value.trim();
+    if (url) { formUrl = url; localStorage.setItem('skrunchi_form_url', formUrl); }
+  }
   hideSlidePage('settings');
-  renderDashboard();
-  updateCounts();
+  renderDashboard(); updateCounts();
   showToast('Settings saved!');
-}
-
-function completeSetup() {
-  const name = document.getElementById('setupName').value.trim();
-  const url = document.getElementById('setupSheetUrl').value.trim();
-  if (!name) { showToast('Please enter your name to continue'); return; }
-  employeeName = name;
-  companySheetUrl = url;
-  localStorage.setItem('employee_name', employeeName);
-  if (url) localStorage.setItem('company_sheet_url', companySheetUrl);
-  document.getElementById('setupOverlay').classList.remove('visible');
-  renderDashboard();
-  updateCounts();
-  showToast('Welcome to Skrunchi, ' + name.split(' ')[0] + '!');
 }
 
 // GL CATEGORIES
@@ -737,17 +841,14 @@ function addGLCategory() {
   const val = input.value.trim();
   if (!val) return;
   if (glCategories.includes(val)) { showToast('Already exists'); return; }
-  glCategories.push(val);
-  input.value = '';
-  renderGLTags();
-  buildEditCategoryChips();
+  glCategories.push(val); input.value = '';
+  renderGLTags(); buildEditCategoryChips();
   localStorage.setItem('gl_categories', JSON.stringify(glCategories));
 }
 
 function removeGLCategory(i) {
   glCategories.splice(i, 1);
-  renderGLTags();
-  buildEditCategoryChips();
+  renderGLTags(); buildEditCategoryChips();
   localStorage.setItem('gl_categories', JSON.stringify(glCategories));
 }
 
@@ -760,10 +861,7 @@ function buildEditCategoryChips() {
     chip.className = 'cat-chip';
     chip.setAttribute('data-cat', cat);
     chip.textContent = (ICONS[cat]||'📄') + ' ' + cat;
-    chip.onclick = () => {
-      container.querySelectorAll('.cat-chip').forEach(c => c.classList.remove('active'));
-      chip.classList.add('active');
-    };
+    chip.onclick = () => { container.querySelectorAll('.cat-chip').forEach(c => c.classList.remove('active')); chip.classList.add('active'); };
     container.appendChild(chip);
   });
 }
@@ -832,7 +930,7 @@ async function handleFile(file) {
     result._imageUrl = url;
     result._imageB64 = 'data:' + (file.type||'image/jpeg') + ';base64,' + b64;
     showResult(result);
-  } catch(err) { showError(err.message||'Could not read receipt. Please try again.'); }
+  } catch(err) { showError(err.message||'Could not read receipt.'); }
 }
 
 function fileToBase64(file) {
@@ -892,8 +990,7 @@ function showError(msg) {
   document.getElementById('processingCard').classList.remove('visible');
   document.getElementById('uploadZone').style.display = '';
   const e = document.getElementById('errorMsg');
-  e.textContent = 'Error: ' + msg;
-  e.classList.add('visible');
+  e.textContent = 'Error: ' + msg; e.classList.add('visible');
   document.getElementById('fileInputCamera').value = '';
   document.getElementById('fileInputGallery').value = '';
 }
@@ -959,12 +1056,7 @@ function makeLedgerItem(entry) {
   const el = document.createElement('div');
   el.className = 'ledger-item';
   el.onclick = () => openEdit(entry.id);
-  el.innerHTML = '<div class="ledger-icon">' + (entry.icon||'📄') + '</div>' +
-    '<div class="ledger-info"><div class="ledger-vendor">' + (entry.vendor||'') + '</div>' +
-    '<div class="ledger-meta">' + (entry.date||'') + ' &nbsp;&middot;&nbsp; ' + (entry.category||'') + '</div>' +
-    exportedBadge + btns + '</div>' +
-    '<div class="ledger-right"><div class="ledger-total">' + (entry.total||'-') + '</div>' +
-    '<div class="ledger-tax">' + taxParts + '</div></div>';
+  el.innerHTML = '<div class="ledger-icon">' + (entry.icon||'📄') + '</div><div class="ledger-info"><div class="ledger-vendor">' + (entry.vendor||'') + '</div><div class="ledger-meta">' + (entry.date||'') + ' &middot; ' + (entry.category||'') + '</div>' + exportedBadge + btns + '</div><div class="ledger-right"><div class="ledger-total">' + (entry.total||'-') + '</div><div class="ledger-tax">' + taxParts + '</div></div>';
   return el;
 }
 
@@ -976,13 +1068,8 @@ function refreshLedger() {
   const exportedList = document.getElementById('exportedList');
   if (emptyState && emptyState.parentNode) emptyState.parentNode.removeChild(emptyState);
   pendingList.innerHTML = '';
-  if (pendingItems.length === 0) {
-    emptyState.style.display = '';
-    pendingList.appendChild(emptyState);
-  } else {
-    emptyState.style.display = 'none';
-    pendingItems.forEach(e => pendingList.appendChild(makeLedgerItem(e)));
-  }
+  if (pendingItems.length === 0) { emptyState.style.display = ''; pendingList.appendChild(emptyState); }
+  else { emptyState.style.display = 'none'; pendingItems.forEach(e => pendingList.appendChild(makeLedgerItem(e))); }
   pendingList.style.display = pendingOpen ? '' : 'none';
   exportedList.innerHTML = '';
   exportedItems.forEach(e => exportedList.appendChild(makeLedgerItem(e)));
@@ -997,7 +1084,7 @@ function updateCounts() {
   const eEl = document.getElementById('exportedCount');
   if (pEl) pEl.textContent = '(' + p + ')';
   if (eEl) eEl.textContent = '(' + e + ')';
-  const canExport = p > 0 && !!employeeName && !!companySheetUrl;
+  const canExport = p > 0 && !!employeeName && (userRole === 'admin' ? !!googleAccessToken && !!spreadsheetId : !!formUrl);
   const btn = document.getElementById('exportBtn');
   if (btn) btn.disabled = !canExport;
 }
@@ -1005,10 +1092,8 @@ function updateCounts() {
 function markPaid(id) {
   const entry = receipts.find(r => r.id === id);
   if (!entry) return;
-  entry.paid = true;
-  entry.paidDate = new Date().toLocaleDateString('en-CA');
-  saveToStorage();
-  refreshLedger(); renderDashboard(); updateCounts();
+  entry.paid = true; entry.paidDate = new Date().toLocaleDateString('en-CA');
+  saveToStorage(); refreshLedger(); renderDashboard(); updateCounts();
   showToast('Marked as paid!');
 }
 
@@ -1016,16 +1101,15 @@ function reExport(id) {
   const entry = receipts.find(r => r.id === id);
   if (!entry) return;
   entry.exported = false; entry.exportedDate = null;
-  saveToStorage();
-  refreshLedger(); renderDashboard(); updateCounts();
+  saveToStorage(); refreshLedger(); renderDashboard(); updateCounts();
   showToast('Moved back to Ready to Export');
 }
 
 // EXPORT
 function startExport() {
   if (!employeeName) { showToast('Set your name in Settings first'); showPage('settings'); return; }
-  if (!companySheetUrl) { showToast('Add the company sheet URL in Settings first'); showPage('settings'); return; }
-  if (!googleAccessToken) { connectGoogle(); return; }
+  if (userRole === 'admin' && !googleAccessToken) { connectGoogle(); return; }
+  if (userRole === 'employee' && !formUrl) { showToast('Add the form link in Settings first'); showPage('settings'); return; }
   if (!accountingCycle) { document.getElementById('cycleModal').classList.add('visible'); return; }
   doExport();
 }
@@ -1035,31 +1119,48 @@ async function doExport() {
   if (!pending.length) { showToast('Nothing to export'); return; }
   const btn = document.getElementById('exportBtn');
   btn.textContent = 'Exporting...'; btn.disabled = true;
-  const groups = {};
-  pending.forEach(r => { const tab = getTabName(r.date); if (!groups[tab]) groups[tab] = []; groups[tab].push(r); });
+  const period = getTabName(pending[0].date);
   try {
+    // Resolve spreadsheet ID
     let sid = spreadsheetId;
-    for (const [tabName, tabReceipts] of Object.entries(groups)) {
-      const res = await fetch('/api/sheets', {
-        method:'POST', headers:{'Content-Type':'application/json'},
-        body: JSON.stringify({accessToken:googleAccessToken, receipts:tabReceipts, tabName, spreadsheetId:sid, sheetUrl:companySheetUrl})
+    if (!sid && formUrl) {
+      // Employee: extract spreadsheet ID from stored form url
+      if (formUrl.startsWith('skrunchi-sheet:')) sid = formUrl.replace('skrunchi-sheet:', '');
+      else { const m = formUrl.match(/\/spreadsheets\/d\/([a-zA-Z0-9-_]+)/); if (m) sid = m[1]; }
+    }
+    if (!sid) throw new Error('No sheet configured. Check Settings.');
+    // Submit each receipt
+    for (const receipt of pending) {
+      const res = await fetch('/api/forms', {
+        method: 'POST', headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ accessToken: googleAccessToken, action: 'submit', spreadsheetId: sid, receipt, accountingPeriod: getTabName(receipt.date) })
       });
       const data = await res.json();
       if (data.error) throw new Error(data.error);
-      sid = data.spreadsheetId;
     }
-    spreadsheetId = sid;
-    localStorage.setItem('skrunchi_sheet_id', spreadsheetId);
+    // Apply period filter
+    await fetch('/api/forms', {
+      method: 'POST', headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ accessToken: googleAccessToken, action: 'filter', spreadsheetId: sid, accountingPeriod: period })
+    });
     const today = new Date().toLocaleDateString('en-CA');
     receipts.forEach(r => { if (!r.exported && !r.paid) { r.exported = true; r.exportedDate = today; } });
-    saveToStorage();
-    exportedOpen = true;
-    if (document.getElementById('exportedToggle')) document.getElementById('exportedToggle').textContent = 'HIDE';
+    saveToStorage(); exportedOpen = true;
+    const et = document.getElementById('exportedToggle');
+    if (et) et.textContent = 'HIDE';
     refreshLedger(); renderDashboard(); updateCounts(); updateGoogleStatus();
-    showToast('Exported to Google Sheets!');
+    showToast('Exported!');
   } catch(err) { showToast('Export failed: ' + err.message); }
-  btn.textContent = 'Export to Google Sheets';
-  updateCounts();
+  btn.textContent = 'Export to Google Sheets'; updateCounts();
+}
+
+async function applySheetFilter() {
+  if (!spreadsheetId || !googleAccessToken || !accountingCycle) return;
+  const period = getTabName(new Date().toISOString().split('T')[0]);
+  await fetch('/api/forms', {
+    method: 'POST', headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({ accessToken: googleAccessToken, action: 'filter', spreadsheetId, accountingPeriod: period })
+  });
 }
 
 // EDIT MODAL
@@ -1102,10 +1203,8 @@ function saveEdit() {
   entry.tip = document.getElementById('editTip').value;
   entry.total = document.getElementById('editTotal').value;
   entry.icon = ICONS[entry.category]||'📄';
-  saveToStorage();
-  refreshLedger(); renderDashboard(); updateCounts();
-  closeEdit();
-  showToast('Receipt updated!');
+  saveToStorage(); refreshLedger(); renderDashboard(); updateCounts();
+  closeEdit(); showToast('Receipt updated!');
 }
 
 // DETAIL MODAL
@@ -1118,17 +1217,15 @@ function openDetail(id) {
   const img = document.getElementById('detailImage');
   if (imgSrc) { img.src = imgSrc; imgWrap.style.display = 'block'; } else { imgWrap.style.display = 'none'; }
   const rows = [
-    ['Date', entry.date], ['Category', entry.category], ['Payment', entry.payment],
-    ['Submitted By', entry.submittedBy], ['Type', entry.reimbursable === false ? 'Company Card' : 'Reimbursable'],
-    ['Subtotal', entry.subtotal], ['GST/HST', entry.gst_hst], ['PST', entry.pst], ['Tip', entry.tip], ['Notes', entry.notes]
+    ['Date', entry.date],['Category', entry.category],['Payment', entry.payment],
+    ['Submitted By', entry.submittedBy],['Type', entry.reimbursable === false ? 'Company Card' : 'Reimbursable'],
+    ['Subtotal', entry.subtotal],['GST/HST', entry.gst_hst],['PST', entry.pst],['Tip', entry.tip],['Notes', entry.notes]
   ].filter(r => r[1] && r[1] !== '$0.00');
   document.getElementById('detailFields').innerHTML =
     rows.map(([l,v]) => '<div class="detail-row"><span class="detail-label">'+l+'</span><span class="detail-value">'+v+'</span></div>').join('') +
     '<div class="detail-row"><span class="detail-label">Total</span><span class="detail-value detail-total">'+(entry.total||'-')+'</span></div>';
   const actions = document.getElementById('detailActions');
-  actions.innerHTML = entry.exported && !entry.paid
-    ? '<button class="btn btn-primary" onclick="markPaid('+entry.id+');closeDetail();" style="flex:1;">Mark as Paid</button>'
-    : '';
+  actions.innerHTML = entry.exported && !entry.paid ? '<button class="btn btn-primary" onclick="markPaid('+entry.id+');closeDetail();" style="flex:1;">Mark as Paid</button>' : '';
   document.getElementById('detailModal').classList.add('visible');
 }
 function closeDetail() { document.getElementById('detailModal').classList.remove('visible'); }
@@ -1145,16 +1242,10 @@ function renderHistory() {
   document.getElementById('histPaidCount').textContent = paid.length + ' receipt' + (paid.length !== 1 ? 's' : '');
   const content = document.getElementById('historyContent');
   content.innerHTML = '';
-  const groupBy = items => {
-    const g = {};
-    items.forEach(r => { const p = getTabName(r.date); if (!g[p]) g[p] = []; g[p].push(r); });
-    return g;
-  };
+  const groupBy = items => { const g = {}; items.forEach(r => { const p = getTabName(r.date); if (!g[p]) g[p] = []; g[p].push(r); }); return g; };
   if (awaiting.length > 0) addHistSection(content, 'Awaiting Reimbursement', groupBy(awaiting), false);
   if (paid.length > 0) addHistSection(content, 'Paid', groupBy(paid), true);
-  if (!awaiting.length && !paid.length) {
-    content.innerHTML = '<div style="text-align:center;padding:40px 20px;color:var(--muted2);font-size:13px;font-weight:600;">No history yet.<br>Export receipts to start tracking.</div>';
-  }
+  if (!awaiting.length && !paid.length) content.innerHTML = '<div style="text-align:center;padding:40px 20px;color:var(--muted2);font-size:13px;font-weight:600;">No history yet.</div>';
 }
 
 function addHistSection(container, title, groups, isPaid) {
@@ -1166,34 +1257,21 @@ function addHistSection(container, title, groups, isPaid) {
   Object.entries(groups).forEach(([period, items]) => {
     const total = items.reduce((s,r) => s + parseFloat((r.total||'0').replace(/[^0-9.]/g,'')), 0);
     const isOpen = {v:true};
-    const group = document.createElement('div');
-    group.className = 'period-group';
-    const header = document.createElement('div');
-    header.className = 'period-header';
-    const toggleLbl = document.createElement('div');
-    toggleLbl.className = 'period-toggle';
-    toggleLbl.textContent = 'HIDE';
-    const right = document.createElement('div');
-    right.style.textAlign = 'right';
+    const group = document.createElement('div'); group.className = 'period-group';
+    const header = document.createElement('div'); header.className = 'period-header';
+    const toggleLbl = document.createElement('div'); toggleLbl.className = 'period-toggle'; toggleLbl.textContent = 'HIDE';
+    const right = document.createElement('div'); right.style.textAlign = 'right';
     right.innerHTML = '<div class="period-total" style="color:' + color + '">$' + total.toFixed(2) + '</div>';
     right.appendChild(toggleLbl);
     header.innerHTML = '<div><h4>' + period + '</h4><div class="period-meta-text">' + items.length + ' receipt' + (items.length !== 1 ? 's' : '') + '</div></div>';
     header.appendChild(right);
-    const itemsEl = document.createElement('div');
-    itemsEl.className = 'period-items';
+    const itemsEl = document.createElement('div'); itemsEl.className = 'period-items';
     header.onclick = () => { isOpen.v = !isOpen.v; itemsEl.style.display = isOpen.v ? '' : 'none'; toggleLbl.textContent = isOpen.v ? 'HIDE' : 'SHOW'; };
     items.forEach(entry => {
-      const hitem = document.createElement('div');
-      hitem.className = 'history-item';
+      const hitem = document.createElement('div'); hitem.className = 'history-item';
       hitem.onclick = () => openDetail(entry.id);
-      const btn = !isPaid
-        ? '<button class="mark-paid-btn" onclick="event.stopPropagation();markPaid('+entry.id+');renderHistory();">Mark as Paid</button>'
-        : '<div style="font-size:10px;color:var(--green);font-weight:700;">Paid ' + (entry.paidDate||'') + '</div>';
-      hitem.innerHTML = '<div class="item-icon">' + (entry.icon||'📄') + '</div>' +
-        '<div class="item-info"><div class="item-vendor">' + (entry.vendor||'') + '</div>' +
-        '<div class="item-meta">' + (entry.date||'') + ' &nbsp;&middot;&nbsp; ' + (entry.category||'') + '</div>' +
-        '<div style="margin-top:4px;">' + btn + '</div></div>' +
-        '<div class="item-right"><div class="item-total" style="color:' + color + '">' + (entry.total||'-') + '</div></div>';
+      const btn = !isPaid ? '<button class="mark-paid-btn" onclick="event.stopPropagation();markPaid('+entry.id+');renderHistory();">Mark as Paid</button>' : '<div style="font-size:10px;color:var(--green);font-weight:700;">Paid ' + (entry.paidDate||'') + '</div>';
+      hitem.innerHTML = '<div class="item-icon">' + (entry.icon||'📄') + '</div><div class="item-info"><div class="item-vendor">' + (entry.vendor||'') + '</div><div class="item-meta">' + (entry.date||'') + ' &middot; ' + (entry.category||'') + '</div><div style="margin-top:4px;">' + btn + '</div></div><div class="item-right"><div class="item-total" style="color:' + color + '">' + (entry.total||'-') + '</div></div>';
       itemsEl.appendChild(hitem);
     });
     group.appendChild(header); group.appendChild(itemsEl); container.appendChild(group);
@@ -1205,9 +1283,6 @@ function showToast(msg) {
   t.textContent = msg; t.classList.add('show');
   setTimeout(() => t.classList.remove('show'), 3000);
 }
-
-// Init export bar hidden on dashboard
-document.getElementById('exportBar').style.display = 'none';
 </script>
 </body>
 </html>
