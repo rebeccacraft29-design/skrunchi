@@ -170,7 +170,35 @@
   .history-icon { width: 38px; height: 38px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; background: var(--surface2); border: 1px solid var(--border); }
   .paid-badge { font-size: 10px; color: var(--green); font-weight: 700; margin-top: 3px; }
 
-  /* RECEIPT DETAIL MODAL */
+  /* SETTINGS PAGE */
+  .settings-page { position: fixed; inset: 0; background: var(--bg); z-index: 40; max-width: 480px; margin: 0 auto; overflow-y: auto; transform: translateX(100%); transition: transform 0.3s ease; padding-bottom: 40px; }
+  .settings-page.visible { transform: translateX(0); }
+  .settings-header { padding: 18px 20px 14px; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid var(--border); position: sticky; top: 0; background: var(--bg); z-index: 1; }
+  .settings-back { width: 36px; height: 36px; border-radius: 10px; background: var(--surface2); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 18px; }
+  .settings-back:hover { border-color: var(--accent); }
+  .settings-section { margin: 16px 16px 0; }
+  .settings-section-title { font-size: 11px; font-weight: 800; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; }
+  .settings-card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; margin-bottom: 12px; }
+  .settings-row { padding: 14px 16px; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid var(--border); }
+  .settings-row:last-child { border-bottom: none; }
+  .settings-label { font-size: 13px; font-weight: 700; flex: 1; }
+  .settings-sublabel { font-size: 11px; color: var(--muted2); font-weight: 600; margin-top: 2px; }
+  .settings-input { width: 100%; background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; padding: 10px 12px; font-family: 'Nunito', sans-serif; font-size: 14px; font-weight: 600; color: var(--text); outline: none; transition: border-color 0.15s; }
+  .settings-input:focus { border-color: var(--blue); }
+  .settings-input-wrap { padding: 12px 16px; border-bottom: 1px solid var(--border); }
+  .settings-input-wrap:last-child { border-bottom: none; }
+  .settings-input-label { font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 6px; }
+  .gl-tag { display: inline-flex; align-items: center; gap: 6px; background: var(--surface2); border: 1px solid var(--border); border-radius: 100px; padding: 5px 10px 5px 12px; font-size: 12px; font-weight: 700; margin: 3px; }
+  .gl-tag-remove { width: 16px; height: 16px; border-radius: 50%; background: var(--border); border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 10px; color: var(--muted2); padding: 0; }
+  .gl-tag-remove:hover { background: #ff5c5c; color: #fff; }
+  .gl-add-row { display: flex; gap: 8px; padding: 10px 16px; }
+  .setup-overlay { position: fixed; inset: 0; background: var(--bg); z-index: 60; max-width: 480px; margin: 0 auto; overflow-y: auto; display: none; padding-bottom: 40px; }
+  .setup-overlay.visible { display: block; }
+  /* REIMBURSABLE TOGGLE */
+  .reimb-toggle-row { display: flex; align-items: center; gap: 0; margin: 0 18px 16px; background: var(--surface2); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+  .reimb-option { flex: 1; padding: 11px 8px; text-align: center; font-size: 12px; font-weight: 800; cursor: pointer; transition: all 0.15s; color: var(--muted2); }
+  .reimb-option.active.reimbursable { background: var(--green-soft); color: var(--green); border-color: var(--green); }
+  .reimb-option.active.company { background: var(--blue-soft); color: var(--blue); }
   .detail-image { width: 100%; max-height: 240px; object-fit: contain; border-radius: 12px; border: 1px solid var(--border); background: var(--surface2); margin-bottom: 4px; }
   .detail-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 18px; border-bottom: 1px solid var(--border); }
   .detail-row:last-child { border-bottom: none; }
@@ -183,14 +211,87 @@
 
 <header>
   <div class="logo-wrap">
-    <div class="logo-icon">🧾</div>
+    <div class="logo-icon" onclick="openSettings()" style="cursor:pointer;" title="Settings">🧾</div>
     <div>
       <div class="logo-text">Skr<span>u</span>nchi</div>
       <div class="tagline">Snap it. Skrunchi it. Done.</div>
     </div>
   </div>
-  <div class="total-pill" id="totalPill" onclick="openHistory()">$0.00 pending</div>
+  <div style="display:flex;align-items:center;gap:8px;">
+    <div class="total-pill" id="totalPill" onclick="openHistory()">$0.00 pending</div>
+    <div onclick="openSettings()" style="width:32px;height:32px;border-radius:10px;background:var(--surface2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px;flex-shrink:0;" title="Settings">⚙️</div>
+  </div>
 </header>
+
+<!-- FIRST TIME SETUP OVERLAY -->
+<div class="setup-overlay" id="setupOverlay">
+  <div style="padding:40px 20px 20px;">
+    <div style="text-align:center;margin-bottom:32px;">
+      <div style="font-size:48px;margin-bottom:12px;">🧾</div>
+      <div style="font-size:26px;font-weight:900;">Welcome to Skrunchi</div>
+      <div style="font-size:13px;color:var(--muted2);font-weight:600;margin-top:6px;">Set up your account before you start scanning</div>
+    </div>
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:14px;overflow:hidden;margin-bottom:16px;">
+      <div class="settings-input-wrap">
+        <div class="settings-input-label">Your Name</div>
+        <input class="settings-input" id="setupName" type="text" placeholder="e.g. Rebecca Smith">
+      </div>
+      <div class="settings-input-wrap">
+        <div class="settings-input-label">Company Google Sheet URL</div>
+        <input class="settings-input" id="setupSheetUrl" type="url" placeholder="Paste the shared Google Sheet link here">
+        <div style="font-size:11px;color:var(--muted);font-weight:600;margin-top:6px;">Your admin will send you this link. Leave blank if you are the admin — you can set it up later in Settings.</div>
+      </div>
+    </div>
+    <button class="btn btn-primary" onclick="completeSetup()" style="width:100%;padding:16px;font-size:16px;">Get Started</button>
+  </div>
+</div>
+
+<!-- SETTINGS PAGE -->
+<div class="settings-page" id="settingsPage">
+  <div class="settings-header">
+    <div class="settings-back" onclick="closeSettings()">←</div>
+    <div style="font-size:18px;font-weight:900;">Settings</div>
+  </div>
+
+  <div class="settings-section">
+    <div class="settings-section-title">Your Profile</div>
+    <div class="settings-card">
+      <div class="settings-input-wrap">
+        <div class="settings-input-label">Your Name</div>
+        <input class="settings-input" id="settingsName" type="text" placeholder="e.g. Rebecca Smith">
+      </div>
+    </div>
+  </div>
+
+  <div class="settings-section">
+    <div class="settings-section-title">Company Google Sheet</div>
+    <div class="settings-card">
+      <div class="settings-input-wrap">
+        <div class="settings-input-label">Shared Sheet URL</div>
+        <input class="settings-input" id="settingsSheetUrl" type="url" placeholder="Paste company Google Sheet link">
+        <div style="font-size:11px;color:var(--muted);font-weight:600;margin-top:6px;">All your exports will go to this sheet automatically.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="settings-section">
+    <div class="settings-section-title">GL Account Categories</div>
+    <div class="settings-card">
+      <div style="padding:12px 16px;border-bottom:1px solid var(--border);">
+        <div style="font-size:12px;color:var(--muted2);font-weight:600;margin-bottom:10px;">Your categories — tap × to remove</div>
+        <div id="glTagsContainer"></div>
+      </div>
+      <div class="gl-add-row">
+        <input class="settings-input" id="glNewCategory" type="text" placeholder="Add a custom category..." style="flex:1;">
+        <button onclick="addGLCategory()" style="background:var(--accent);color:#fff;border:none;border-radius:10px;padding:10px 16px;font-family:Nunito,sans-serif;font-size:13px;font-weight:800;cursor:pointer;">Add</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="settings-section">
+    <button onclick="saveSettings()" class="btn btn-primary" style="width:100%;padding:14px;">Save Settings</button>
+  </div>
+</div>
 
 <!-- HISTORY PAGE -->
 <div class="history-page" id="historyPage">
@@ -272,6 +373,14 @@
     <div class="amounts-grid-2">
       <div class="amount-box"><label>Tip</label><input id="amtTip" type="text" placeholder="$0.00"></div>
       <div class="amount-box total"><label>Total</label><input id="amtTotal" type="text" placeholder="$0.00"></div>
+    </div>
+  </div>
+  <div class="reimb-toggle-row">
+    <div class="reimb-option reimbursable active" id="reimbTogglePersonal" onclick="setReimbursable(true)">
+      💳 Reimbursable
+    </div>
+    <div class="reimb-option company" id="reimbToggleCompany" onclick="setReimbursable(false)">
+      🏢 Company Card
     </div>
   </div>
   <div class="action-row">
@@ -396,7 +505,18 @@
 </div>
 
 <script>
-const ICONS = {'Meals & Entertainment':'🍽️','Travel':'✈️','Office Supplies':'📎','Software & Subscriptions':'💻','Fuel & Transportation':'⛽','Accommodation':'🏨','Marketing & Advertising':'📣','Professional Services':'💼','Equipment':'🔧','Utilities':'💡','Other':'📄'};
+const DEFAULT_GL_CATEGORIES = [
+  'Meals & Entertainment','Travel','Office Supplies','Fuel & Transportation',
+  'Professional Services','Software & Subscriptions','Equipment','Marketing & Advertising',
+  'Utilities','Accommodation','Other'
+];
+
+const ICONS = {
+  'Meals & Entertainment':'🍽️','Travel':'✈️','Office Supplies':'📎',
+  'Software & Subscriptions':'💻','Fuel & Transportation':'⛽','Accommodation':'🏨',
+  'Marketing & Advertising':'📣','Professional Services':'💼','Equipment':'🔧',
+  'Utilities':'💡','Other':'📄'
+};
 
 let receipts = [];
 let currentData = null;
@@ -404,9 +524,13 @@ let pendingOpen = true;
 let exportedOpen = false;
 let editingId = null;
 let selectedCycle = 'monthly';
+let isReimbursable = true;
 let googleAccessToken = localStorage.getItem('google_access_token') || null;
 let spreadsheetId = localStorage.getItem('skrunchi_sheet_id') || null;
 let accountingCycle = localStorage.getItem('accounting_cycle') || null;
+let employeeName = localStorage.getItem('employee_name') || '';
+let companySheetUrl = localStorage.getItem('company_sheet_url') || '';
+let glCategories = JSON.parse(localStorage.getItem('gl_categories') || 'null') || DEFAULT_GL_CATEGORIES;
 
 // INIT
 window.addEventListener('load', () => {
@@ -433,6 +557,11 @@ window.addEventListener('load', () => {
   refreshLedger();
   updateTotal();
   updateCounts();
+  updateCategoryChips();
+  // Show first-time setup if no name set
+  if (!employeeName) {
+    document.getElementById('setupOverlay').classList.add('visible');
+  }
 });
 
 function saveToStorage() {
@@ -472,6 +601,104 @@ function updateGoogleStatus() {
     if (resetBtn) resetBtn.style.display = 'none';
   }
   updateCounts();
+}
+
+// SETTINGS
+function openSettings() {
+  document.getElementById('settingsName').value = employeeName;
+  document.getElementById('settingsSheetUrl').value = companySheetUrl;
+  renderGLTags();
+  document.getElementById('settingsPage').classList.add('visible');
+}
+function closeSettings() { document.getElementById('settingsPage').classList.remove('visible'); }
+
+function saveSettings() {
+  const name = document.getElementById('settingsName').value.trim();
+  const url = document.getElementById('settingsSheetUrl').value.trim();
+  if (!name) { showToast('Please enter your name'); return; }
+  employeeName = name;
+  companySheetUrl = url;
+  localStorage.setItem('employee_name', employeeName);
+  localStorage.setItem('company_sheet_url', companySheetUrl);
+  localStorage.setItem('gl_categories', JSON.stringify(glCategories));
+  closeSettings();
+  updateCounts();
+  showToast('Settings saved!');
+}
+
+function completeSetup() {
+  const name = document.getElementById('setupName').value.trim();
+  const url = document.getElementById('setupSheetUrl').value.trim();
+  if (!name) { showToast('Please enter your name to continue'); return; }
+  employeeName = name;
+  companySheetUrl = url;
+  localStorage.setItem('employee_name', employeeName);
+  if (url) localStorage.setItem('company_sheet_url', companySheetUrl);
+  document.getElementById('setupOverlay').classList.remove('visible');
+  updateCounts();
+  showToast('Welcome to Skrunchi, ' + employeeName + '!');
+}
+
+function renderGLTags() {
+  const container = document.getElementById('glTagsContainer');
+  container.innerHTML = '';
+  glCategories.forEach((cat, i) => {
+    const tag = document.createElement('span');
+    tag.className = 'gl-tag';
+    tag.innerHTML = cat + '<button class="gl-tag-remove" onclick="removeGLCategory(' + i + ')">×</button>';
+    container.appendChild(tag);
+  });
+}
+
+function addGLCategory() {
+  const input = document.getElementById('glNewCategory');
+  const val = input.value.trim();
+  if (!val) return;
+  if (glCategories.includes(val)) { showToast('Category already exists'); return; }
+  glCategories.push(val);
+  input.value = '';
+  renderGLTags();
+  updateCategoryChips();
+}
+
+function removeGLCategory(index) {
+  glCategories.splice(index, 1);
+  renderGLTags();
+  updateCategoryChips();
+}
+
+function updateCategoryChips() {
+  // Update the category chips in the result card and edit modal
+  ['resultCategoryChips', 'editCategoryChips'].forEach(containerId => {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+    container.innerHTML = '';
+    glCategories.forEach(cat => {
+      const chip = document.createElement('div');
+      chip.className = 'cat-chip';
+      chip.textContent = (ICONS[cat] || '📄') + ' ' + cat;
+      chip.setAttribute('data-cat', cat);
+      chip.onclick = () => selectCatChip(chip, cat, containerId);
+      container.appendChild(chip);
+    });
+  });
+}
+
+function selectCatChip(el, cat, containerId) {
+  const container = document.getElementById(containerId);
+  if (container) container.querySelectorAll('.cat-chip').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  // Update the hidden display value
+  if (containerId === 'resultCategoryChips') {
+    document.getElementById('resultCategory').textContent = cat;
+  }
+}
+
+// REIMBURSABLE TOGGLE
+function setReimbursable(val) {
+  isReimbursable = val;
+  document.getElementById('reimbTogglePersonal').classList.toggle('active', val);
+  document.getElementById('reimbToggleCompany').classList.toggle('active', !val);
 }
 
 function connectGoogle() { window.location.href = '/api/auth'; }
@@ -650,7 +877,9 @@ function saveReceipt() {
     imageUrl: currentData ? currentData._imageUrl : null,
     imageB64: currentData ? currentData._imageB64 : null,
     exported: false,
-    paid: false
+    paid: false,
+    reimbursable: isReimbursable,
+    submittedBy: employeeName || 'Unknown'
   };
   receipts.push(entry);
   saveToStorage();
@@ -659,6 +888,8 @@ function saveReceipt() {
   document.getElementById('fileInputCamera').value = '';
   document.getElementById('fileInputGallery').value = '';
   currentData = null;
+  isReimbursable = true;
+  setReimbursable(true);
   refreshLedger();
   updateTotal();
   updateCounts();
@@ -757,7 +988,11 @@ function updateCounts() {
   const e = receipts.filter(r => r.exported && !r.paid).length;
   document.getElementById('pendingCount').textContent = '(' + p + ')';
   document.getElementById('exportedCount').textContent = '(' + e + ')';
-  document.getElementById('exportBtn').disabled = p === 0 || !googleAccessToken;
+  const canExport = p > 0 && employeeName && companySheetUrl;
+  document.getElementById('exportBtn').disabled = !canExport;
+  if (!employeeName || !companySheetUrl) {
+    document.getElementById('exportBtn').title = 'Complete setup in Settings first';
+  }
 }
 
 function markPaid(id) {
@@ -782,7 +1017,8 @@ function reExport(id) {
 
 // EXPORT
 function startExport() {
-  if (!googleAccessToken) { connectGoogle(); return; }
+  if (!employeeName) { showToast('Set your name in Settings first'); openSettings(); return; }
+  if (!companySheetUrl) { showToast('Add the company sheet URL in Settings first'); openSettings(); return; }
   if (!accountingCycle) { document.getElementById('cycleModal').classList.add('visible'); return; }
   doExport();
 }
@@ -790,22 +1026,34 @@ function startExport() {
 async function doExport() {
   const pending = receipts.filter(r => !r.exported && !r.paid);
   if (!pending.length) { showToast('Nothing to export'); return; }
+  if (!employeeName) { showToast('Set your name in Settings first'); openSettings(); return; }
+  if (!companySheetUrl) { showToast('Add the company sheet URL in Settings first'); openSettings(); return; }
+  if (!googleAccessToken) { connectGoogle(); return; }
+
   const btn = document.getElementById('exportBtn');
   btn.textContent = 'Exporting...';
   btn.disabled = true;
+
   const groups = {};
   pending.forEach(r => {
     const tab = getTabName(r.date);
     if (!groups[tab]) groups[tab] = [];
     groups[tab].push(r);
   });
+
   try {
     let sid = spreadsheetId;
     for (const [tabName, tabReceipts] of Object.entries(groups)) {
       const res = await fetch('/api/sheets', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ accessToken: googleAccessToken, receipts: tabReceipts, tabName, spreadsheetId: sid })
+        body: JSON.stringify({
+          accessToken: googleAccessToken,
+          receipts: tabReceipts,
+          tabName,
+          spreadsheetId: sid,
+          sheetUrl: companySheetUrl
+        })
       });
       const data = await res.json();
       if (data.error) throw new Error(data.error);
