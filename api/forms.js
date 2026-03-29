@@ -62,8 +62,8 @@ module.exports = async function handler(req, res) {
       // Step 5: Write headers to the sheet
       const BLACK = { red: 0.067, green: 0.075, blue: 0.094 };
       const ORANGE = { red: 1, green: 0.482, blue: 0.208 };
-      const headerRow = [['Employee', 'Accounting Period', 'Date', 'Vendor', 'Category', 'Subtotal', 'GST/HST', 'PST', 'Tip', 'Total', 'Payment Method', 'Reimbursable', 'Notes']];
-      await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/Sheet1!A1:M1?valueInputOption=RAW`, {
+      const headerRow = [['Employee', 'Accounting Period', 'Date', 'Vendor', 'Category', 'Subtotal', 'GST/HST', 'PST', 'Tip', 'Total', 'Payment Method', 'Reimbursable', 'Notes', 'Photo']];
+      await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/Sheet1!A1:N1?valueInputOption=RAW`, {
         method: 'PUT', headers, body: JSON.stringify({ values: headerRow })
       });
 
@@ -71,12 +71,16 @@ module.exports = async function handler(req, res) {
       const styleRequests = [
         {
           repeatCell: {
-            range: { sheetId, startRowIndex: 0, endRowIndex: 1, startColumnIndex: 0, endColumnIndex: 13 },
+            range: { sheetId, startRowIndex: 0, endRowIndex: 1, startColumnIndex: 0, endColumnIndex: 14 },
             cell: { userEnteredFormat: { backgroundColor: BLACK, textFormat: { bold: true, foregroundColor: ORANGE, fontSize: 11 }, horizontalAlignment: 'CENTER', verticalAlignment: 'MIDDLE' } },
             fields: 'userEnteredFormat(backgroundColor,textFormat,horizontalAlignment,verticalAlignment)'
           }
         },
         { updateDimensionProperties: { range: { sheetId, dimension: 'ROWS', startIndex: 0, endIndex: 1 }, properties: { pixelSize: 36 }, fields: 'pixelSize' } },
+        // Set data rows tall enough to show receipt photos
+        { updateDimensionProperties: { range: { sheetId, dimension: 'ROWS', startIndex: 1, endIndex: 1000 }, properties: { pixelSize: 100 }, fields: 'pixelSize' } },
+        // Set photo column width
+        { updateDimensionProperties: { range: { sheetId, dimension: 'COLUMNS', startIndex: 13, endIndex: 14 }, properties: { pixelSize: 120 }, fields: 'pixelSize' } },
         { updateSheetProperties: { properties: { sheetId, gridProperties: { frozenRowCount: 1 } }, fields: 'gridProperties.frozenRowCount' } }
       ];
       await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}:batchUpdate`, {
@@ -113,10 +117,11 @@ module.exports = async function handler(req, res) {
         (receipt.total || '').replace('$', ''),
         receipt.payment || '',
         receipt.reimbursable === false ? 'Company Card' : 'Reimbursable',
-        receipt.notes || ''
+        receipt.notes || '',
+        receipt.permanentImageUrl ? `=IMAGE("${receipt.permanentImageUrl}")` : ''
       ]];
 
-      await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/Sheet1!A${startRow}:M${startRow}?valueInputOption=RAW&insertDataOption=INSERT_ROWS`, {
+      await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/Sheet1!A${startRow}:N${startRow}?valueInputOption=USER_ENTERED&insertDataOption=INSERT_ROWS`, {
         method: 'POST', headers, body: JSON.stringify({ values: row })
       });
 
@@ -126,7 +131,7 @@ module.exports = async function handler(req, res) {
       const rowIndex = startRow - 1;
       const colorRequests = [{
         repeatCell: {
-          range: { sheetId: 0, startRowIndex: rowIndex, endRowIndex: rowIndex + 1, startColumnIndex: 0, endColumnIndex: 13 },
+          range: { sheetId: 0, startRowIndex: rowIndex, endRowIndex: rowIndex + 1, startColumnIndex: 0, endColumnIndex: 14 },
           cell: { userEnteredFormat: { backgroundColor: rowIndex % 2 === 0 ? GREY : WHITE, verticalAlignment: 'MIDDLE' } },
           fields: 'userEnteredFormat(backgroundColor,verticalAlignment)'
         }
