@@ -1123,6 +1123,7 @@ async function saveReceipt() {
   document.getElementById('fileInputGallery').value = '';
   currentData = null; isReimbursable = true; setReimbursable(true);
   goHome();
+  updateCounts();
   showToast('Skrunchi\'d!');
 }
 
@@ -1183,7 +1184,7 @@ function updateCounts() {
   const eEl = document.getElementById('exportedCount');
   if (pEl) pEl.textContent = '(' + p + ')';
   if (eEl) eEl.textContent = '(' + e + ')';
-  const canExport = p > 0 && !!employeeName && (userRole === 'admin' ? !!googleAccessToken && !!spreadsheetId : !!formUrl);
+  const canExport = p > 0 && !!employeeName && (userRole === 'admin' ? !!googleAccessToken : !!formUrl);
   const btn = document.getElementById('exportBtn');
   if (btn) btn.disabled = !canExport;
 }
@@ -1222,8 +1223,26 @@ async function doExport() {
   try {
     // Resolve spreadsheet ID
     let sid = spreadsheetId;
+
+    // Admin with no sheet yet — create one automatically
+    if (!sid && userRole === 'admin') {
+      showToast('Creating your company sheet...');
+      const createRes = await fetch('/api/forms', {
+        method: 'POST', headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ accessToken: googleAccessToken, companyName: companyName || 'Skrunchi', action: 'create' })
+      });
+      const createData = await createRes.json();
+      if (createData.error) throw new Error(createData.error);
+      sid = createData.spreadsheetId;
+      spreadsheetId = sid;
+      formUrl = 'skrunchi-sheet:' + sid;
+      localStorage.setItem('skrunchi_spreadsheet_id', sid);
+      localStorage.setItem('skrunchi_form_url', formUrl);
+      const fLink = document.getElementById('settingsFormLink');
+      if (fLink) fLink.textContent = formUrl;
+    }
+
     if (!sid && formUrl) {
-      // Employee: extract spreadsheet ID from stored form url
       if (formUrl.startsWith('skrunchi-sheet:')) sid = formUrl.replace('skrunchi-sheet:', '');
       else { const m = formUrl.match(/\/spreadsheets\/d\/([a-zA-Z0-9-_]+)/); if (m) sid = m[1]; }
     }
