@@ -1071,10 +1071,32 @@ function showError(msg) {
   document.getElementById('fileInputGallery').value = '';
 }
 
-function saveReceipt() {
+async function saveReceipt() {
   const cat = document.getElementById('resultCategory').textContent;
+  const id = Date.now();
+
+  // Upload photo to Supabase if we have one
+  let permanentImageUrl = null;
+  if (currentData && currentData._imageB64) {
+    try {
+      showToast('Uploading photo...');
+      const b64 = currentData._imageB64.split(',')[1];
+      const mime = currentData._imageB64.split(';')[0].split(':')[1];
+      const uploadRes = await fetch('/api/upload', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ image: b64, mediaType: mime, receiptId: id })
+      });
+      const uploadData = await uploadRes.json();
+      if (uploadData.url) permanentImageUrl = uploadData.url;
+    } catch(e) {
+      // Photo upload failed — save receipt anyway without photo
+      console.error('Photo upload failed:', e);
+    }
+  }
+
   const entry = {
-    id: Date.now(),
+    id,
     vendor: document.getElementById('resultVendor').textContent,
     category: cat,
     date: document.getElementById('fieldDate').value,
@@ -1086,8 +1108,9 @@ function saveReceipt() {
     tip: document.getElementById('amtTip').value,
     total: document.getElementById('amtTotal').value,
     icon: ICONS[cat]||'📄',
-    imageUrl: currentData ? currentData._imageUrl : null,
-    imageB64: currentData ? currentData._imageB64 : null,
+    imageUrl: permanentImageUrl || (currentData ? currentData._imageUrl : null),
+    imageB64: permanentImageUrl ? null : (currentData ? currentData._imageB64 : null),
+    permanentImageUrl,
     exported: false, paid: false,
     reimbursable: isReimbursable,
     submittedBy: employeeName||'Unknown'
